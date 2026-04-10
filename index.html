@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VERTEXTRACK — Analyse Biomécanique par IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;
+  --bg2:#060d18;
+  --cyan:#00c8ff;
+  --cyan2:rgba(0,200,255,0.15);
+  --amber:#f59e0b;
+  --green:#00e676;
+  --white:#ffffff;
+  --muted:rgba(255,255,255,0.45);
+  --border:rgba(0,200,255,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.nav-logo-text .v{color:var(--white);}
+.nav-logo-text .t{color:var(--cyan);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-links a:hover{color:#fff;border-bottom-color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-outline{border:1.5px solid var(--cyan);color:var(--white);background:transparent;padding:8px 20px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-outline:hover{background:rgba(0,200,255,0.1);}
+.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 22px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-filled:hover{box-shadow:0 0 28px rgba(0,200,255,0.5);}
+
+/* HERO */
+.hero{position:relative;width:100%;height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;margin-top:64px;}
+
+.hero-panel{position:relative;overflow:hidden;}
+.hero-panel img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(25%) contrast(1.1);transition:transform 6s ease;}
+.hero-panel:hover img{transform:scale(1.03);}
+
+/* dark overlays */
+.hero-panel-left::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,rgba(3,8,15,0.92) 0%,rgba(3,8,15,0.7) 50%,rgba(3,8,15,0.4) 100%);}
+.hero-panel-right::after{content:'';position:absolute;inset:0;background:linear-gradient(250deg,rgba(3,8,15,0.88) 0%,rgba(3,8,15,0.6) 50%,rgba(3,8,15,0.35) 100%);}
+
+/* cyan tint */
+.hero-panel::before{content:'';position:absolute;inset:0;background:rgba(0,200,255,0.05);z-index:1;}
+
+/* scan line */
+@keyframes scan{0%{top:-2px}100%{top:100%}}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,200,255,0.4),transparent);z-index:3;animation:scan 4s linear infinite;}
+
+/* corner brackets */
+.corner{position:absolute;z-index:3;}
+.corner-tl{top:20px;left:20px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);width:24px;height:24px;}
+.corner-tr{top:20px;right:20px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);width:24px;height:24px;}
+.corner-bl{bottom:80px;left:20px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);width:24px;height:24px;}
+.corner-br{bottom:80px;right:20px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);width:24px;height:24px;}
+
+/* REC dot */
+.rec-badge{position:absolute;top:20px;right:54px;z-index:4;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.6);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:#ff4444;animation:blink 1.2s infinite;}
+
+/* HUD data box */
+.hud-box{position:absolute;bottom:90px;left:20px;z-index:4;background:rgba(3,12,28,0.88);border:1px solid rgba(0,200,255,0.3);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:1px;}
+
+/* sport label */
+.sport-label{position:absolute;bottom:28px;left:20px;z-index:4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:2px;display:flex;align-items:center;gap:10px;}
+.sport-label a{color:#fff;text-decoration:none;transition:color .2s;}
+.sport-label a:hover{color:var(--cyan);}
+.arrow{color:var(--cyan);font-size:18px;}
+
+/* divider line */
+.hero-divider{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(0,200,255,0.2);z-index:5;}
+
+/* HERO OVERLAY CONTENT */
+.hero-content{position:absolute;top:0;left:0;right:0;bottom:0;z-index:6;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 60px;pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.25);color:var(--cyan);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;margin-bottom:24px;pointer-events:all;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(64px,8vw,100px);line-height:.92;letter-spacing:-2px;text-transform:uppercase;margin-bottom:36px;}
+.hero-title .line1,.hero-title .line2{display:block;color:#fff;}
+.hero-title .line3{display:block;}
+.hero-title .line3 .cyan{color:var(--cyan);text-shadow:0 0 40px rgba(0,200,255,0.6),0 0 80px rgba(0,200,255,0.3);}
+.hero-title .line3 .dim{color:rgba(255,255,255,0.3);}
+.hero-btns{display:flex;gap:12px;pointer-events:all;margin-bottom:40px;}
+.hero-btn-main{background:var(--cyan);color:#03080f;border:none;padding:14px 32px;font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+.hero-btn-main:hover{box-shadow:0 0 32px rgba(0,200,255,0.55);}
+.hero-btn-sec{background:transparent;color:#fff;border:1.5px solid rgba(0,200,255,0.5);padding:13px 30px;font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.hero-btn-sec:hover{background:rgba(0,200,255,0.08);border-color:var(--cyan);}
+
+/* METRIC CARDS on right side */
+.hero-metrics{position:absolute;right:48px;top:50%;transform:translateY(-50%);z-index:7;display:flex;flex-direction:column;gap:12px;pointer-events:none;}
+.metric-card{background:rgba(3,12,28,0.92);border:1px solid rgba(0,200,255,0.25);padding:14px 18px;width:200px;}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.metric-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:42px;line-height:1;color:#fff;}
+.metric-value.green{color:var(--green);font-size:28px;}
+.metric-unit{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:8px;}
+.metric-bar-bg{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;}
+.metric-bar-fill{height:3px;border-radius:2px;transition:width 1s ease;}
+.bar-cyan{background:var(--cyan);}
+.bar-amber{background:var(--amber);}
+.bar-green{background:var(--green);}
+
+/* STATS STRIP */
+.stats-strip{background:#020609;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);}
+.stat-item{padding:24px 28px;border-right:1px solid rgba(255,255,255,0.05);text-align:center;}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;color:var(--cyan);line-height:1;}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:2px;text-transform:uppercase;margin-top:5px;}
+
+/* TICKER */
+.ticker{background:var(--cyan);padding:10px 0;overflow:hidden;}
+.ticker-inner{display:flex;gap:56px;white-space:nowrap;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-inner{animation:tick 22s linear infinite;}
+.tick-item{font-size:11px;font-weight:800;color:rgba(3,8,15,0.75);letter-spacing:2px;text-transform:uppercase;}
+.tick-sep{color:rgba(3,8,15,0.35);margin:0 6px;}
+
+/* MODULES */
+.modules{padding:80px 60px;background:#06090f;}
+.section-tag{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
+.section-sub{font-size:14px;color:var(--muted);margin-bottom:52px;max-width:500px;line-height:1.7;}
+.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(0,200,255,0.04);}
+.mod-card{background:#06090f;padding:32px 26px;border-top:2px solid rgba(0,200,255,0.12);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.mod-card:hover{background:#080f1e;border-top-color:var(--cyan);}
+.mod-num{font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:900;color:rgba(0,200,255,0.05);position:absolute;top:-10px;right:16px;line-height:1;pointer-events:none;}
+.mod-icon{width:48px;height:48px;background:rgba(0,200,255,0.07);border:1px solid rgba(0,200,255,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.mod-icon svg{width:22px;height:22px;stroke:var(--cyan);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.mod-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;margin-bottom:8px;letter-spacing:.5px;}
+.mod-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;}
+.mod-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.mod-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(0,200,255,0.7);background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);padding:3px 10px;letter-spacing:.5px;}
+
+/* HOW IT WORKS */
+.steps-section{padding:80px 60px;background:#040810;}
+.steps-row{display:flex;align-items:flex-start;gap:0;max-width:700px;margin:40px auto 0;}
+.step{flex:1;text-align:center;padding:0 12px;}
+.step-circle{width:48px;height:48px;border:2px solid var(--cyan);background:rgba(0,200,255,0.06);color:var(--cyan);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+.step-sep{padding-top:22px;color:rgba(0,200,255,0.3);font-size:24px;flex-shrink:0;}
+
+/* TECH */
+.tech-section{padding:52px 60px;background:#06090f;border-top:1px solid rgba(255,255,255,0.04);}
+.tech-label{font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;text-align:center;}
+.tech-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.tech-badge{background:#040810;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 16px;letter-spacing:.5px;}
+
+/* FOOTER */
+footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.04);}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
+.footer-logo span{color:var(--cyan);}
+.footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.hero-badge{animation:fadeUp .6s ease both;}
+.hero-title{animation:fadeUp .7s .1s ease both;}
+.hero-btns{animation:fadeUp .7s .2s ease both;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg class="nav-logo-icon" viewBox="0 0 34 34">
+      <polygon points="17,2 32,11 32,23 17,32 2,23 2,11" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+      <polygon points="17,8 27,14 27,20 17,26 7,20 7,14" fill="rgba(0,200,255,0.08)"/>
+      <circle cx="17" cy="17" r="3.5" fill="#00c8ff"/>
+      <line x1="17" y1="8" x2="17" y2="13.5" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+      <line x1="17" y1="20.5" x2="17" y2="26" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+    </svg>
+    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="#">Solutions</a>
+    <a href="#">Plateforme</a>
+    <a href="#">Sports</a>
+    <a href="#">Ressources</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-outline">Nous contacter</button>
+    <button class="btn-filled">Voir la démo</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+
+  <!-- LEFT PANEL — Wireframe sprinting athlete -->
+  <div class="hero-panel hero-panel-left">
+    <img src="https://i.ibb.co/d0H41m37/Gemini-Generated-Image-cujs7fcujs7fcujs.png" alt="Biomechanical athlete sprint"/>
+    <div class="scan-line"></div>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-bl"></div>
+    <div class="rec-badge"><span class="rec-dot"></span>REC</div>
+    <div class="hud-box">KNEE FLEX: 72° &nbsp;|&nbsp; CMJ: 38cm &nbsp;|&nbsp; STATUS: ANALYSING</div>
+    <div class="sport-label"><a href="#">Basketball <span class="arrow">→</span></a></div>
+  </div>
+
+  <!-- RIGHT PANEL — Wireframe CMJ jump athlete -->
+  <div class="hero-panel hero-panel-right">
+    <img src="https://i.ibb.co/5xkq4Tmb/Gemini-Generated-Image-suj5vksuj5vksuj5.png" alt="Biomechanical athlete CMJ"/>
+    <div class="scan-line" style="animation-delay:-2s;"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-br"></div>
+    <div class="rec-badge"><span class="rec-dot" style="animation-delay:-.6s"></span>REC</div>
+    <div class="hud-box" style="right:20px;left:auto;">HIP ROM: 45° &nbsp;|&nbsp; FPPA: 12° &nbsp;|&nbsp; STATUS: ANALYSING</div>
+    <div class="sport-label"><a href="#">Football <span class="arrow">→</span></a></div>
+  </div>
+
+  <!-- CENTER DIVIDER -->
+  <div class="hero-divider"></div>
+
+  <!-- HERO TEXT (left side overlay) -->
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>IA · Vision par ordinateur · Biomécanique</div>
+    <h1 class="hero-title">
+      <span class="line1">Analyse.</span>
+      <span class="line2">Prévention.</span>
+      <span class="line3"><span class="cyan">Élevez</span> <span class="dim">le Jeu.</span></span>
+    </h1>
+    <div class="hero-btns">
+      <a class="hero-btn-main" href="https://vertextrack.streamlit.app" target="_blank">Lancer l'analyse →</a>
+      <a class="hero-btn-sec" href="#">Voir la démo</a>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS (right side) -->
+  <div class="hero-metrics">
+    <div class="metric-card">
+      <div class="metric-label">CMJ Height</div>
+      <div class="metric-value">38</div>
+      <div class="metric-unit">CENTIMÈTRES</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill bar-cyan" style="width:76%"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">FPPA Angle</div>
+      <div class="metric-value">14°</div>
+      <div class="metric-unit">DEGRÉS</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill bar-amber" style="width:28%"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Risque LCA</div>
+      <div class="metric-value green">LOW</div>
+      <div class="metric-unit">SCORE: 0.18</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill bar-green" style="width:18%"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">AUC-ROC</div>
+      <div class="metric-value">0.80</div>
+      <div class="metric-unit">RANDOM FOREST</div>
+      <div class="metric-bar-bg"><div class="metric-bar-fill bar-cyan" style="width:80%"></div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">60fps</div><div class="stat-lbl">Analyse vidéo</div></div>
+  <div class="stat-item"><div class="stat-num">33</div><div class="stat-lbl">Landmarks IA</div></div>
+  <div class="stat-item"><div class="stat-num">0.80</div><div class="stat-lbl">AUC-ROC</div></div>
+  <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">Tests biomécanique</div></div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="tick-item">ANALYSE BIOMÉCANIQUE</span><span class="tick-sep">◆</span>
+    <span class="tick-item">PRÉVENTION LCA</span><span class="tick-sep">◆</span>
+    <span class="tick-item">MEDIAPIPE BLAZEPOSE</span><span class="tick-sep">◆</span>
+    <span class="tick-item">RANDOM FOREST + SHAP</span><span class="tick-sep">◆</span>
+    <span class="tick-item">CMJ · SLS · HOP TEST</span><span class="tick-sep">◆</span>
+    <span class="tick-item">DÉTECTION LCA</span><span class="tick-sep">◆</span>
+    <span class="tick-item">ANALYSE BIOMÉCANIQUE</span><span class="tick-sep">◆</span>
+    <span class="tick-item">PRÉVENTION LCA</span><span class="tick-sep">◆</span>
+    <span class="tick-item">MEDIAPIPE BLAZEPOSE</span><span class="tick-sep">◆</span>
+    <span class="tick-item">RANDOM FOREST + SHAP</span><span class="tick-sep">◆</span>
+    <span class="tick-item">CMJ · SLS · HOP TEST</span><span class="tick-sep">◆</span>
+    <span class="tick-item">DÉTECTION LCA</span><span class="tick-sep">◆</span>
+  </div>
+</div>
+
+<!-- MODULES -->
+<section class="modules">
+  <div class="section-tag">Modules de la plateforme</div>
+  <h2 class="section-title">Trois axes d'analyse intégrés</h2>
+  <p class="section-sub">De la mesure de performance pure à la prévention des blessures du LCA — pipeline complet computer vision + machine learning.</p>
+  <div class="modules-grid">
+
+    <div class="mod-card">
+      <div class="mod-num">01</div>
+      <div class="mod-icon">
+        <svg viewBox="0 0 24 24"><polyline points="1 12 5 6 9 10 13 4 17 8 21 4"/><line x1="1" y1="20" x2="23" y2="20"/></svg>
+      </div>
+      <div class="mod-title">Performance</div>
+      <div class="mod-desc">Mesure précise de la hauteur de saut CMJ par double méthode — temps de vol (Bosco 1983) et déplacement du centre de masse. Filtrage Savitzky-Golay à 60fps.</div>
+      <div class="mod-tags">
+        <span class="mod-tag">CMJ</span><span class="mod-tag">Jump Height</span><span class="mod-tag">DVJ</span><span class="mod-tag">Bosco 1983</span>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <div class="mod-num">02</div>
+      <div class="mod-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="mod-title">Diagnostic</div>
+      <div class="mod-desc">Extraction FPPA, angles genou/hanche et vélocités angulaires via MediaPipe BlazePose 33 landmarks. Détection des asymétries neuromusculaires en vue frontale.</div>
+      <div class="mod-tags">
+        <span class="mod-tag">FPPA</span><span class="mod-tag">ROM</span><span class="mod-tag">LSI</span><span class="mod-tag">SLS</span>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <div class="mod-num">03</div>
+      <div class="mod-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="mod-title">Prévention LCA</div>
+      <div class="mod-desc">Profil de similarité biomécanique via Random Forest. Explicabilité SHAP intégrée. Recommandations personnalisées par athlète basées sur les données historiques.</div>
+      <div class="mod-tags">
+        <span class="mod-tag">Random Forest</span><span class="mod-tag">SHAP</span><span class="mod-tag">LOSO-CV</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-section">
+  <div style="text-align:center">
+    <div class="section-tag">Comment ça marche</div>
+    <h2 class="section-title">Pipeline en 3 étapes</h2>
+  </div>
+  <div class="steps-row">
+    <div class="step">
+      <div class="step-circle">1</div>
+      <div class="step-title">Filmez l'athlète</div>
+      <div class="step-desc">Vue frontale 60fps · 1080p<br>Tests CMJ / SLS / Hop</div>
+    </div>
+    <div class="step-sep">›</div>
+    <div class="step">
+      <div class="step-circle">2</div>
+      <div class="step-title">Analyse IA</div>
+      <div class="step-desc">MediaPipe 33 landmarks<br>Savitzky-Golay filtering</div>
+    </div>
+    <div class="step-sep">›</div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <div class="step-title">Rapport biomécanique</div>
+      <div class="step-desc">Scores + SHAP<br>Profil de risque LCA</div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<div class="tech-section">
+  <div class="tech-label">Stack technologique</div>
+  <div class="tech-badges">
+    <span class="tech-badge">MediaPipe</span>
+    <span class="tech-badge">Python 3.11</span>
+    <span class="tech-badge">Random Forest</span>
+    <span class="tech-badge">SHAP</span>
+    <span class="tech-badge">Streamlit</span>
+    <span class="tech-badge">Savitzky-Golay</span>
+    <span class="tech-badge">OpenCV</span>
+    <span class="tech-badge">scikit-learn</span>
+    <span class="tech-badge">joblib</span>
+    <span class="tech-badge">Plotly</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">VERTEX<span>TRACK</span></div>
+  <div class="footer-info">
+    Université Hassan 1er · Settat · Master TDTS · 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa · VERTEXTRACK © 2026
+  </div>
+</footer>
+
+</body>
+</html>
