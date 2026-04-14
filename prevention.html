@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VERTEXTRACK — Prévention LCA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;--bg2:#060d18;--bg3:#040a14;--bg4:#050c18;
+  --cyan:#00c8ff;--cyan2:rgba(0,200,255,0.12);
+  --amber:#f59e0b;--green:#00e676;--red:#ef5350;
+  --white:#fff;--muted:rgba(255,255,255,0.45);
+  --border:rgba(0,200,255,0.15);--border2:rgba(255,255,255,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.nav-logo-text .v{color:#fff;}.nav-logo-text .t{color:var(--cyan);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 14px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-outline{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 18px;font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-outline:hover{background:rgba(0,200,255,0.1);}
+.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 20px;font-family:'Barlow',sans-serif;font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-filled:hover{box-shadow:0 0 24px rgba(0,200,255,0.45);}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:96px 60px 44px;background:var(--bg);border-bottom:1px solid var(--border2);position:relative;overflow:hidden;}
+.page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,200,255,0.04) 0%,transparent 70%);pointer-events:none;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;}
+.breadcrumb a{color:var(--cyan);text-decoration:none;transition:opacity .2s;}
+.breadcrumb a:hover{opacity:.7;}
+.breadcrumb-sep{color:rgba(255,255,255,0.2);}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(36px,5vw,56px);text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
+.page-title .cyan{color:var(--cyan);}
+.page-sub{font-size:14px;color:var(--muted);max-width:560px;line-height:1.8;}
+
+/* ── SECTION LABEL ── */
+.section-label{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── CONTENT WRAPPER ── */
+.content{padding:48px 60px 80px;}
+
+/* ── PROFIL GRID ── */
+.profil-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:52px;}
+
+/* ── FORM CARD ── */
+.form-card{background:var(--bg3);border:1px solid var(--border2);padding:28px;}
+.form-card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px;color:#fff;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.form-input,.form-select{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:13px;width:100%;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus{border-color:rgba(0,200,255,0.45);}
+.form-select option{background:#060d18;color:#fff;}
+.form-actions{margin-top:20px;display:flex;gap:10px;}
+.btn-analyse{background:var(--cyan);color:#03080f;border:none;padding:12px 28px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;}
+.btn-analyse:hover{box-shadow:0 0 28px rgba(0,200,255,0.5);}
+.btn-reset{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);padding:12px 20px;font-family:'Barlow',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-reset:hover{border-color:rgba(255,255,255,0.25);color:#fff;}
+
+/* ── GAUGE CARD ── */
+.gauge-card{background:var(--bg3);border:1px solid var(--border2);padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gauge-card-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:24px;color:#fff;align-self:flex-start;}
+.gauge-wrap{position:relative;width:200px;height:110px;margin-bottom:20px;}
+.gauge-svg{overflow:visible;}
+/* arc track */
+.gauge-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:18;stroke-linecap:round;}
+/* arc fill — animated */
+.gauge-fill{fill:none;stroke-width:18;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:251.2;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .4s;}
+@keyframes gaugeIn{to{stroke-dashoffset:var(--target-offset);}}
+.gauge-fill{animation:gaugeIn 1.4s .3s cubic-bezier(.4,0,.2,1) forwards;}
+/* needle */
+.gauge-needle{position:absolute;bottom:0;left:50%;transform-origin:bottom center;transform:translateX(-50%) rotate(-80deg);transition:transform 1.4s cubic-bezier(.4,0,.2,1);width:2px;height:72px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 60%);border-radius:2px;}
+.gauge-center{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:14px;height:14px;background:var(--bg3);border:2px solid rgba(255,255,255,0.3);border-radius:50%;}
+/* risk labels on arc */
+.gauge-labels{display:flex;justify-content:space-between;width:200px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;color:rgba(255,255,255,0.3);margin-bottom:16px;}
+/* score display */
+.gauge-score{text-align:center;}
+.gauge-score-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;line-height:1;color:#fff;}
+.gauge-score-max{font-size:18px;font-weight:400;color:rgba(255,255,255,0.3);}
+.gauge-score-label{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:4px;}
+/* risk badge */
+.risk-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-top:12px;}
+.risk-badge-low{background:rgba(0,230,118,0.1);border:1.5px solid rgba(0,230,118,0.35);color:var(--green);}
+.risk-badge-mod{background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.35);color:var(--amber);}
+.risk-badge-high{background:rgba(239,83,80,0.1);border:1.5px solid rgba(239,83,80,0.35);color:var(--red);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.risk-dot{width:8px;height:8px;border-radius:50%;animation:blink 1.6s infinite;}
+.risk-badge-low .risk-dot{background:var(--green);}
+.risk-badge-mod .risk-dot{background:var(--amber);}
+.risk-badge-high .risk-dot{background:var(--red);}
+
+/* ── SHAP SECTION ── */
+.shap-box{background:var(--bg3);border:1px solid var(--border2);padding:28px;margin-bottom:52px;}
+.shap-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.shap-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.5px;}
+.shap-sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.7;}
+.shap-legend{display:flex;gap:20px;font-size:11px;color:var(--muted);}
+.shap-legend-item{display:flex;align-items:center;gap:6px;}
+.shap-legend-dot{width:10px;height:10px;border-radius:1px;}
+
+.shap-list{display:flex;flex-direction:column;gap:14px;}
+.shap-row{display:grid;grid-template-columns:200px 1fr 80px;align-items:center;gap:16px;}
+.shap-feat-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.5px;}
+.shap-feat-desc{font-size:10px;color:rgba(255,255,255,0.28);margin-top:2px;letter-spacing:.3px;}
+.shap-bar-track{height:10px;background:rgba(255,255,255,0.05);position:relative;border-radius:1px;overflow:hidden;}
+.shap-bar-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.15);}
+.shap-bar-fill{height:100%;border-radius:1px;transition:width 1s ease,margin-left 1s ease;}
+.shap-bar-pos{background:linear-gradient(90deg,rgba(239,83,80,0.6),var(--red));margin-left:50%;}
+.shap-bar-neg{background:linear-gradient(90deg,var(--green),rgba(0,230,118,0.5));margin-left:auto;float:right;}
+.shap-val{font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right;letter-spacing:.5px;font-weight:600;}
+.shap-val.pos{color:var(--red);}
+.shap-val.neg{color:var(--green);}
+
+/* ── RECO SECTION ── */
+.reco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:52px;}
+.reco-card{background:var(--bg3);border:1px solid var(--border2);padding:24px 20px;border-top:2px solid rgba(0,200,255,0.12);transition:all .25s;cursor:default;}
+.reco-card:hover{background:#080f1e;border-top-color:var(--cyan);}
+.reco-icon{width:44px;height:44px;background:rgba(0,200,255,0.07);border:1px solid rgba(0,200,255,0.18);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.reco-icon svg{width:20px;height:20px;stroke:var(--cyan);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.reco-priority{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--amber);}
+.reco-priority.high{color:var(--red);}
+.reco-priority.low{color:var(--green);}
+.reco-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.reco-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+.reco-tag{display:inline-block;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(0,200,255,0.6);background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);padding:3px 8px;letter-spacing:.5px;}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.3);border-left:4px solid var(--amber);padding:24px 28px;margin-bottom:52px;display:flex;gap:18px;align-items:flex-start;}
+.disclaimer-icon{flex-shrink:0;margin-top:2px;}
+.disclaimer-icon svg{width:22px;height:22px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.disclaimer-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:1px;color:var(--amber);margin-bottom:6px;}
+.disclaimer-text{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8;}
+.disclaimer-text strong{color:rgba(255,255,255,0.75);}
+
+/* ── HISTORIQUE TABLE ── */
+.hist-box{background:var(--bg3);border:1px solid var(--border2);margin-bottom:52px;}
+.hist-header-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 80px 60px;padding:12px 20px;background:rgba(0,200,255,0.04);border-bottom:1px solid var(--border2);}
+.th{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;}
+.hist-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 80px 60px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.03);align-items:center;transition:background .15s;}
+.hist-row:last-child{border-bottom:none;}
+.hist-row:hover{background:rgba(0,200,255,0.03);}
+.td{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.65);}
+.td-date{font-size:12px;color:var(--muted);}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 9px;}
+.badge-low{background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.25);}
+.badge-mod{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-high{background:rgba(239,83,80,0.1);color:var(--red);border:1px solid rgba(239,83,80,0.25);}
+.evo{font-size:16px;text-align:center;}
+.evo-up{color:var(--green);}
+.evo-down{color:var(--red);}
+.evo-eq{color:rgba(255,255,255,0.3);}
+
+/* ── CTA BANNER ── */
+.cta-banner{background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.2);padding:36px 44px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.cta-text h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.cta-text p{font-size:13px;color:var(--muted);}
+
+/* ── FOOTER ── */
+footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.04);}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
+.footer-logo span{color:var(--cyan);}
+.footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .page-header,.content{padding-left:24px;padding-right:24px;}
+  .profil-grid{grid-template-columns:1fr;}
+  .reco-grid{grid-template-columns:1fr 1fr;}
+  .shap-row{grid-template-columns:140px 1fr 60px;}
+  footer{flex-direction:column;gap:12px;text-align:center;padding:24px;}
+  .footer-info{text-align:center;}
+}
+@media(max-width:600px){
+  .reco-grid{grid-template-columns:1fr;}
+  .hist-header-row,.hist-row{grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .hist-header-row .th:nth-child(n+4),.hist-row .td:nth-child(n+4),.hist-row .evo{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg class="nav-logo-icon" viewBox="0 0 34 34">
+      <polygon points="17,2 32,11 32,23 17,32 2,23 2,11" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+      <polygon points="17,8 27,14 27,20 17,26 7,20 7,14" fill="rgba(0,200,255,0.08)"/>
+      <circle cx="17" cy="17" r="3.5" fill="#00c8ff"/>
+      <line x1="17" y1="8" x2="17" y2="13.5" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+      <line x1="17" y1="20.5" x2="17" y2="26" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+    </svg>
+    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="analyse.html">Analyse</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="documentation.html">Documentation</a>
+    <a href="apropos.html">À propos</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-outline" href="apropos.html">Contact</a>
+    <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Prévention LCA</span>
+  </div>
+  <h1 class="page-title">Prévention <span class="cyan">LCA</span></h1>
+  <p class="page-sub">Profil de risque biomécanique personnalisé, explications SHAP et recommandations d'entraînement ciblées pour chaque athlète.</p>
+</div>
+
+<div class="content">
+
+  <!-- ══ SECTION 1 — Profil athlète + Gauge ══ -->
+  <div class="section-label">Profil de risque athlète</div>
+  <div class="profil-grid">
+
+    <!-- Formulaire -->
+    <div class="form-card">
+      <div class="form-card-title">Sélectionner un athlète</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input class="form-input" type="text" placeholder="ex. Amine Benali" id="inp-nom"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Âge (ans)</label>
+          <input class="form-input" type="number" placeholder="ex. 22" min="14" max="45" id="inp-age"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sport</label>
+          <select class="form-select" id="inp-sport">
+            <option value="">-- Sélectionner --</option>
+            <option value="basketball">Basketball</option>
+            <option value="football">Football</option>
+            <option value="handball">Handball</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Club</label>
+          <select class="form-select" id="inp-club">
+            <option value="">-- Sélectionner --</option>
+            <option value="usb">USB — Union Sportive</option>
+            <option value="rcoz">RCOZ — Omnisports</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Test réalisé</label>
+          <select class="form-select" id="inp-test">
+            <option value="cmj">CMJ — Counter-Movement Jump</option>
+            <option value="sls">SLS — Single Leg Squat</option>
+            <option value="dvj">DVJ — Drop Vertical Jump</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date d'évaluation</label>
+          <input class="form-input" type="date" id="inp-date" value="2026-04-14"/>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-analyse" onclick="loadProfile()">Calculer le profil →</button>
+        <button class="btn-reset" onclick="resetForm()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Gauge de risque -->
+    <div class="gauge-card">
+      <div class="gauge-card-title">Score de risque LCA</div>
+
+      <!-- Semi-circle gauge -->
+      <div class="gauge-wrap" id="gauge-wrap">
+        <svg class="gauge-svg" width="200" height="110" viewBox="0 0 200 110">
+          <!-- track -->
+          <path class="gauge-track" d="M 20 100 A 80 80 0 0 1 180 100"/>
+          <!-- color zones -->
+          <path fill="none" stroke="rgba(0,230,118,0.25)" stroke-width="18" stroke-linecap="round" stroke-dasharray="84 252" d="M 20 100 A 80 80 0 0 1 180 100"/>
+          <path fill="none" stroke="rgba(245,158,11,0.25)" stroke-width="18" stroke-linecap="round" stroke-dasharray="84 252" stroke-dashoffset="-84" d="M 20 100 A 80 80 0 0 1 180 100"/>
+          <path fill="none" stroke="rgba(239,83,80,0.25)" stroke-width="18" stroke-linecap="round" stroke-dasharray="84 252" stroke-dashoffset="-168" d="M 20 100 A 80 80 0 0 1 180 100"/>
+          <!-- fill -->
+          <path id="gauge-fill" fill="none" stroke="#00e676" stroke-width="18" stroke-linecap="round"
+            d="M 20 100 A 80 80 0 0 1 180 100"
+            stroke-dasharray="252"
+            stroke-dashoffset="207"/>
+        </svg>
+        <div class="gauge-needle" id="gauge-needle" style="transform:translateX(-50%) rotate(-62deg);"></div>
+        <div class="gauge-center"></div>
+      </div>
+
+      <div class="gauge-labels">
+        <span style="color:var(--green)">FAIBLE</span>
+        <span>MODÉRÉ</span>
+        <span style="color:var(--red)">ÉLEVÉ</span>
+      </div>
+
+      <div class="gauge-score">
+        <div class="gauge-score-val" id="gauge-score-val">0.18<span class="gauge-score-max"> / 1.00</span></div>
+        <div class="gauge-score-label">SCORE RANDOM FOREST</div>
+      </div>
+      <div id="risk-badge-wrap">
+        <span class="risk-badge risk-badge-low"><span class="risk-dot"></span>RISQUE FAIBLE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2 — Facteurs SHAP ══ -->
+  <div class="section-label">Facteurs SHAP — Contributions au score</div>
+  <div class="shap-box">
+    <div class="shap-header">
+      <div>
+        <div class="shap-title">Top 5 features biomécaniques</div>
+        <p class="shap-sub">Valeurs SHAP calculées par TreeExplainer sur la session courante. <span style="color:var(--red)">Rouge</span> = facteur de risque (augmente le score) — <span style="color:var(--green)">Vert</span> = facteur protecteur (diminue le score).</p>
+      </div>
+      <div class="shap-legend">
+        <div class="shap-legend-item"><div class="shap-legend-dot" style="background:var(--red)"></div>Facteur de risque</div>
+        <div class="shap-legend-item"><div class="shap-legend-dot" style="background:var(--green)"></div>Facteur protecteur</div>
+      </div>
+    </div>
+
+    <div class="shap-list">
+
+      <div class="shap-row">
+        <div>
+          <div class="shap-feat-name">fppa_angular_vel</div>
+          <div class="shap-feat-desc">Vélocité angulaire FPPA — valgus dynamique</div>
+        </div>
+        <div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-center"></div>
+            <div class="shap-bar-fill shap-bar-pos" style="width:38%;"></div>
+          </div>
+        </div>
+        <div class="shap-val pos">+0.127</div>
+      </div>
+
+      <div class="shap-row">
+        <div>
+          <div class="shap-feat-name">knee_rom_sls</div>
+          <div class="shap-feat-desc">ROM flexion genou — test SLS</div>
+        </div>
+        <div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-center"></div>
+            <div class="shap-bar-fill shap-bar-pos" style="width:22%;"></div>
+          </div>
+        </div>
+        <div class="shap-val pos">+0.073</div>
+      </div>
+
+      <div class="shap-row">
+        <div>
+          <div class="shap-feat-name">hip_angle_cmj</div>
+          <div class="shap-feat-desc">Angle flexion hanche au pic CMJ</div>
+        </div>
+        <div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-center"></div>
+            <div class="shap-bar-fill shap-bar-neg" style="width:18%;"></div>
+          </div>
+        </div>
+        <div class="shap-val neg">−0.059</div>
+      </div>
+
+      <div class="shap-row">
+        <div>
+          <div class="shap-feat-name">lsi_hop</div>
+          <div class="shap-feat-desc">Limb Symmetry Index — Hop Test</div>
+        </div>
+        <div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-center"></div>
+            <div class="shap-bar-fill shap-bar-neg" style="width:28%;"></div>
+          </div>
+        </div>
+        <div class="shap-val neg">−0.094</div>
+      </div>
+
+      <div class="shap-row">
+        <div>
+          <div class="shap-feat-name">jump_height</div>
+          <div class="shap-feat-desc">Hauteur de saut CMJ (cm)</div>
+        </div>
+        <div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-center"></div>
+            <div class="shap-bar-fill shap-bar-neg" style="width:14%;"></div>
+          </div>
+        </div>
+        <div class="shap-val neg">−0.046</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3 — Recommandations ══ -->
+  <div class="section-label">Recommandations personnalisées</div>
+  <div class="reco-grid">
+
+    <div class="reco-card">
+      <div class="reco-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 2v6l4 4-4 4v6h12v-6l-4-4 4-4V2z"/></svg>
+      </div>
+      <div class="reco-priority high">Priorité haute</div>
+      <div class="reco-title">Contrôle du valgus</div>
+      <div class="reco-desc">Exercices de renforcement isométrique des abducteurs de hanche (clamshells, monster walks) pour réduire le FPPA dynamique. 3×15 répétitions, 3 fois/semaine.</div>
+      <span class="reco-tag">FPPA · Abducteurs</span>
+    </div>
+
+    <div class="reco-card">
+      <div class="reco-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M12 8v8M9 14l3 3 3-3"/><path d="M7 10c-1 1-2 3-2 5h2m10-5c1 1 2 3 2 5h-2"/></svg>
+      </div>
+      <div class="reco-priority">Priorité moyenne</div>
+      <div class="reco-title">Proprioception & équilibre</div>
+      <div class="reco-desc">Entraînement proprioceptif sur surface instable (plateau de Freeman, BOSU). Améliore le contrôle neuromusculaire et réduit l'asymétrie LSI. 10 min par séance.</div>
+      <span class="reco-tag">LSI · Proprioception</span>
+    </div>
+
+    <div class="reco-card">
+      <div class="reco-icon">
+        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div class="reco-priority">Priorité moyenne</div>
+      <div class="reco-title">Technique de réception</div>
+      <div class="reco-desc">Travail de la technique d'atterrissage DVJ avec rétroaction vidéo. Objectif : fléchir genou ≥ 60° à l'atterrissage, genoux alignés au-dessus des pieds. Exercices de drop landing.</div>
+      <span class="reco-tag">DVJ · Atterrissage</span>
+    </div>
+
+    <div class="reco-card">
+      <div class="reco-icon">
+        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="reco-priority low">Entretien</div>
+      <div class="reco-title">Puissance explosive CMJ</div>
+      <div class="reco-desc">Programme pliométrique progressif (squat jumps → depth jumps) pour maintenir et améliorer la hauteur de saut. La puissance excentrique est un facteur protecteur du LCA.</div>
+      <span class="reco-tag">CMJ · Pliométrie</span>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 4 — Disclaimer médical ══ -->
+  <div class="disclaimer">
+    <div class="disclaimer-icon">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div>
+      <div class="disclaimer-title">⚠ Avertissement médical important</div>
+      <p class="disclaimer-text">
+        Ce score de <strong>0.18 / 1.00</strong> représente une <strong>mesure de similarité biomécanique</strong> avec des profils
+        d'athlètes référencés, et <strong>non une prédiction médicale de blessure</strong>. Le modèle Random Forest a été
+        entraîné sur un dataset limité (USB + RCOZ, Settat, Maroc) et ne se substitue en aucun cas à un bilan
+        médical ou kinésithérapeutique professionnel. <strong>Toute décision clinique doit être prise par un professionnel
+        de santé qualifié.</strong> Les recommandations fournies sont indicatives et doivent être adaptées par un
+        entraîneur ou thérapeute. AUC-ROC du modèle : 0.80 en LOSO-CV.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 5 — Historique des évaluations ══ -->
+  <div class="section-label">Historique des évaluations — Amine Benali</div>
+  <div class="hist-box">
+    <div class="hist-header-row">
+      <div class="th">Date</div>
+      <div class="th">Test</div>
+      <div class="th">Score RF</div>
+      <div class="th">Risque</div>
+      <div class="th">FPPA</div>
+      <div class="th">Évol.</div>
+    </div>
+
+    <div class="hist-row">
+      <div class="td-date">14 Avr 2026</div>
+      <div class="td">DVJ</div>
+      <div class="td">0.18</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td">8°</div>
+      <div class="evo evo-up" title="Amélioration">↓</div>
+    </div>
+    <div class="hist-row">
+      <div class="td-date">28 Mar 2026</div>
+      <div class="td">SLS</div>
+      <div class="td">0.24</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td">10°</div>
+      <div class="evo evo-up" title="Amélioration">↓</div>
+    </div>
+    <div class="hist-row">
+      <div class="td-date">10 Mar 2026</div>
+      <div class="td">CMJ</div>
+      <div class="td">0.31</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td">13°</div>
+      <div class="evo evo-eq" title="Stable">→</div>
+    </div>
+    <div class="hist-row">
+      <div class="td-date">18 Fév 2026</div>
+      <div class="td">DVJ</div>
+      <div class="td">0.42</div>
+      <div><span class="badge badge-mod">Modéré</span></div>
+      <div class="td">17°</div>
+      <div class="evo evo-down" title="Dégradation">↑</div>
+    </div>
+    <div class="hist-row">
+      <div class="td-date">02 Fév 2026</div>
+      <div class="td">SLS</div>
+      <div class="td">0.38</div>
+      <div><span class="badge badge-mod">Modéré</span></div>
+      <div class="td">15°</div>
+      <div class="evo evo-eq" title="Stable">→</div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <div class="cta-text">
+      <h3>Lancer une nouvelle analyse</h3>
+      <p>Uploadez une vidéo frontale pour générer un nouveau profil de risque SHAP.</p>
+    </div>
+    <a class="btn-filled" href="analyse.html">Analyser une vidéo →</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">VERTEX<span>TRACK</span></div>
+  <div class="footer-info">
+    Université Hassan 1er · Settat · Master TDTS · 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa · VERTEXTRACK © 2026
+  </div>
+</footer>
+
+<script>
+// ── Gauge interactivity ──
+function setGauge(score){
+  const fill = document.getElementById('gauge-fill');
+  const needle = document.getElementById('gauge-needle');
+  const scoreEl = document.getElementById('gauge-score-val');
+  const badgeWrap = document.getElementById('risk-badge-wrap');
+
+  // arc length = 252, offset: 252=0%, 0=100%
+  const pct = Math.min(Math.max(score,0),1);
+  const offset = 252 - (pct * 252);
+
+  // Determine color
+  let color, badgeClass, label;
+  if(pct < 0.35){ color='#00e676'; badgeClass='risk-badge-low'; label='RISQUE FAIBLE'; }
+  else if(pct < 0.65){ color='#f59e0b'; badgeClass='risk-badge-mod'; label='RISQUE MODÉRÉ'; }
+  else { color='#ef5350'; badgeClass='risk-badge-high'; label='RISQUE ÉLEVÉ'; }
+
+  fill.style.stroke = color;
+  fill.style.strokeDashoffset = offset;
+
+  // Needle: -80deg (score=0) to +80deg (score=1)
+  const angle = -80 + (pct * 160);
+  needle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+  needle.style.background = `linear-gradient(to bottom, rgba(255,255,255,0), ${color} 60%)`;
+
+  scoreEl.innerHTML = `${score.toFixed(2)}<span class="gauge-score-max"> / 1.00</span>`;
+
+  badgeWrap.innerHTML = `<span class="risk-badge ${badgeClass}"><span class="risk-dot"></span>${label}</span>`;
+}
+
+function loadProfile(){
+  // Simulate loading a profile with a random-ish score
+  const scores = [0.18, 0.24, 0.35, 0.42, 0.58, 0.67, 0.71, 0.12, 0.29];
+  const s = scores[Math.floor(Math.random() * scores.length)];
+  setGauge(s);
+}
+
+function resetForm(){
+  document.getElementById('inp-nom').value='';
+  document.getElementById('inp-age').value='';
+  document.getElementById('inp-sport').value='';
+  document.getElementById('inp-club').value='';
+  setGauge(0.18);
+}
+
+// Init gauge on page load
+window.addEventListener('DOMContentLoaded', ()=>{ setGauge(0.18); });
+</script>
+</body>
+</html>
