@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VERTEXTRACK — Dashboard Athlètes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;--bg2:#060d18;--bg3:#040a14;
+  --cyan:#00c8ff;--amber:#f59e0b;--green:#00e676;--red:#ef5350;
+  --white:#fff;--muted:rgba(255,255,255,0.45);
+  --border:rgba(0,200,255,0.15);--border2:rgba(255,255,255,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.nav-logo-text .v{color:#fff;}.nav-logo-text .t{color:var(--cyan);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-outline{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 20px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-outline:hover{background:rgba(0,200,255,0.1);}
+.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 22px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-filled:hover{box-shadow:0 0 24px rgba(0,200,255,0.4);}
+
+/* PAGE HEADER */
+.page-header{padding:100px 60px 48px;background:var(--bg);border-bottom:1px solid var(--border2);}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.breadcrumb a{color:var(--cyan);text-decoration:none;}
+.breadcrumb-sep{color:rgba(255,255,255,0.2);}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
+.page-sub{font-size:14px;color:var(--muted);max-width:500px;line-height:1.7;}
+
+/* CONTENT */
+.content{padding:40px 60px 80px;}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+.kpi-card{background:var(--bg3);border:1px solid var(--border2);padding:20px 24px;border-top:2px solid rgba(0,200,255,0.2);}
+.kpi-card:hover{border-top-color:var(--cyan);}
+.kpi-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.kpi-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:42px;line-height:1;margin-bottom:4px;}
+.kpi-value.cyan{color:var(--cyan);}
+.kpi-value.green{color:var(--green);}
+.kpi-value.amber{color:var(--amber);}
+.kpi-value.red{color:var(--red);}
+.kpi-sub{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:1px;}
+
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* GRID 2 COL */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px;}
+
+/* CHART PLACEHOLDER */
+.chart-box{background:var(--bg3);border:1px solid var(--border2);padding:24px;}
+.chart-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:20px;}
+.chart-area{height:180px;display:flex;align-items:flex-end;gap:8px;padding:0 4px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.bar{width:100%;background:rgba(0,200,255,0.15);border-top:2px solid var(--cyan);border-radius:1px;transition:all .3s;}
+.bar:hover{background:rgba(0,200,255,0.3);}
+.bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:.5px;}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:32px;height:180px;}
+.donut{position:relative;width:140px;height:140px;}
+.donut svg{transform:rotate(-90deg);}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-pct{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;color:#fff;}
+.donut-txt{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.donut-legend{display:flex;flex-direction:column;gap:10px;}
+.legend-item{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ATHLETE TABLE */
+.table-box{background:var(--bg3);border:1px solid var(--border2);}
+.table-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:12px 20px;background:rgba(0,200,255,0.04);border-bottom:1px solid var(--border2);}
+.th{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;}
+.table-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.03);align-items:center;transition:background .15s;}
+.table-row:hover{background:rgba(0,200,255,0.04);}
+.table-row:last-child{border-bottom:none;}
+.athlete-name{font-weight:600;font-size:14px;}
+.athlete-club{font-size:11px;color:var(--muted);margin-top:2px;}
+.td{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.7);}
+.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:1px;}
+.badge-low{background:rgba(0,230,118,0.12);color:var(--green);border:1px solid rgba(0,230,118,0.25);}
+.badge-med{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);}
+.badge-high{background:rgba(239,83,80,0.12);color:var(--red);border:1px solid rgba(239,83,80,0.25);}
+.btn-sm{font-family:'Barlow',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;background:transparent;border:1px solid rgba(0,200,255,0.3);color:var(--cyan);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-sm:hover{background:rgba(0,200,255,0.1);}
+
+/* SPARKLINE */
+.spark{display:flex;align-items:flex-end;gap:2px;height:28px;}
+.spark-bar{width:4px;background:rgba(0,200,255,0.4);border-radius:1px;}
+
+/* FOOTER */
+footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.04);}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
+.footer-logo span{color:var(--cyan);}
+.footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg class="nav-logo-icon" viewBox="0 0 34 34">
+      <polygon points="17,2 32,11 32,23 17,32 2,23 2,11" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+      <polygon points="17,8 27,14 27,20 17,26 7,20 7,14" fill="rgba(0,200,255,0.08)"/>
+      <circle cx="17" cy="17" r="3.5" fill="#00c8ff"/>
+      <line x1="17" y1="8" x2="17" y2="13.5" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+      <line x1="17" y1="20.5" x2="17" y2="26" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+    </svg>
+    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="documentation.html">Documentation</a>
+    <a href="apropos.html">À propos</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-outline" href="apropos.html">Nous contacter</a>
+    <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Dashboard</span>
+  </div>
+  <h1 class="page-title">Dashboard Athlètes</h1>
+  <p class="page-sub">Suivi biomécanique des athlètes USB et RCOZ — historique, scores de risque LCA et indicateurs de performance.</p>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Athlètes suivis</div>
+      <div class="kpi-value cyan">24</div>
+      <div class="kpi-sub">USB + RCOZ · Settat</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sessions analysées</div>
+      <div class="kpi-value">142</div>
+      <div class="kpi-sub">CMJ · SLS · DVJ</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Risque faible</div>
+      <div class="kpi-value green">18</div>
+      <div class="kpi-sub">75 % des athlètes</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Risque élevé</div>
+      <div class="kpi-value red">3</div>
+      <div class="kpi-sub">Suivi renforcé requis</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="grid-2">
+
+    <!-- BAR CHART — CMJ moyen -->
+    <div class="chart-box">
+      <div class="chart-title">Hauteur CMJ — groupe</div>
+      <div class="chart-sub">Moyenne par athlète (cm) · 8 dernières sessions</div>
+      <div class="chart-area">
+        <div class="bar-wrap"><div class="bar" style="height:72%"></div><div class="bar-lbl">A.B</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:65%"></div><div class="bar-lbl">M.K</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:80%"></div><div class="bar-lbl">Y.O</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:58%"></div><div class="bar-lbl">H.R</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:88%"></div><div class="bar-lbl">S.E</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:45%"></div><div class="bar-lbl">N.B</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:76%"></div><div class="bar-lbl">I.M</div></div>
+        <div class="bar-wrap"><div class="bar" style="height:62%"></div><div class="bar-lbl">R.F</div></div>
+      </div>
+    </div>
+
+    <!-- DONUT — Répartition risque -->
+    <div class="chart-box">
+      <div class="chart-title">Répartition du risque LCA</div>
+      <div class="chart-sub">Score Random Forest · ensemble des athlètes</div>
+      <div class="donut-wrap">
+        <div class="donut">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <!-- low risk 75% -->
+            <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="18"/>
+            <circle cx="70" cy="70" r="54" fill="none" stroke="#00e676" stroke-width="18"
+              stroke-dasharray="254 85" stroke-linecap="butt"/>
+            <!-- med risk 12.5% — offset 254 -->
+            <circle cx="70" cy="70" r="54" fill="none" stroke="#f59e0b" stroke-width="18"
+              stroke-dasharray="42 297" stroke-dashoffset="-254" stroke-linecap="butt"/>
+            <!-- high risk 12.5% -->
+            <circle cx="70" cy="70" r="54" fill="none" stroke="#ef5350" stroke-width="18"
+              stroke-dasharray="42 297" stroke-dashoffset="-296" stroke-linecap="butt"/>
+          </svg>
+          <div class="donut-center">
+            <div class="donut-pct">24</div>
+            <div class="donut-txt">ATHLÈTES</div>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Faible — 18 (75%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Modéré — 3 (12.5%)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Élevé — 3 (12.5%)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ATHLETE TABLE -->
+  <div class="section-label">Liste des athlètes</div>
+  <div class="table-box">
+    <div class="table-header">
+      <div class="th">Athlète</div>
+      <div class="th">CMJ moy.</div>
+      <div class="th">FPPA</div>
+      <div class="th">LSI</div>
+      <div class="th">Risque LCA</div>
+      <div class="th"></div>
+    </div>
+
+    <div class="table-row">
+      <div><div class="athlete-name">Amine Benali</div><div class="athlete-club">USB Basket · #7</div></div>
+      <div class="td">41 cm</div>
+      <div class="td">8°</div>
+      <div class="td">0.97</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Mohamed Kabbaj</div><div class="athlete-club">RCOZ Football · #11</div></div>
+      <div class="td">37 cm</div>
+      <div class="td">16°</div>
+      <div class="td">0.84</div>
+      <div><span class="badge badge-med">Modéré</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Youssef Ouali</div><div class="athlete-club">USB Basket · #3</div></div>
+      <div class="td">44 cm</div>
+      <div class="td">6°</div>
+      <div class="td">0.99</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Hamza Rachidi</div><div class="athlete-club">RCOZ Football · #8</div></div>
+      <div class="td">33 cm</div>
+      <div class="td">22°</div>
+      <div class="td">0.71</div>
+      <div><span class="badge badge-high">Élevé</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Soufiane El Amrani</div><div class="athlete-club">USB Basket · #14</div></div>
+      <div class="td">46 cm</div>
+      <div class="td">5°</div>
+      <div class="td">1.00</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Nabil Benhaddou</div><div class="athlete-club">RCOZ Football · #22</div></div>
+      <div class="td">30 cm</div>
+      <div class="td">25°</div>
+      <div class="td">0.68</div>
+      <div><span class="badge badge-high">Élevé</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Ilyas Moumen</div><div class="athlete-club">USB Basket · #5</div></div>
+      <div class="td">39 cm</div>
+      <div class="td">11°</div>
+      <div class="td">0.91</div>
+      <div><span class="badge badge-low">Faible</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+    <div class="table-row">
+      <div><div class="athlete-name">Rachid Fassi</div><div class="athlete-club">RCOZ Football · #6</div></div>
+      <div class="td">35 cm</div>
+      <div class="td">18°</div>
+      <div class="td">0.80</div>
+      <div><span class="badge badge-med">Modéré</span></div>
+      <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">VERTEX<span>TRACK</span></div>
+  <div class="footer-info">
+    Université Hassan 1er · Settat · Master TDTS · 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa · VERTEXTRACK © 2026
+  </div>
+</footer>
+
+</body>
+</html>

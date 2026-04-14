@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VERTEXTRACK — À propos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;--bg2:#060d18;--bg3:#040a14;
+  --cyan:#00c8ff;--amber:#f59e0b;--green:#00e676;--red:#ef5350;
+  --white:#fff;--muted:rgba(255,255,255,0.45);
+  --border:rgba(0,200,255,0.15);--border2:rgba(255,255,255,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.nav-logo-text .v{color:#fff;}.nav-logo-text .t{color:var(--cyan);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-outline{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 20px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-outline:hover{background:rgba(0,200,255,0.1);}
+.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 22px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-filled:hover{box-shadow:0 0 24px rgba(0,200,255,0.4);}
+
+/* PAGE HEADER */
+.page-header{padding:100px 60px 48px;background:var(--bg);border-bottom:1px solid var(--border2);}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.breadcrumb a{color:var(--cyan);text-decoration:none;}
+.breadcrumb-sep{color:rgba(255,255,255,0.2);}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
+.page-sub{font-size:14px;color:var(--muted);max-width:600px;line-height:1.7;}
+
+/* CONTENT */
+.content{padding:60px 60px 80px;max-width:1200px;}
+
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* PROJECT CONTEXT */
+.context-grid{display:grid;grid-template-columns:3fr 2fr;gap:48px;margin-bottom:64px;}
+.context-text h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:16px;}
+.context-text p{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:16px;}
+.context-text p strong{color:#fff;}
+
+.context-meta{display:flex;flex-direction:column;gap:12px;}
+.meta-card{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--cyan);padding:16px 20px;}
+.meta-key{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.meta-val{font-size:14px;font-weight:600;color:#fff;line-height:1.5;}
+
+/* TEAM CARDS */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px;}
+.team-card{background:var(--bg3);border:1px solid var(--border2);padding:28px 24px;border-top:2px solid rgba(0,200,255,0.15);transition:all .25s;}
+.team-card:hover{border-top-color:var(--cyan);background:#080f1e;}
+.team-avatar{width:64px;height:64px;background:rgba(0,200,255,0.08);border:2px solid rgba(0,200,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--cyan);}
+.team-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.team-role{font-size:12px;font-weight:600;color:var(--cyan);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.team-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+.team-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+.team-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(0,200,255,0.6);background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);padding:3px 8px;}
+
+/* CLUBS SECTION */
+.clubs-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:64px;}
+.club-card{background:var(--bg3);border:1px solid var(--border2);padding:28px 24px;display:flex;flex-direction:column;gap:12px;}
+.club-acronym{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;color:var(--cyan);line-height:1;opacity:.9;}
+.club-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:1px;}
+.club-detail{font-size:13px;color:var(--muted);line-height:1.7;}
+.club-stat{display:flex;gap:24px;margin-top:8px;}
+.cstat{text-align:center;}
+.cstat-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:#fff;}
+.cstat-lbl{font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* CTA BANNER */
+.cta-banner{background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.2);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.cta-text h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.cta-text p{font-size:13px;color:var(--muted);}
+
+/* FOOTER */
+footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.04);}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
+.footer-logo span{color:var(--cyan);}
+.footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg class="nav-logo-icon" viewBox="0 0 34 34">
+      <polygon points="17,2 32,11 32,23 17,32 2,23 2,11" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+      <polygon points="17,8 27,14 27,20 17,26 7,20 7,14" fill="rgba(0,200,255,0.08)"/>
+      <circle cx="17" cy="17" r="3.5" fill="#00c8ff"/>
+      <line x1="17" y1="8" x2="17" y2="13.5" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+      <line x1="17" y1="20.5" x2="17" y2="26" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+    </svg>
+    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="documentation.html">Documentation</a>
+    <a href="apropos.html" class="active">À propos</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-outline" href="apropos.html">Nous contacter</a>
+    <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>À propos</span>
+  </div>
+  <h1 class="page-title">À propos du projet</h1>
+  <p class="page-sub">VERTEXTRACK est un projet de fin d'études (PFE) développé dans le cadre du Master TDTS à l'Université Hassan 1er de Settat, Maroc.</p>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- PROJECT CONTEXT -->
+  <div class="section-label">Contexte académique</div>
+  <div class="context-grid">
+    <div class="context-text">
+      <h2>Prévention des blessures LCA par vision par ordinateur</h2>
+      <p>
+        Les ruptures du ligament croisé antérieur (LCA) constituent l'une des blessures les plus graves
+        en sport collectif. <strong>VERTEXTRACK</strong> propose une approche non-invasive, accessible
+        et reproductible pour évaluer le risque de blessure à partir d'une simple vidéo frontale.
+      </p>
+      <p>
+        Le pipeline combine <strong>MediaPipe BlazePose</strong> pour l'extraction de 33 landmarks
+        squelettiques, un filtrage <strong>Savitzky-Golay</strong> pour lisser les trajectoires à 60fps,
+        et un modèle <strong>Random Forest</strong> entraîné en Leave-One-Subject-Out Cross-Validation
+        (LOSO-CV) pour assurer la généralisation inter-sujets.
+      </p>
+      <p>
+        L'explicabilité est intégrée nativement via <strong>SHAP</strong>, permettant aux entraîneurs
+        et kinésithérapeutes de comprendre quels facteurs biomécaniques contribuent le plus au score
+        de risque de chaque athlète.
+      </p>
+    </div>
+    <div class="context-meta">
+      <div class="meta-card">
+        <div class="meta-key">Établissement</div>
+        <div class="meta-val">Université Hassan 1er<br>Settat, Maroc</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-key">Formation</div>
+        <div class="meta-val">Master TDTS<br>Traitement des Données et Technologies des Systèmes</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-key">Année académique</div>
+        <div class="meta-val">2025 – 2026</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-key">Type de projet</div>
+        <div class="meta-val">Projet de Fin d'Études (PFE)</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-key">AUC-ROC obtenu</div>
+        <div class="meta-val" style="color:var(--cyan);font-size:22px;font-family:'Barlow Condensed',sans-serif;font-weight:900;">0.80</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="section-label">Équipe</div>
+  <div class="team-grid">
+
+    <div class="team-card">
+      <div class="team-avatar">MB</div>
+      <div class="team-name">Mhamed Belabbes</div>
+      <div class="team-role">Étudiant PFE · Développeur</div>
+      <div class="team-desc">
+        Conception et implémentation complète du pipeline — extraction biomécanique,
+        entraînement du modèle ML, développement de l'interface Streamlit et du site web VERTEXTRACK.
+      </div>
+      <div class="team-tags">
+        <span class="team-tag">Python</span>
+        <span class="team-tag">MediaPipe</span>
+        <span class="team-tag">scikit-learn</span>
+        <span class="team-tag">Streamlit</span>
+        <span class="team-tag">HTML/CSS</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">AB</div>
+      <div class="team-name">Dr. Ali Benaissa</div>
+      <div class="team-role">Encadrant académique</div>
+      <div class="team-desc">
+        Supervision scientifique et académique du projet. Orientation méthodologique
+        sur les protocoles de validation biomécanique et les choix de modélisation
+        machine learning pour l'analyse du risque LCA.
+      </div>
+      <div class="team-tags">
+        <span class="team-tag">Encadrement PFE</span>
+        <span class="team-tag">Biomécanique</span>
+        <span class="team-tag">Machine Learning</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-avatar">UH</div>
+      <div class="team-name">Université Hassan 1er</div>
+      <div class="team-role">Institution · Settat, Maroc</div>
+      <div class="team-desc">
+        Cadre institutionnel du projet. Master TDTS — Traitement des Données et Technologies
+        des Systèmes. Collaboration avec les clubs sportifs locaux USB et RCOZ pour la collecte
+        de données sur le terrain.
+      </div>
+      <div class="team-tags">
+        <span class="team-tag">Master TDTS</span>
+        <span class="team-tag">Settat</span>
+        <span class="team-tag">Maroc</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CLUBS -->
+  <div class="section-label">Clubs partenaires</div>
+  <div class="clubs-row">
+
+    <div class="club-card">
+      <div class="club-acronym">USB</div>
+      <div class="club-name">Union Sportive de Berkane — Basketball</div>
+      <div class="club-detail">
+        Club de basketball partenaire basé à Settat. Les athlètes USB ont participé aux sessions
+        de capture vidéo pour les tests CMJ, SLS et DVJ, constituant une partie du dataset
+        d'entraînement du modèle Random Forest.
+      </div>
+      <div class="club-stat">
+        <div class="cstat"><div class="cstat-val">12</div><div class="cstat-lbl">Athlètes</div></div>
+        <div class="cstat"><div class="cstat-val">3</div><div class="cstat-lbl">Tests</div></div>
+        <div class="cstat"><div class="cstat-val">74</div><div class="cstat-lbl">Sessions</div></div>
+      </div>
+    </div>
+
+    <div class="club-card">
+      <div class="club-acronym">RCOZ</div>
+      <div class="club-name">Royal Club Omnisports Zemmouri — Football</div>
+      <div class="club-detail">
+        Club omnisports partenaire de Settat. Les données football apportent une diversité
+        biomécanique essentielle au modèle, notamment sur les patterns FPPA et la variabilité
+        inter-sujets en vue frontale lors des atterrissages DVJ.
+      </div>
+      <div class="club-stat">
+        <div class="cstat"><div class="cstat-val">12</div><div class="cstat-lbl">Athlètes</div></div>
+        <div class="cstat"><div class="cstat-val">3</div><div class="cstat-lbl">Tests</div></div>
+        <div class="cstat"><div class="cstat-val">68</div><div class="cstat-lbl">Sessions</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <div class="cta-text">
+      <h3>Tester l'analyse biomécanique</h3>
+      <p>Uploadez une vidéo frontale et obtenez un rapport de risque LCA complet en quelques secondes.</p>
+    </div>
+    <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">VERTEX<span>TRACK</span></div>
+  <div class="footer-info">
+    Université Hassan 1er · Settat · Master TDTS · 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa · VERTEXTRACK © 2026
+  </div>
+</footer>
+
+</body>
+</html>

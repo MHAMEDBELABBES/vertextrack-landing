@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VERTEXTRACK — Documentation Technique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#03080f;--bg2:#060d18;--bg3:#040a14;
+  --cyan:#00c8ff;--amber:#f59e0b;--green:#00e676;--red:#ef5350;
+  --white:#fff;--muted:rgba(255,255,255,0.45);
+  --border:rgba(0,200,255,0.15);--border2:rgba(255,255,255,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.nav-logo-text .v{color:#fff;}.nav-logo-text .t{color:var(--cyan);}
+.nav-links{display:flex;gap:2px;}
+.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn-outline{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 20px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-outline:hover{background:rgba(0,200,255,0.1);}
+.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 22px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;}
+.btn-filled:hover{box-shadow:0 0 24px rgba(0,200,255,0.4);}
+
+/* PAGE HEADER */
+.page-header{padding:100px 60px 48px;background:var(--bg);border-bottom:1px solid var(--border2);}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.breadcrumb a{color:var(--cyan);text-decoration:none;}
+.breadcrumb-sep{color:rgba(255,255,255,0.2);}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
+.page-sub{font-size:14px;color:var(--muted);max-width:600px;line-height:1.7;}
+
+/* TWO-COL LAYOUT */
+.doc-layout{display:grid;grid-template-columns:220px 1fr;gap:40px;padding:48px 60px 80px;max-width:1300px;}
+
+/* SIDEBAR */
+.doc-sidebar{position:sticky;top:80px;align-self:start;}
+.sidebar-section{margin-bottom:24px;}
+.sidebar-title{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.sidebar-link{display:block;font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;padding:5px 0 5px 10px;border-left:2px solid transparent;letter-spacing:.5px;transition:all .15s;}
+.sidebar-link:hover,.sidebar-link.active{color:var(--cyan);border-left-color:var(--cyan);}
+
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* DOC SECTIONS */
+.doc-section{margin-bottom:64px;}
+.doc-section h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;text-transform:uppercase;letter-spacing:-.5px;margin-bottom:12px;}
+.doc-section p{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+.doc-section p strong{color:#fff;}
+
+/* PIPELINE STEPS */
+.pipeline{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
+.pipe-step{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid rgba(0,200,255,0.3);padding:20px 24px;display:grid;grid-template-columns:48px 1fr auto;align-items:start;gap:20px;transition:border-left-color .2s;}
+.pipe-step:hover{border-left-color:var(--cyan);}
+.pipe-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:rgba(0,200,255,0.2);line-height:1;}
+.pipe-content h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.pipe-content p{font-size:13px;color:var(--muted);line-height:1.7;margin:0;}
+.pipe-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.2);padding:4px 10px;white-space:nowrap;align-self:start;}
+
+/* CODE BLOCK */
+.code-block{background:#020609;border:1px solid var(--border2);border-left:3px solid rgba(0,200,255,0.4);padding:20px 24px;margin:20px 0;overflow-x:auto;}
+.code-block code{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8;white-space:pre;}
+.code-block .kw{color:var(--cyan);}
+.code-block .cm{color:rgba(255,255,255,0.25);}
+.code-block .st{color:var(--green);}
+.code-block .nm{color:var(--amber);}
+
+/* FEATURE TABLE */
+.feature-table{width:100%;border-collapse:collapse;margin:20px 0 32px;}
+.feature-table th{text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;padding:10px 16px;background:rgba(0,200,255,0.04);border-bottom:1px solid var(--border2);}
+.feature-table td{padding:12px 16px;font-size:13px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,0.03);}
+.feature-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan);}
+.feature-table tr:hover td{background:rgba(255,255,255,0.01);}
+
+/* TEST CARDS */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.test-card{background:var(--bg3);border:1px solid var(--border2);padding:20px;border-top:2px solid rgba(0,200,255,0.15);}
+.test-card:hover{border-top-color:var(--cyan);}
+.test-icon{font-size:28px;margin-bottom:10px;}
+.test-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.test-full{font-size:11px;color:var(--cyan);letter-spacing:1px;margin-bottom:10px;}
+.test-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+.test-metrics{display:flex;flex-direction:column;gap:4px;margin-top:12px;}
+.test-metric{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);padding:3px 0;border-top:1px solid rgba(255,255,255,0.04);}
+
+/* RESULTS CARD */
+.results-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.result-card{background:var(--bg3);border:1px solid var(--border2);padding:20px 24px;text-align:center;}
+.result-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:44px;color:var(--cyan);line-height:1;margin-bottom:4px;}
+.result-metric{font-size:12px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.result-desc{font-size:11px;color:var(--muted);}
+
+/* CTA BANNER */
+.cta-banner{background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.2);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:48px;}
+.cta-text h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.cta-text p{font-size:13px;color:var(--muted);}
+
+/* FOOTER */
+footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.04);}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
+.footer-logo span{color:var(--cyan);}
+.footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <svg class="nav-logo-icon" viewBox="0 0 34 34">
+      <polygon points="17,2 32,11 32,23 17,32 2,23 2,11" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
+      <polygon points="17,8 27,14 27,20 17,26 7,20 7,14" fill="rgba(0,200,255,0.08)"/>
+      <circle cx="17" cy="17" r="3.5" fill="#00c8ff"/>
+      <line x1="17" y1="8" x2="17" y2="13.5" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+      <line x1="17" y1="20.5" x2="17" y2="26" stroke="#00c8ff" stroke-width=".8" opacity=".6"/>
+    </svg>
+    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="documentation.html" class="active">Documentation</a>
+    <a href="apropos.html">À propos</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn-outline" href="apropos.html">Nous contacter</a>
+    <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Documentation</span>
+  </div>
+  <h1 class="page-title">Documentation Technique</h1>
+  <p class="page-sub">Architecture du pipeline VERTEXTRACK — de la vidéo brute au score de risque LCA, étape par étape.</p>
+</div>
+
+<!-- TWO-COL LAYOUT -->
+<div class="doc-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="doc-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Pipeline</div>
+      <a class="sidebar-link active" href="#pipeline">Vue d'ensemble</a>
+      <a class="sidebar-link" href="#extraction">Extraction de pose</a>
+      <a class="sidebar-link" href="#features">Features biomécaniques</a>
+      <a class="sidebar-link" href="#model">Modèle ML</a>
+      <a class="sidebar-link" href="#shap">Explicabilité SHAP</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Tests</div>
+      <a class="sidebar-link" href="#tests">Protocoles</a>
+      <a class="sidebar-link" href="#resultats">Résultats</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Stack</div>
+      <a class="sidebar-link" href="#stack">Technologies</a>
+    </div>
+  </nav>
+
+  <!-- MAIN DOC CONTENT -->
+  <div class="doc-main">
+
+    <!-- PIPELINE OVERVIEW -->
+    <div class="doc-section" id="pipeline">
+      <div class="section-label">Vue d'ensemble</div>
+      <h2>Pipeline de traitement</h2>
+      <p>
+        VERTEXTRACK implémente un pipeline end-to-end qui transforme une vidéo frontale en un
+        score de risque LCA accompagné d'explications SHAP par feature biomécanique.
+        Chaque étape est conçue pour être reproductible et non-invasive.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-num">01</div>
+          <div class="pipe-content">
+            <h3>Acquisition vidéo</h3>
+            <p>Vidéo frontale 1080p à 60fps. Tests supportés : CMJ (Counter-Movement Jump), SLS (Single Leg Squat), DVJ (Drop Vertical Jump). Positionnement caméra standardisé à 2m de distance.</p>
+          </div>
+          <div class="pipe-badge">60fps · 1080p</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">02</div>
+          <div class="pipe-content">
+            <h3>Extraction de pose — MediaPipe BlazePose</h3>
+            <p>33 landmarks 3D extraits frame-par-frame. Coordonnées normalisées par rapport à la largeur des hanches. Confiance minimale de 0.5 requise pour valider un landmark.</p>
+          </div>
+          <div class="pipe-badge">33 landmarks</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">03</div>
+          <div class="pipe-content">
+            <h3>Filtrage Savitzky-Golay</h3>
+            <p>Lissage des trajectoires articulaires avec fenêtre de 11 frames et polynôme d'ordre 3. Élimine le bruit de capture tout en préservant les pics de vélocité angulaire critiques.</p>
+          </div>
+          <div class="pipe-badge">window=11 · poly=3</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">04</div>
+          <div class="pipe-content">
+            <h3>Calcul des features biomécaniques</h3>
+            <p>12 features extraites par session : FPPA bilatéral, angles de flexion genou/hanche, LSI (Limb Symmetry Index), vélocités angulaires, hauteur CMJ par méthode temps de vol et déplacement CoM.</p>
+          </div>
+          <div class="pipe-badge">12 features</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-num">05</div>
+          <div class="pipe-content">
+            <h3>Prédiction Random Forest + SHAP</h3>
+            <p>Modèle Random Forest (100 estimateurs) entraîné en LOSO-CV. Score de probabilité de risque LCA entre 0 et 1. Valeurs SHAP calculées par TreeExplainer pour chaque prédiction.</p>
+          </div>
+          <div class="pipe-badge">AUC-ROC 0.80</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXTRACTION -->
+    <div class="doc-section" id="extraction">
+      <div class="section-label">Extraction de pose</div>
+      <h2>MediaPipe BlazePose</h2>
+      <p>
+        BlazePose est un modèle de détection de pose développé par Google MediaPipe.
+        Il détecte <strong>33 landmarks squelettiques</strong> en temps réel, incluant les articulations
+        clés pour l'analyse biomécanique du membre inférieur.
+      </p>
+
+      <div class="code-block"><code><span class="kw">import</span> mediapipe <span class="kw">as</span> mp
+<span class="kw">import</span> cv2
+
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose(
+    static_image_mode=<span class="nm">False</span>,
+    model_complexity=<span class="nm">2</span>,           <span class="cm"># modèle haute précision</span>
+    min_detection_confidence=<span class="nm">0.5</span>,
+    min_tracking_confidence=<span class="nm">0.5</span>
+)
+
+<span class="cm"># Extraction landmarks par frame</span>
+results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+landmarks = results.pose_landmarks.landmark</code></div>
+
+      <p>
+        Les landmarks utilisés pour l'analyse LCA : <strong>LEFT_HIP (23)</strong>, <strong>RIGHT_HIP (24)</strong>,
+        <strong>LEFT_KNEE (25)</strong>, <strong>RIGHT_KNEE (26)</strong>, <strong>LEFT_ANKLE (27)</strong>,
+        <strong>RIGHT_ANKLE (28)</strong>, <strong>LEFT_HEEL (29)</strong>, <strong>RIGHT_HEEL (30)</strong>.
+      </p>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="doc-section" id="features">
+      <div class="section-label">Features biomécaniques</div>
+      <h2>12 indicateurs extraits</h2>
+      <p>
+        Chaque session produit un vecteur de 12 features biomécaniques normalisées,
+        calculées sur l'ensemble des frames valides de la séquence de test.
+      </p>
+
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Description</th>
+            <th>Unité</th>
+            <th>Seuil critique</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>fppa_left</td>
+            <td>Frontal Plane Projection Angle — genou gauche</td>
+            <td>degrés</td>
+            <td>&gt; 15°</td>
+          </tr>
+          <tr>
+            <td>fppa_right</td>
+            <td>Frontal Plane Projection Angle — genou droit</td>
+            <td>degrés</td>
+            <td>&gt; 15°</td>
+          </tr>
+          <tr>
+            <td>knee_flex_left</td>
+            <td>Angle de flexion du genou gauche au pic</td>
+            <td>degrés</td>
+            <td>&lt; 60°</td>
+          </tr>
+          <tr>
+            <td>knee_flex_right</td>
+            <td>Angle de flexion du genou droit au pic</td>
+            <td>degrés</td>
+            <td>&lt; 60°</td>
+          </tr>
+          <tr>
+            <td>hip_flex_left</td>
+            <td>Angle de flexion de la hanche gauche</td>
+            <td>degrés</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>hip_flex_right</td>
+            <td>Angle de flexion de la hanche droite</td>
+            <td>degrés</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>lsi_knee</td>
+            <td>Limb Symmetry Index — genou (gauche/droit)</td>
+            <td>ratio</td>
+            <td>&lt; 0.90</td>
+          </tr>
+          <tr>
+            <td>cmj_height</td>
+            <td>Hauteur de saut CMJ (méthode temps de vol)</td>
+            <td>cm</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>angular_vel_knee_left</td>
+            <td>Vélocité angulaire maximale genou gauche</td>
+            <td>°/s</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>angular_vel_knee_right</td>
+            <td>Vélocité angulaire maximale genou droit</td>
+            <td>°/s</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>trunk_lean</td>
+            <td>Inclinaison latérale du tronc à l'atterrissage</td>
+            <td>degrés</td>
+            <td>&gt; 10°</td>
+          </tr>
+          <tr>
+            <td>knee_valgus_excursion</td>
+            <td>Excursion en valgus dynamique au DVJ</td>
+            <td>cm normalisé</td>
+            <td>&gt; 0.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MODEL -->
+    <div class="doc-section" id="model">
+      <div class="section-label">Modèle machine learning</div>
+      <h2>Random Forest — LOSO-CV</h2>
+      <p>
+        Le modèle de classification est un <strong>Random Forest</strong> scikit-learn entraîné
+        avec la stratégie <strong>Leave-One-Subject-Out Cross-Validation (LOSO-CV)</strong>,
+        qui garantit une évaluation non biaisée en excluant toutes les sessions d'un même
+        athlète du set d'entraînement à chaque fold.
+      </p>
+
+      <div class="code-block"><code><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> LeaveOneGroupOut
+
+clf = RandomForestClassifier(
+    n_estimators=<span class="nm">100</span>,
+    max_depth=<span class="nm">None</span>,
+    min_samples_split=<span class="nm">2</span>,
+    random_state=<span class="nm">42</span>,
+    class_weight=<span class="st">'balanced'</span>   <span class="cm"># compense le déséquilibre de classes</span>
+)
+
+logo = LeaveOneGroupOut()
+<span class="cm"># groups = identifiant athlète (garantit isolation inter-sujet)</span>
+scores = cross_val_score(clf, X, y, groups=groups,
+                         cv=logo, scoring=<span class="st">'roc_auc'</span>)</code></div>
+    </div>
+
+    <!-- SHAP -->
+    <div class="doc-section" id="shap">
+      <div class="section-label">Explicabilité</div>
+      <h2>SHAP — SHapley Additive exPlanations</h2>
+      <p>
+        Chaque prédiction est accompagnée de valeurs SHAP calculées par <strong>TreeExplainer</strong>,
+        qui décomposent le score de risque en contributions individuelles par feature.
+        Cette explicabilité est essentielle pour que les entraîneurs et kinés puissent
+        cibler les déficits biomécaniques spécifiques à corriger.
+      </p>
+
+      <div class="code-block"><code><span class="kw">import</span> shap
+
+explainer = shap.TreeExplainer(clf)
+shap_values = explainer.shap_values(X_athlete)
+
+<span class="cm"># shap_values[1] = contributions pour la classe "risque élevé"</span>
+<span class="cm"># Feature la plus impactante : fppa_left (valgus dynamique)</span>
+shap.summary_plot(shap_values[<span class="nm">1</span>], X_athlete, feature_names=feature_cols)</code></div>
+
+      <p>
+        Un FPPA élevé (valgus dynamique du genou) est systématiquement la feature la plus
+        contributive au score de risque dans les profils à risque élevé identifiés sur
+        le dataset USB + RCOZ.
+      </p>
+    </div>
+
+    <!-- TESTS PROTOCOLES -->
+    <div class="doc-section" id="tests">
+      <div class="section-label">Protocoles de test</div>
+      <h2>Trois tests biomécanique</h2>
+      <div class="test-grid">
+        <div class="test-card">
+          <div class="test-icon">⬆</div>
+          <div class="test-name">CMJ</div>
+          <div class="test-full">Counter-Movement Jump</div>
+          <div class="test-desc">
+            Saut vertical avec contre-mouvement depuis position bipodale. Vue sagittale ou frontale.
+            Mesure la puissance explosive des membres inférieurs.
+          </div>
+          <div class="test-metrics">
+            <div class="test-metric">→ Hauteur de saut (temps de vol)</div>
+            <div class="test-metric">→ Flexion genou au décollage</div>
+            <div class="test-metric">→ Symétrie bilatérale</div>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="test-icon">🦵</div>
+          <div class="test-name">SLS</div>
+          <div class="test-full">Single Leg Squat</div>
+          <div class="test-desc">
+            Squat unipodale en vue frontale. Révèle les asymétries neuromusculaires
+            et le contrôle moteur du membre inférieur. Protocole 5 répétitions par jambe.
+          </div>
+          <div class="test-metrics">
+            <div class="test-metric">→ FPPA moyen et max</div>
+            <div class="test-metric">→ Inclinaison tronc</div>
+            <div class="test-metric">→ LSI genou/hanche</div>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="test-icon">↓</div>
+          <div class="test-name">DVJ</div>
+          <div class="test-full">Drop Vertical Jump</div>
+          <div class="test-desc">
+            Chute depuis une boîte de 30cm suivie d'un saut vertical maximal. Vue frontale.
+            Test le plus discriminant pour l'évaluation du risque LCA à l'atterrissage.
+          </div>
+          <div class="test-metrics">
+            <div class="test-metric">→ Valgus excursion à l'atterrissage</div>
+            <div class="test-metric">→ Vélocité angulaire genou</div>
+            <div class="test-metric">→ FPPA au contact initial</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RÉSULTATS -->
+    <div class="doc-section" id="resultats">
+      <div class="section-label">Résultats</div>
+      <h2>Performance du modèle</h2>
+      <p>
+        Évaluation en <strong>LOSO-CV</strong> sur 24 athlètes (USB + RCOZ) avec 142 sessions totales.
+        Les métriques sont rapportées sur le set de validation de chaque fold.
+      </p>
+      <div class="results-row">
+        <div class="result-card">
+          <div class="result-val">0.80</div>
+          <div class="result-metric">AUC-ROC</div>
+          <div class="result-desc">Aire sous la courbe ROC — LOSO-CV</div>
+        </div>
+        <div class="result-card">
+          <div class="result-val">76%</div>
+          <div class="result-metric">Accuracy</div>
+          <div class="result-desc">Précision globale de classification</div>
+        </div>
+        <div class="result-card">
+          <div class="result-val">0.74</div>
+          <div class="result-metric">F1-Score</div>
+          <div class="result-desc">Classe "risque élevé" (pondéré)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STACK -->
+    <div class="doc-section" id="stack">
+      <div class="section-label">Technologies</div>
+      <h2>Stack technique complet</h2>
+      <table class="feature-table">
+        <thead>
+          <tr><th>Composant</th><th>Technologie</th><th>Version</th><th>Rôle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pose estimation</td><td>MediaPipe BlazePose</td><td>0.10.x</td><td>33 landmarks squelettiques</td></tr>
+          <tr><td>Signal filtering</td><td>Savitzky-Golay (scipy)</td><td>1.11+</td><td>Lissage trajectoires</td></tr>
+          <tr><td>ML model</td><td>scikit-learn RandomForest</td><td>1.4+</td><td>Classification risque LCA</td></tr>
+          <tr><td>Explainability</td><td>SHAP TreeExplainer</td><td>0.44+</td><td>Contributions par feature</td></tr>
+          <tr><td>Video processing</td><td>OpenCV</td><td>4.9+</td><td>Lecture et traitement vidéo</td></tr>
+          <tr><td>Visualisation</td><td>Plotly</td><td>5.x</td><td>Graphiques interactifs</td></tr>
+          <tr><td>Interface web</td><td>Streamlit</td><td>1.35+</td><td>App d'analyse interactive</td></tr>
+          <tr><td>Persistence</td><td>SQLite + SQLAlchemy</td><td>2.0+</td><td>Stockage sessions athlètes</td></tr>
+          <tr><td>Runtime</td><td>Python</td><td>3.11</td><td>Environnement d'exécution</td></tr>
+          <tr><td>Model serialization</td><td>joblib</td><td>1.3+</td><td>Sauvegarde modèle entraîné</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-banner">
+      <div class="cta-text">
+        <h3>Tester sur votre vidéo</h3>
+        <p>Pipeline complet disponible — uploadez une vidéo frontale CMJ, SLS ou DVJ.</p>
+      </div>
+      <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
+    </div>
+
+  </div><!-- end doc-main -->
+
+</div><!-- end doc-layout -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">VERTEX<span>TRACK</span></div>
+  <div class="footer-info">
+    Université Hassan 1er · Settat · Master TDTS · 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa · VERTEXTRACK © 2026
+  </div>
+</footer>
+
+</body>
+</html>
