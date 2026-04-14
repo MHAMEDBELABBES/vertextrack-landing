@@ -3,187 +3,142 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>VERTEXTRACK — Analyse Biomécanique</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<title>VERTEXTRACK — Analyse</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --bg:#03080f;--bg2:#060d18;--bg3:#040a14;
-  --cyan:#00c8ff;--amber:#f59e0b;--green:#00e676;--red:#ef5350;
-  --white:#fff;--muted:rgba(255,255,255,0.45);
-  --border:rgba(0,200,255,0.15);--border2:rgba(255,255,255,0.06);
-}
+:root{--bg:#03080f;--cyan:#00c8ff;--amber:#f59e0b;--green:#00e676;--red:#ef5350;--muted:rgba(255,255,255,0.45);}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--white);font-family:'Barlow',sans-serif;min-height:100vh;}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
-.nav-logo-text .v{color:#fff;}.nav-logo-text .t{color:var(--cyan);}
-.nav-links{display:flex;gap:2px;}
-.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;}
+body{background:var(--bg);color:#fff;font-family:'Barlow',sans-serif;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(3,8,15,0.95);border-bottom:1px solid rgba(0,200,255,0.15);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;}
+.logo .t{color:var(--cyan);}
+.nav-links{display:flex;}
+.nav-links a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0 16px;height:64px;display:flex;align-items:center;border-bottom:2px solid transparent;}
 .nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--cyan);}
 .nav-right{display:flex;gap:10px;}
-.btn-outline{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 20px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;}
-.btn-filled{background:var(--cyan);color:#03080f;border:none;padding:9px 22px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;}
-.btn-filled:hover{box-shadow:0 0 24px rgba(0,200,255,0.4);}
+.btn-o{border:1.5px solid var(--cyan);color:#fff;background:transparent;padding:8px 18px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;}
+.btn-f{background:var(--cyan);color:#03080f;border:none;padding:9px 20px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;}
 
-/* PAGE HEADER */
-.page-header{padding:100px 60px 48px;background:var(--bg);border-bottom:1px solid var(--border2);}
-.breadcrumb{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
-.breadcrumb a{color:var(--cyan);text-decoration:none;}
-.breadcrumb-sep{color:rgba(255,255,255,0.2);}
-.page-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:8px;}
-.page-sub{font-size:14px;color:var(--muted);max-width:500px;line-height:1.7;}
+.header{padding:88px 60px 28px;}
+.header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:6px;}
+.header p{font-size:14px;color:var(--muted);}
 
-/* MAIN LAYOUT */
-.main{display:grid;grid-template-columns:1fr 360px;gap:24px;padding:32px 60px 60px;max-width:1400px;}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:20px;padding:0 60px 60px;}
+.card{background:#040a14;border:1px solid rgba(255,255,255,0.06);padding:24px;margin-bottom:16px;}
+.card-t{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(0,200,255,0.1);}
 
-/* UPLOAD ZONE */
-.upload-section{background:var(--bg3);border:1px solid var(--border2);padding:32px;}
-.section-label{font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+/* TEST BUTTONS */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.tbtn{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);padding:20px 12px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
+.tbtn:hover{border-color:rgba(0,200,255,0.5);background:rgba(0,200,255,0.06);}
+.tbtn.sel{border-color:var(--cyan);background:rgba(0,200,255,0.12);}
+.tbtn svg{display:block;margin:0 auto 10px;}
+.tbtn-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:2px;}
+.tbtn-desc{font-size:11px;color:var(--muted);margin-top:4px;}
 
-/* TEST SELECTOR */
-.test-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:28px;}
-.test-btn{background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.12);padding:14px;text-align:center;cursor:pointer;transition:all .2s;}
-.test-btn:hover{border-color:rgba(0,200,255,0.4);background:rgba(0,200,255,0.08);}
-.test-btn.selected{border-color:var(--cyan);background:rgba(0,200,255,0.12);}
-.test-btn-icon{font-size:20px;margin-bottom:6px;}
-.test-btn-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#fff;}
-.test-btn-desc{font-size:10px;color:var(--muted);margin-top:3px;}
+/* UPLOAD */
+.upzone{border:2px dashed rgba(0,200,255,0.3);background:rgba(0,200,255,0.02);padding:36px 24px;text-align:center;margin-bottom:12px;}
+.upzone-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;margin:12px 0 6px;}
+.upzone-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.choose-label{display:inline-block;background:var(--cyan);color:#03080f;padding:11px 28px;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.fmts{display:flex;gap:6px;justify-content:center;margin-top:12px;}
+.fmt{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(0,200,255,0.6);border:1px solid rgba(0,200,255,0.2);padding:2px 8px;}
 
-/* DROP ZONE */
-.drop-zone{border:2px dashed rgba(0,200,255,0.25);background:rgba(0,200,255,0.02);padding:48px 32px;text-align:center;cursor:pointer;transition:all .3s;position:relative;margin-bottom:20px;}
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--cyan);background:rgba(0,200,255,0.06);}
-.drop-icon{margin:0 auto 16px;}
-.drop-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-.drop-sub{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-.drop-formats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.format-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(0,200,255,0.6);background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);padding:3px 10px;}
-input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+/* BILATERAL */
+.bi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.bi-side-label{font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.bi-zone{border:2px dashed rgba(0,200,255,0.25);padding:20px 12px;text-align:center;}
+.bi-zone.loaded{border-color:var(--green);border-style:solid;}
+.bi-choose{display:inline-block;background:rgba(0,200,255,0.1);color:var(--cyan);border:1px solid rgba(0,200,255,0.3);padding:7px 16px;font-weight:700;font-size:11px;cursor:pointer;margin-top:8px;}
+.bi-ok{display:none;font-size:11px;color:var(--green);padding:6px 0;}
 
-/* VIDEO PREVIEW */
-.video-preview{display:none;background:#020609;border:1px solid var(--border2);position:relative;margin-bottom:20px;}
-.video-preview.show{display:block;}
-.video-preview video{width:100%;display:block;}
-.video-overlay{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;}
-.v-chip{background:rgba(3,12,28,0.9);border:1px solid rgba(0,200,255,0.3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);padding:5px 10px;}
-.video-info-bar{display:flex;gap:20px;padding:12px 16px;background:#020609;border-top:1px solid var(--border2);}
-.vi-item{font-size:11px;color:var(--muted);}
-.vi-item span{color:#fff;font-weight:600;}
+/* VIDEO */
+.vid-box{display:none;margin-bottom:12px;}
+.vid-box.show{display:block;}
+.vid-rel{position:relative;background:#000;}
+.vid-rel video{width:100%;display:block;max-height:260px;}
+.vid-rel canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+.live-b{position:absolute;top:8px;left:8px;background:rgba(3,12,28,.9);border:1px solid rgba(0,200,255,.5);padding:4px 10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);display:flex;align-items:center;gap:6px;}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.2}}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pu 1.2s infinite;}
+.vid-info{display:flex;gap:14px;padding:8px 12px;background:#020609;font-size:11px;color:var(--muted);}
+.vid-info strong{color:#fff;}
 
-/* ATHLETE INFO */
-.athlete-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.form-group{display:flex;flex-direction:column;gap:6px;}
-.form-group.full{grid-column:1/-1;}
-.form-label{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
-.form-input,.form-select{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:13px;width:100%;outline:none;transition:border-color .2s;}
-.form-input:focus,.form-select:focus{border-color:rgba(0,200,255,0.4);}
-.form-select option{background:#060d18;}
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fgroup{display:flex;flex-direction:column;gap:5px;}
+.fgroup.s2{grid-column:1/-1;}
+.fl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.fi,.fs{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 12px;font-family:'Barlow',sans-serif;font-size:13px;width:100%;outline:none;}
+.fi:focus,.fs:focus{border-color:rgba(0,200,255,.4);}
+.fs option{background:#06101e;}
 
-/* ANALYSE BUTTON */
-.analyse-btn{width:100%;background:var(--cyan);color:#03080f;border:none;padding:16px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;}
-.analyse-btn:hover{box-shadow:0 0 32px rgba(0,200,255,0.5);}
-.analyse-btn:disabled{background:rgba(0,200,255,0.3);cursor:not-allowed;box-shadow:none;}
+/* TOGGLE */
+.save-row{display:flex;align-items:center;justify-content:space-between;padding:14px;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.1);margin-bottom:12px;cursor:pointer;}
+.tog{width:42px;height:22px;background:rgba(255,255,255,0.1);border-radius:11px;border:1px solid rgba(255,255,255,0.15);position:relative;transition:.3s;flex-shrink:0;}
+.tog.on{background:rgba(0,200,255,0.35);border-color:var(--cyan);}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:rgba(255,255,255,.4);border-radius:50%;transition:.3s;}
+.tog.on::after{transform:translateX(20px);background:var(--cyan);}
+
+/* LAUNCH */
+.lbtn{width:100%;background:var(--cyan);color:#03080f;border:none;padding:16px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.lbtn:hover:not(:disabled){box-shadow:0 0 28px rgba(0,200,255,.5);}
+.lbtn:disabled{background:rgba(255,255,255,.06);color:rgba(255,255,255,.2);cursor:not-allowed;}
 
 /* PROGRESS */
-.progress-section{display:none;margin-top:20px;}
-.progress-section.show{display:block;}
-.progress-steps{display:flex;flex-direction:column;gap:8px;}
-.prog-step{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--border2);}
-.prog-step.active{border-color:rgba(0,200,255,0.3);background:rgba(0,200,255,0.04);}
-.prog-step.done{border-color:rgba(0,230,118,0.3);background:rgba(0,230,118,0.04);}
-.prog-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);flex-shrink:0;}
-.prog-step.active .prog-dot{background:var(--cyan);}
-.prog-step.done .prog-dot{background:var(--green);}
-.prog-text{font-size:12px;color:var(--muted);}
-.prog-step.active .prog-text{color:#fff;}
-.prog-step.done .prog-text{color:var(--green);}
-.prog-bar-wrap{margin-top:12px;height:3px;background:rgba(255,255,255,0.06);}
-.prog-bar{height:3px;background:var(--cyan);width:0%;transition:width .4s ease;}
+.prog{display:none;margin-top:14px;}
+.prog.show{display:block;}
+.ps{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);margin-bottom:6px;font-size:12px;color:var(--muted);}
+.ps.active{border-color:rgba(0,200,255,.3);color:#fff;}
+.ps.done{border-color:rgba(0,230,118,.2);color:var(--green);}
+.pd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;}
+.ps.active .pd{background:var(--cyan);}
+.ps.done .pd{background:var(--green);}
+.pb-bg{height:3px;background:rgba(255,255,255,.05);margin-top:8px;}
+.pb-fill{height:3px;background:var(--cyan);width:0;transition:width .5s;}
 
-/* RESULTS PANEL */
-.results-panel{display:flex;flex-direction:column;gap:16px;}
-.result-card{background:var(--bg3);border:1px solid var(--border2);padding:20px;}
-.rc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.rc-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:1px;}
-.rc-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:2px;}
-.badge-ok{background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.2);}
-.badge-warn{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.2);}
-.badge-danger{background:rgba(239,83,80,0.1);color:var(--red);border:1px solid rgba(239,83,80,0.2);}
-
-/* METRIC ROW */
-.metric-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
-.metric-row:last-child{border-bottom:none;}
-.mr-label{font-size:12px;color:var(--muted);}
-.mr-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:#fff;font-weight:600;}
-.mr-val.cyan{color:var(--cyan);}
-.mr-val.green{color:var(--green);}
-.mr-val.amber{color:var(--amber);}
-.mr-val.red{color:var(--red);}
-
-/* BIG METRIC */
-.big-metric{text-align:center;padding:16px 0;}
-.bm-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:56px;line-height:1;color:var(--cyan);}
-.bm-unit{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
-
-/* BAR */
-.bar-row{margin-bottom:10px;}
-.bar-info{display:flex;justify-content:space-between;margin-bottom:4px;}
-.bar-name{font-size:11px;color:var(--muted);}
-.bar-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:#fff;}
-.bar-bg{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;}
-.bar-fill{height:4px;border-radius:2px;}
-
-/* RISK GAUGE */
-.risk-gauge{text-align:center;padding:8px 0 16px;}
-.risk-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.risk-value{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;margin-bottom:4px;}
-.risk-score{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
-.risk-bar-wrap{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin:10px 0 6px;position:relative;}
-.risk-bar{height:6px;border-radius:3px;}
-.risk-ticks{display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,0.2);}
-
-/* SHAP */
-.shap-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.shap-feat{font-size:11px;color:var(--muted);width:130px;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
-.shap-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;}
-.shap-bar-fill{height:6px;border-radius:3px;}
-.shap-v{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);width:40px;text-align:right;}
-
-/* EXPORT BTN */
-.export-btn{width:100%;background:transparent;color:var(--cyan);border:1.5px solid rgba(0,200,255,0.3);padding:12px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.export-btn:hover{border-color:var(--cyan);background:rgba(0,200,255,0.06);}
-
-/* EMPTY STATE */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 20px;text-align:center;border:1px dashed rgba(255,255,255,0.06);background:rgba(255,255,255,0.01);}
-.empty-icon{opacity:.3;}
-.empty-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
-.empty-sub{font-size:12px;color:rgba(255,255,255,0.2);line-height:1.7;max-width:200px;}
-
-/* FOOTER */
-footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border2);margin-top:40px;}
-.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;letter-spacing:3px;}
-.footer-logo span{color:var(--cyan);}
-.footer-info{font-size:11px;color:rgba(255,255,255,0.18);}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:16px;height:16px;border:2px solid rgba(3,8,15,0.3);border-top-color:#03080f;border-radius:50%;animation:spin .8s linear infinite;}
+/* RESULTS */
+.rc{background:#040a14;border:1px solid rgba(255,255,255,.06);padding:20px;margin-bottom:14px;}
+.rch{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.rct{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;}
+.ok{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.warn{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.bign{text-align:center;padding:10px 0;}
+.bign .v{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;color:var(--cyan);line-height:1;}
+.bign .u{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.mr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+.mr:last-child{border:none;}
+.mr .l{color:var(--muted);}
+.mr .r{font-family:'JetBrains Mono',monospace;font-weight:600;}
+.mr .r.c{color:var(--cyan);}
+.mr .r.g{color:var(--green);}
+.br{margin-bottom:9px;}
+.bi{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.bb{height:4px;background:rgba(255,255,255,.06);border-radius:2px;}
+.bf{height:4px;border-radius:2px;}
+.sr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);width:120px;flex-shrink:0;}
+.sb{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;}
+.sbi{height:5px;border-radius:3px;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:10px;width:38px;text-align:right;}
+.disc{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);padding:12px 14px;font-size:11px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px;}
+.xbtn{width:100%;background:transparent;color:var(--cyan);border:1.5px solid rgba(0,200,255,.3);padding:11px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.xbtn:hover{background:rgba(0,200,255,.06);}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 20px;text-align:center;border:1px dashed rgba(255,255,255,.06);}
+.empty .et{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.empty .es{font-size:12px;color:rgba(255,255,255,.2);max-width:200px;line-height:1.6;}
+footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.04);margin-top:20px;}
+.flogo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;letter-spacing:3px;}
+.flogo span{color:var(--cyan);}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <a class="nav-logo" href="index.html">
-    <svg width="30" height="30" viewBox="0 0 30 30">
-      <polygon points="15,2 28,10 28,22 15,30 2,22 2,10" fill="none" stroke="#00c8ff" stroke-width="1.5"/>
-      <polygon points="15,8 24,13 24,19 15,24 6,19 6,13" fill="rgba(0,200,255,0.1)"/>
-      <circle cx="15" cy="15" r="3" fill="#00c8ff"/>
-    </svg>
-    <div class="nav-logo-text"><span class="v">VERTEX</span><span class="t">TRACK</span></div>
+  <a class="logo" href="index.html">
+    <svg width="28" height="28" viewBox="0 0 28 28"><polygon points="14,2 26,9 26,21 14,28 2,21 2,9" fill="none" stroke="#00c8ff" stroke-width="1.5"/><circle cx="14" cy="14" r="3" fill="#00c8ff"/></svg>
+    VERTEX<span class="t">TRACK</span>
   </a>
   <div class="nav-links">
     <a href="index.html">Accueil</a>
@@ -193,359 +148,1081 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
     <a href="apropos.html">À propos</a>
   </div>
   <div class="nav-right">
-    <a class="btn-outline" href="dashboard.html">Dashboard</a>
-    <a class="btn-filled" href="analyse.html">App IA →</a>
+    <a class="btn-o" href="dashboard.html">Dashboard</a>
+    <a class="btn-f" href="https://vertextrack.streamlit.app" target="_blank">App IA →</a>
   </div>
 </nav>
 
-<!-- PAGE HEADER -->
-<div class="page-header">
-  <div class="breadcrumb">
-    <a href="index.html">Accueil</a>
-    <span class="breadcrumb-sep">›</span>
-    <span>Analyse biomécanique</span>
-  </div>
-  <h1 class="page-title">Analyse Biomécanique</h1>
-  <p class="page-sub">Uploadez une vidéo d'athlète pour extraire les métriques biomécaniques et générer un profil de risque LCA par IA.</p>
+<div class="header">
+  <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;"><a href="index.html" style="color:var(--cyan);text-decoration:none;">Accueil</a> › Analyse</div>
+  <h1>Analyse Biomécanique</h1>
+  <p>Uploadez une vidéo pour extraire les métriques biomécaniques et générer un profil de risque LCA.</p>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main">
+<div class="layout">
+<div>
 
-  <!-- LEFT — UPLOAD + CONFIG -->
-  <div>
+<!-- TEST -->
+<div class="card">
+  <div class="card-t">Sélectionner le test</div>
+  <div class="test-grid">
 
-    <!-- TEST SELECTION -->
-    <div class="upload-section" style="margin-bottom:16px;">
-      <div class="section-label">Sélectionner le test</div>
-      <div class="test-selector">
-        <div class="test-btn selected" onclick="selectTest(this,'CMJ')">
-          <div class="test-btn-icon">🏃</div>
-          <div class="test-btn-name">CMJ</div>
-          <div class="test-btn-desc">Counter Movement Jump</div>
-        </div>
-        <div class="test-btn" onclick="selectTest(this,'SLS')">
-          <div class="test-btn-icon">🦵</div>
-          <div class="test-btn-name">SLS</div>
-          <div class="test-btn-desc">Single Leg Squat</div>
-        </div>
-        <div class="test-btn" onclick="selectTest(this,'DVJ')">
-          <div class="test-btn-icon">⬇️</div>
-          <div class="test-btn-name">DVJ</div>
-          <div class="test-btn-desc">Drop Vertical Jump</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIDEO UPLOAD -->
-    <div class="upload-section" style="margin-bottom:16px;">
-      <div class="section-label">Upload vidéo</div>
-      <div class="drop-zone" id="dropZone">
-        <input type="file" accept="video/*" id="videoInput" onchange="handleFile(this)"/>
-        <svg class="drop-icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <rect x="4" y="4" width="40" height="40" rx="4" stroke="rgba(0,200,255,0.3)" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <path d="M24 32V20M24 20L18 26M24 20L30 26" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="12" y="34" width="24" height="4" rx="2" fill="rgba(0,200,255,0.1)"/>
-        </svg>
-        <div class="drop-title">Glissez votre vidéo ici</div>
-        <div class="drop-sub">ou cliquez pour sélectionner<br>Vue frontale recommandée pour FPPA · 60fps · 1080p</div>
-        <div class="drop-formats">
-          <span class="format-tag">MP4</span>
-          <span class="format-tag">MOV</span>
-          <span class="format-tag">AVI</span>
-          <span class="format-tag">MPEG4</span>
-          <span class="format-tag">MAX 200MB</span>
-        </div>
-      </div>
-
-      <!-- VIDEO PREVIEW -->
-      <div class="video-preview" id="videoPreview">
-        <video id="videoPlayer" controls></video>
-        <div class="video-overlay">
-          <div class="v-chip" id="fpsChip">60fps</div>
-          <div class="v-chip" id="resChip">1080p</div>
-        </div>
-        <div class="video-info-bar">
-          <div class="vi-item">Fichier : <span id="fileName">—</span></div>
-          <div class="vi-item">Durée : <span id="videoDuration">—</span></div>
-          <div class="vi-item">Taille : <span id="fileSize">—</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ATHLETE INFO -->
-    <div class="upload-section" style="margin-bottom:16px;">
-      <div class="section-label">Informations athlète</div>
-      <div class="athlete-form">
-        <div class="form-group">
-          <label class="form-label">Nom</label>
-          <input class="form-input" type="text" placeholder="Ex: Karim Amrani" id="athName"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prénom</label>
-          <input class="form-input" type="text" placeholder="Ex: K." id="athFirst"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Sport</label>
-          <select class="form-select" id="athSport">
-            <option value="">Sélectionner</option>
-            <option value="basketball">Basketball</option>
-            <option value="football">Football</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Club</label>
-          <input class="form-input" type="text" placeholder="Ex: USB" id="athClub"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Âge</label>
-          <input class="form-input" type="number" placeholder="Ex: 22" id="athAge"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Jambe dominante</label>
-          <select class="form-select" id="athLeg">
-            <option value="droite">Droite</option>
-            <option value="gauche">Gauche</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- ANALYSE BUTTON -->
-    <button class="analyse-btn" id="analyseBtn" onclick="startAnalysis()" disabled>
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#03080f" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="#03080f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Lancer l'analyse IA
-    </button>
-
-    <!-- PROGRESS -->
-    <div class="progress-section" id="progressSection">
-      <div style="margin-bottom:12px;"></div>
-      <div class="progress-steps" id="progressSteps">
-        <div class="prog-step" id="step1"><div class="prog-dot"></div><div class="prog-text">Extraction des landmarks MediaPipe...</div></div>
-        <div class="prog-step" id="step2"><div class="prog-dot"></div><div class="prog-text">Filtrage Savitzky-Golay du signal...</div></div>
-        <div class="prog-step" id="step3"><div class="prog-dot"></div><div class="prog-text">Calcul des features biomécaniques...</div></div>
-        <div class="prog-step" id="step4"><div class="prog-dot"></div><div class="prog-text">Prédiction Random Forest + SHAP...</div></div>
-        <div class="prog-step" id="step5"><div class="prog-dot"></div><div class="prog-text">Génération du rapport...</div></div>
-      </div>
-      <div class="prog-bar-wrap"><div class="prog-bar" id="progBar"></div></div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT — RESULTS -->
-  <div class="results-panel" id="resultsPanel">
-
-    <!-- EMPTY STATE -->
-    <div class="empty-state" id="emptyState">
-      <svg class="empty-icon" width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <rect x="8" y="8" width="48" height="48" rx="6" stroke="white" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <path d="M32 40V28M32 28L26 34M32 28L38 34" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="32" cy="48" r="2" fill="white"/>
+    <div class="tbtn sel" id="tb-CMJ" onclick="setTest('CMJ')">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="7" r="5" stroke="#00c8ff" stroke-width="2"/>
+        <path d="M22 12v9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 21l-7 9M22 21l7 9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M16 17l-5 3M28 17l5 3" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="5" y1="7" x2="5" y2="38" stroke="rgba(0,200,255,.35)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <path d="M2 10l3-4 3 4" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <line x1="8" y1="38" x2="40" y2="38" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <div class="empty-title">Résultats</div>
-      <div class="empty-sub">Uploadez une vidéo et lancez l'analyse pour voir les résultats ici</div>
+      <div class="tbtn-name">CMJ</div>
+      <div class="tbtn-desc">Counter Movement Jump</div>
     </div>
 
-    <!-- RESULTS (hidden until analysis) -->
-    <div id="resultsContent" style="display:none;display:flex;flex-direction:column;gap:16px;">
+    <div class="tbtn" id="tb-SLS" onclick="setTest('SLS')">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="6" r="5" stroke="#00c8ff" stroke-width="2"/>
+        <path d="M22 11v8" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 15l-8 4M22 15l8 4" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M20 19l-4 9-3 9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M24 19l5 7" stroke="rgba(0,200,255,.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2"/>
+        <path d="M13 24 A6 6 0 0 1 19 28" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+        <line x1="6" y1="37" x2="34" y2="37" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="tbtn-name">SLS</div>
+      <div class="tbtn-desc">Single Leg Squat</div>
+    </div>
 
-      <!-- CMJ HEIGHT -->
-      <div class="result-card">
-        <div class="rc-header">
-          <div class="rc-title">Performance CMJ</div>
-          <span class="rc-badge badge-ok">BON</span>
-        </div>
-        <div class="big-metric">
-          <div class="bm-val" id="cmjVal">38.4</div>
-          <div class="bm-unit">centimètres</div>
-        </div>
-        <div class="metric-row">
-          <span class="mr-label">Méthode temps de vol</span>
-          <span class="mr-val cyan">38.4 cm</span>
-        </div>
-        <div class="metric-row">
-          <span class="mr-label">Méthode déplacement COM</span>
-          <span class="mr-val">37.8 cm</span>
-        </div>
-        <div class="metric-row">
-          <span class="mr-label">Temps de vol</span>
-          <span class="mr-val">0.558 s</span>
-        </div>
-        <div class="metric-row">
-          <span class="mr-label">Vitesse décollage</span>
-          <span class="mr-val">2.73 m/s</span>
-        </div>
+    <div class="tbtn" id="tb-DVJ" onclick="setTest('DVJ')">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+        <rect x="3" y="26" width="10" height="11" rx="1" stroke="#00c8ff" stroke-width="1.5"/>
+        <circle cx="22" cy="6" r="5" stroke="#00c8ff" stroke-width="2"/>
+        <path d="M22 11v7" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 14l-6-3M22 14l6-3" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M19 18l-4 10M25 18l4 10" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M36 6v14" stroke="rgba(0,200,255,.4)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <path d="M33 17l3 4 3-4" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <line x1="3" y1="37" x2="41" y2="37" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="tbtn-name">DVJ</div>
+      <div class="tbtn-desc">Drop Vertical Jump</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="card">
+  <div class="card-t" id="ulabel">Upload vidéo — CMJ</div>
+
+  <!-- CMJ -->
+  <div id="z-CMJ">
+    <div class="upzone">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="margin:0 auto 12px;display:block;">
+        <rect x="3" y="3" width="38" height="38" rx="4" stroke="rgba(0,200,255,.4)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <path d="M22 30V18M22 18L16 24M22 18L28 24" stroke="#00c8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="upzone-title">Glissez votre vidéo ici</div>
+      <div class="upzone-sub">ou utilisez le bouton ci-dessous · Vue frontale · 60fps</div>
+      <label class="choose-label" for="f-CMJ">Choisir un fichier vidéo</label>
+      <input type="file" id="f-CMJ" accept="video/*" style="display:none" onchange="onFile(event,'CMJ')"/>
+      <div class="fmts"><span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">AVI</span><span class="fmt">200MB max</span></div>
+    </div>
+    <div class="vid-box" id="vb-CMJ">
+      <div class="vid-rel">
+        <video id="v-CMJ" controls></video>
+        <canvas id="c-CMJ"></canvas>
+        <div class="live-b"><div class="live-dot"></div>POSE DETECTION</div>
       </div>
-
-      <!-- DIAGNOSTIC -->
-      <div class="result-card">
-        <div class="rc-header">
-          <div class="rc-title">Diagnostic</div>
-          <span class="rc-badge badge-warn" id="diagBadge">ATTENTION</span>
-        </div>
-        <div class="bar-row">
-          <div class="bar-info"><span class="bar-name">FPPA gauche</span><span class="bar-val" id="fppaL">14.2°</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:28%;background:var(--amber);"></div></div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-info"><span class="bar-name">FPPA droite</span><span class="bar-val" id="fppaR">11.8°</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:24%;background:var(--cyan);"></div></div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-info"><span class="bar-name">Flexion genou max</span><span class="bar-val">68°</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:68%;background:var(--cyan);"></div></div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-info"><span class="bar-name">ROM hanche</span><span class="bar-val">42°</span></div>
-          <div class="bar-bg"><div class="bar-fill" style="width:55%;background:var(--green);"></div></div>
-        </div>
-        <div class="metric-row" style="margin-top:8px;">
-          <span class="mr-label">LSI symétrie</span>
-          <span class="mr-val green">0.88</span>
-        </div>
+      <div class="vid-info">
+        <span>📄 <strong id="vn-CMJ">—</strong></span>
+        <span>⏱ <strong id="vd-CMJ">—</strong></span>
+        <span>💾 <strong id="vs-CMJ">—</strong></span>
       </div>
+    </div>
+  </div>
 
-      <!-- RISK LCA -->
-      <div class="result-card">
-        <div class="rc-header">
-          <div class="rc-title">Risque LCA</div>
-          <span class="rc-badge badge-ok" id="riskBadge">LOW</span>
+  <!-- SLS -->
+  <div id="z-SLS" style="display:none">
+    <div class="bi-grid">
+      <div>
+        <div class="bi-side-label">SLS — Côté Droit</div>
+        <div class="bi-zone" id="bz-SLS-R">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">SLS Droit</div>
+          <label class="bi-choose" for="f-SLS-R">Choisir</label>
+          <input type="file" id="f-SLS-R" accept="video/*" style="display:none" onchange="onFileSide(event,'SLS','R')"/>
         </div>
-        <div class="risk-gauge">
-          <div class="risk-label">Profil de similarité biomécanique</div>
-          <div class="risk-value" id="riskVal" style="color:var(--green);">LOW</div>
-          <div class="risk-score" id="riskScore">Score: 0.18 / 1.00</div>
-          <div class="risk-bar-wrap">
-            <div class="risk-bar" id="riskBar" style="width:18%;background:var(--green);"></div>
-          </div>
-          <div class="risk-ticks"><span>0</span><span>0.25</span><span>0.5</span><span>0.75</span><span>1.0</span></div>
-        </div>
+        <div class="bi-ok" id="ok-SLS-R">✓ <span id="on-SLS-R"></span></div>
       </div>
-
-      <!-- SHAP -->
-      <div class="result-card">
-        <div class="rc-header">
-          <div class="rc-title">Facteurs SHAP</div>
+      <div>
+        <div class="bi-side-label">SLS — Côté Gauche</div>
+        <div class="bi-zone" id="bz-SLS-L">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">SLS Gauche</div>
+          <label class="bi-choose" for="f-SLS-L">Choisir</label>
+          <input type="file" id="f-SLS-L" accept="video/*" style="display:none" onchange="onFileSide(event,'SLS','L')"/>
         </div>
-        <div class="shap-row">
-          <div class="shap-feat">fppa_angular_vel</div>
-          <div class="shap-bar-wrap"><div class="shap-bar-fill" style="width:88%;background:var(--red);height:6px;border-radius:3px;"></div></div>
-          <div class="shap-v" style="color:var(--red);">+0.31</div>
-        </div>
-        <div class="shap-row">
-          <div class="shap-feat">knee_rom_sls</div>
-          <div class="shap-bar-wrap"><div class="shap-bar-fill" style="width:65%;background:var(--amber);height:6px;border-radius:3px;"></div></div>
-          <div class="shap-v" style="color:var(--amber);">+0.22</div>
-        </div>
-        <div class="shap-row">
-          <div class="shap-feat">hip_angle_cmj</div>
-          <div class="shap-bar-wrap"><div class="shap-bar-fill" style="width:45%;background:var(--amber);height:6px;border-radius:3px;"></div></div>
-          <div class="shap-v" style="color:var(--amber);">+0.15</div>
-        </div>
-        <div class="shap-row">
-          <div class="shap-feat">lsi_hop</div>
-          <div class="shap-bar-wrap"><div class="shap-bar-fill" style="width:30%;background:var(--cyan);height:6px;border-radius:3px;"></div></div>
-          <div class="shap-v">-0.11</div>
-        </div>
-        <div class="shap-row">
-          <div class="shap-feat">jump_height</div>
-          <div class="shap-bar-wrap"><div class="shap-bar-fill" style="width:18%;background:var(--green);height:6px;border-radius:3px;"></div></div>
-          <div class="shap-v" style="color:var(--green);">-0.07</div>
-        </div>
+        <div class="bi-ok" id="ok-SLS-L">✓ <span id="on-SLS-L"></span></div>
       </div>
+    </div>
+    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;"><span style="color:var(--cyan);font-weight:600;">ℹ Vue frontale obligatoire</span> — Les deux vidéos permettent le calcul du LSI.</div>
+  </div>
 
-      <!-- EXPORT -->
-      <button class="export-btn" onclick="alert('Export PDF — connectez à votre backend FastAPI')">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M7 9L4 6M7 9l3-3M2 11h10" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Exporter rapport PDF
+  <!-- DVJ -->
+  <div id="z-DVJ" style="display:none">
+    <div class="bi-grid">
+      <div>
+        <div class="bi-side-label">DVJ — Côté Droit</div>
+        <div class="bi-zone" id="bz-DVJ-R">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">DVJ Droit</div>
+          <label class="bi-choose" for="f-DVJ-R">Choisir</label>
+          <input type="file" id="f-DVJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','R')"/>
+        </div>
+        <div class="bi-ok" id="ok-DVJ-R">✓ <span id="on-DVJ-R"></span></div>
+      </div>
+      <div>
+        <div class="bi-side-label">DVJ — Côté Gauche</div>
+        <div class="bi-zone" id="bz-DVJ-L">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">DVJ Gauche</div>
+          <label class="bi-choose" for="f-DVJ-L">Choisir</label>
+          <input type="file" id="f-DVJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','L')"/>
+        </div>
+        <div class="bi-ok" id="ok-DVJ-L">✓ <span id="on-DVJ-L"></span></div>
+      </div>
+    </div>
+    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;"><span style="color:var(--cyan);font-weight:600;">ℹ Vue frontale obligatoire</span> — Les deux vidéos permettent le calcul du LSI.</div>
+  </div>
+</div>
+
+<!-- ATHLÈTE -->
+<div class="card">
+  <div class="card-t">Informations athlète</div>
+  <div class="fg">
+    <div class="fgroup"><label class="fl">Nom</label><input class="fi" type="text" placeholder="Ex: Amrani"/></div>
+    <div class="fgroup"><label class="fl">Prénom</label><input class="fi" type="text" placeholder="Ex: Karim"/></div>
+    <div class="fgroup"><label class="fl">Sport</label><select class="fs"><option>Basketball</option><option>Football</option></select></div>
+    <div class="fgroup"><label class="fl">Club</label><input class="fi" type="text" placeholder="Ex: USB"/></div>
+    <div class="fgroup"><label class="fl">Âge</label><input class="fi" type="number" placeholder="22"/></div>
+    <div class="fgroup"><label class="fl">Jambe dominante</label><select class="fs"><option>Droite</option><option>Gauche</option></select></div>
+  </div>
+</div>
+
+<!-- SAUVEGARDE -->
+<div class="card">
+  <div class="card-t">Sauvegarde base de données</div>
+  <div class="save-row" onclick="toggleSave()">
+    <div>
+      <div style="font-size:13px;font-weight:600;">Sauvegarder cette analyse</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Enregistre dans SQLite locale</div>
+    </div>
+    <div class="tog" id="tog"></div>
+  </div>
+  <div id="sfields" style="display:none">
+    <div class="fg" style="margin-bottom:10px;">
+      <div class="fgroup"><label class="fl">Session</label><input class="fi" type="text" placeholder="Session_01_Avril2026"/></div>
+      <div class="fgroup"><label class="fl">Terrain</label><select class="fs"><option>Intérieur</option><option>Extérieur</option><option>Salle</option></select></div>
+      <div class="fgroup s2"><label class="fl">Notes</label><input class="fi" type="text" placeholder="Ex: Post-blessure semaine 3..."/></div>
+    </div>
+    <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);padding:9px 12px;font-size:11px;color:rgba(0,230,118,.8);">✓ Résultats sauvegardés dans la table <code style="background:rgba(0,0,0,.3);padding:1px 5px;">analyses</code></div>
+  </div>
+</div>
+
+<!-- BOUTON LANCER -->
+<button class="lbtn" id="lbtn" onclick="launch()" disabled>Lancer l'analyse IA</button>
+
+<!-- PROGRESS -->
+<div class="prog" id="prog">
+  <div style="height:10px"></div>
+  <div class="ps" id="p1"><div class="pd"></div>Extraction landmarks MediaPipe...</div>
+  <div class="ps" id="p2"><div class="pd"></div>Filtrage Savitzky-Golay 60fps...</div>
+  <div class="ps" id="p3"><div class="pd"></div>Calcul features biomécaniques...</div>
+  <div class="ps" id="p4"><div class="pd"></div>Prédiction Random Forest + SHAP...</div>
+  <div class="ps" id="p5"><div class="pd"></div>Génération du rapport...</div>
+  <div class="pb-bg"><div class="pb-fill" id="pbf"></div></div>
+</div>
+
+</div><!-- end col gauche -->
+
+<!-- COL DROITE -->
+<div>
+  <div class="empty" id="emp">
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none" opacity=".25"><rect x="5" y="5" width="42" height="42" rx="5" stroke="white" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M26 34V22M26 22L20 28M26 22L32 28" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div class="et">Résultats</div>
+    <div class="es">Uploadez une vidéo et lancez l'analyse pour voir les résultats ici</div>
+  </div>
+
+  <div id="res" style="display:none">
+    <!-- CMJ -->
+    <div class="rc">
+      <div class="rch"><div class="rct">Performance CMJ</div><span class="badge ok">BON</span></div>
+      <div class="bign"><div class="v">38.4</div><div class="u">Centimètres</div></div>
+      <div class="mr"><span class="l">Méthode temps de vol</span><span class="r c">38.4 cm</span></div>
+      <div class="mr"><span class="l">Méthode déplacement COM</span><span class="r">37.8 cm</span></div>
+      <div class="mr"><span class="l">Temps de vol</span><span class="r">0.558 s</span></div>
+      <div class="mr"><span class="l">Vitesse décollage</span><span class="r">2.73 m/s</span></div>
+    </div>
+    <!-- DIAGNOSTIC -->
+    <div class="rc">
+      <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn">ATTENTION</span></div>
+      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">FPPA gauche</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">14.2°</span></div><div class="bb"><div class="bf" style="width:28%;background:var(--amber)"></div></div></div>
+      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">FPPA droite</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">11.8°</span></div><div class="bb"><div class="bf" style="width:24%;background:var(--cyan)"></div></div></div>
+      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">Flexion genou max</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">68°</span></div><div class="bb"><div class="bf" style="width:68%;background:var(--cyan)"></div></div></div>
+      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">ROM hanche</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">42°</span></div><div class="bb"><div class="bf" style="width:55%;background:var(--green)"></div></div></div>
+      <div class="mr" style="margin-top:6px"><span class="l">LSI symétrie</span><span class="r g">0.88</span></div>
+    </div>
+    <!-- RISQUE -->
+    <div class="rc">
+      <div class="rch"><div class="rct">Risque LCA</div><span class="badge ok">LOW</span></div>
+      <div style="text-align:center;padding:10px 0 16px">
+        <div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Profil de similarité biomécanique</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:40px;color:var(--green)">LOW</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px">Score: 0.18 / 1.00</div>
+        <div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px"><div style="height:5px;width:18%;background:var(--green);border-radius:3px"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,.2);margin-top:4px"><span>0</span><span>0.25</span><span>0.5</span><span>0.75</span><span>1.0</span></div>
+      </div>
+    </div>
+    <!-- DISCLAIMER -->
+    <div class="disc"><strong style="color:#f59e0b">⚠ Avertissement médical</strong><br>Cet outil génère un <strong style="color:rgba(255,255,255,.7)">profil de similarité biomécanique</strong> basé sur des données historiques. Il ne constitue pas un diagnostic médical et ne remplace pas l'avis d'un professionnel de santé qualifié.</div>
+    <!-- SHAP -->
+    <div class="rc">
+      <div class="rch"><div class="rct">Facteurs SHAP</div></div>
+      <div class="sr"><div class="sf">fppa_angular_vel</div><div class="sb"><div class="sbi" style="width:88%;background:var(--red)"></div></div><div class="sv" style="color:var(--red)">+0.31</div></div>
+      <div class="sr"><div class="sf">knee_rom_sls</div><div class="sb"><div class="sbi" style="width:65%;background:var(--amber)"></div></div><div class="sv" style="color:var(--amber)">+0.22</div></div>
+      <div class="sr"><div class="sf">hip_angle_cmj</div><div class="sb"><div class="sbi" style="width:45%;background:var(--amber)"></div></div><div class="sv" style="color:var(--amber)">+0.15</div></div>
+      <div class="sr"><div class="sf">lsi_hop</div><div class="sb"><div class="sbi" style="width:30%;background:var(--cyan)"></div></div><div class="sv">-0.11</div></div>
+      <div class="sr"><div class="sf">jump_height</div><div class="sb"><div class="sbi" style="width:18%;background:var(--green)"></div></div><div class="sv" style="color:var(--green)">-0.07</div></div>
+    </div>
+    <button class="xbtn" onclick="exportPDF()">⬇ Exporter rapport PDF</button>
+
+    <!-- TÉLÉCHARGER VIDÉO AVEC LANDMARKS -->
+    <div class="rc" style="margin-top:14px;">
+      <div class="rch">
+        <div class="rct">Vidéo annotée</div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);padding:3px 10px;">MediaPipe</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+        Génère et télécharge ta vidéo avec les <strong style="color:#fff;">landmarks MediaPipe</strong> dessinés directement sur le corps de l'athlète — angles FPPA, connexions articulaires et données biomécaniques inclus.
+      </div>
+      <button onclick="exportAnnotatedVideo()" id="exportVidBtn"
+        style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Télécharger vidéo avec landmarks
       </button>
-
+      <div id="exportProgress" style="display:none;margin-top:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;" id="exportMsg">Préparation...</div>
+        <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;">
+          <div id="exportBar" style="height:3px;background:var(--cyan);border-radius:2px;width:0%;transition:width .3s;"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
+</div><!-- end layout -->
+
 <footer>
-  <div class="footer-logo">VERTEX<span>TRACK</span></div>
-  <div class="footer-info">Université Hassan 1er · Master TDTS · 2025–2026 · Dr. Ali Benaissa</div>
+  <div class="flogo">VERTEX<span>TRACK</span></div>
+  <div style="font-size:11px;color:rgba(255,255,255,.18)">Université Hassan 1er · Master TDTS · 2025–2026 · Dr. Ali Benaissa</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
+
 <script>
-let selectedTest = 'CMJ';
-let videoReady = false;
+var cur = 'CMJ';
+var rdy = {};
+var detector = null;
+var animFrame = null;
+var detecting = false;
 
-function selectTest(el, test){
-  document.querySelectorAll('.test-btn').forEach(b=>b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTest = test;
-}
+// CONNEXIONS MoveNet (17 keypoints)
+// 0=nose,1=left_eye,2=right_eye,3=left_ear,4=right_ear
+// 5=left_shoulder,6=right_shoulder,7=left_elbow,8=right_elbow
+// 9=left_wrist,10=right_wrist,11=left_hip,12=right_hip
+// 13=left_knee,14=right_knee,15=left_ankle,16=right_ankle
+var EDGES = [
+  [0,1,'face'],[0,2,'face'],[1,3,'face'],[2,4,'face'],
+  [5,6,'torso'],[5,7,'left'],[7,9,'left'],[6,8,'right'],[8,10,'right'],
+  [5,11,'torso'],[6,12,'torso'],[11,12,'torso'],
+  [11,13,'left'],[13,15,'left'],[12,14,'right'],[14,16,'right']
+];
 
-function handleFile(input){
-  const file = input.files[0];
-  if(!file) return;
-  const url = URL.createObjectURL(file);
-  const video = document.getElementById('videoPlayer');
-  video.src = url;
-  document.getElementById('videoPreview').classList.add('show');
-  document.getElementById('dropZone').style.display = 'none';
-  document.getElementById('fileName').textContent = file.name.length > 20 ? file.name.substring(0,20)+'...' : file.name;
-  document.getElementById('fileSize').textContent = (file.size/1024/1024).toFixed(1)+' MB';
-  video.onloadedmetadata = ()=>{
-    const d = Math.floor(video.duration);
-    document.getElementById('videoDuration').textContent = Math.floor(d/60)+':'+(d%60).toString().padStart(2,'0');
-  };
-  videoReady = true;
-  document.getElementById('analyseBtn').disabled = false;
-}
+var COLORS = {
+  face:'rgba(255,220,50,0.8)',
+  torso:'rgba(0,200,255,0.9)',
+  left:'rgba(0,200,255,0.9)',
+  right:'rgba(0,230,118,0.9)'
+};
 
-function startAnalysis(){
-  const btn = document.getElementById('analyseBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Analyse en cours...';
-  document.getElementById('progressSection').classList.add('show');
-  document.getElementById('emptyState').style.display = 'none';
-
-  const steps = ['step1','step2','step3','step4','step5'];
-  const delays = [0, 1200, 2400, 3600, 4800];
-  const progVals = [20, 40, 60, 80, 100];
-
-  steps.forEach((s,i)=>{
-    setTimeout(()=>{
-      if(i>0) document.getElementById(steps[i-1]).classList.remove('active');
-      if(i>0) document.getElementById(steps[i-1]).classList.add('done');
-      document.getElementById(s).classList.add('active');
-      document.getElementById('progBar').style.width = progVals[i]+'%';
-      if(i===4){
-        setTimeout(()=>{
-          document.getElementById(s).classList.remove('active');
-          document.getElementById(s).classList.add('done');
-          showResults();
-          btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-6" stroke="#03080f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Analyse terminée';
-        }, 800);
+async function initDetector() {
+  try {
+    detector = await poseDetection.createDetector(
+      poseDetection.SupportedModels.MoveNet,
+      {
+        modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
+        enableSmoothing: true
       }
-    }, delays[i]);
+    );
+    console.log('MoveNet loaded!');
+    return true;
+  } catch(e) {
+    console.error('MoveNet error:', e);
+    return false;
+  }
+}
+
+async function detectLoop(vid, cv) {
+  if (!detector || !vid || vid.paused || vid.ended) {
+    animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
+    return;
+  }
+
+  var W = vid.clientWidth, H = vid.clientHeight;
+  if (W === 0 || H === 0) {
+    animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
+    return;
+  }
+
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  try {
+    var poses = await detector.estimatePoses(vid);
+    if (poses && poses.length > 0) {
+      drawPose(ctx, poses[0].keypoints, W, H);
+    }
+  } catch(e) {}
+
+  animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
+}
+
+function drawPose(ctx, kps, W, H) {
+  // Calculer FPPA d'abord pour colorer les connexions
+  var hip=kps[11], knee=kps[13], ankle=kps[15];
+  var fppa=0, badMov=false;
+  if (hip&&knee&&ankle&&hip.score>0.4&&knee.score>0.4&&ankle.score>0.4) {
+    // FPPA = déviation latérale du genou par rapport à l'axe hanche-cheville
+    var v1={x:hip.x-knee.x,y:hip.y-knee.y};
+    var v2={x:ankle.x-knee.x,y:ankle.y-knee.y};
+    var d=v1.x*v2.x+v1.y*v2.y;
+    var m=Math.sqrt(v1.x*v1.x+v1.y*v1.y)*Math.sqrt(v2.x*v2.x+v2.y*v2.y);
+    fppa=Math.round(Math.acos(Math.min(1,Math.abs(d/m)))*180/Math.PI);
+    // Valgus dangereux si genou trop en dedans (FPPA > 15° ou angle genou < 90°)
+    badMov = fppa > 15;
+  }
+
+  // Connexions SANS visage
+  var EDGES2 = [
+    [5,6,'torso'],[5,7,'arm'],[7,9,'arm'],[6,8,'arm'],[8,10,'arm'],
+    [5,11,'torso'],[6,12,'torso'],[11,12,'torso'],
+    [11,13,'leg'],[13,15,'leg'],[12,14,'leg'],[14,16,'leg']
+  ];
+  var COL2 = {
+    torso:'rgba(0,200,255,0.9)',
+    arm:'rgba(0,200,255,0.9)',
+    leg: badMov ? 'rgba(255,60,60,0.9)' : 'rgba(0,230,118,0.9)'
+  };
+
+  EDGES2.forEach(function(e) {
+    var a=kps[e[0]], b=kps[e[1]], color=COL2[e[2]];
+    if (!a||!b||a.score<0.3||b.score<0.3) return;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+    ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.stroke();
   });
+
+  // Points — SKIP visage (i <= 4)
+  kps.forEach(function(kp,i) {
+    if (i<=4) return; // Supprimer landmarks visage
+    if (kp.score<0.3) return;
+    var isLeg=i>=11;
+    var ptCol = isLeg&&badMov ? '#ff3c3c' : isLeg ? '#00e676' : '#00c8ff';
+    var glCol  = isLeg&&badMov ? 'rgba(255,60,60,.18)' : isLeg ? 'rgba(0,230,118,0.15)' : 'rgba(0,200,255,0.18)';
+    ctx.beginPath(); ctx.arc(kp.x,kp.y,8,0,Math.PI*2);
+    ctx.fillStyle=glCol; ctx.fill();
+    ctx.beginPath(); ctx.arc(kp.x,kp.y,4,0,Math.PI*2);
+    ctx.fillStyle=ptCol; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // FPPA + labels
+  if (hip&&knee&&ankle&&hip.score>0.4&&knee.score>0.4&&ankle.score>0.4) {
+    var angle=fppa;
+    // Ligne rouge hanche→genou
+    ctx.beginPath(); ctx.moveTo(hip.x,hip.y); ctx.lineTo(knee.x,knee.y);
+    ctx.strokeStyle='rgba(255,50,50,0.9)'; ctx.lineWidth=2; ctx.stroke();
+    // Cercle au genou
+    ctx.beginPath(); ctx.arc(knee.x,knee.y,16,0,Math.PI*2);
+    ctx.strokeStyle=badMov?'rgba(255,60,60,0.9)':'rgba(245,158,11,0.9)';
+    ctx.lineWidth=2.5; ctx.stroke();
+    // Label FPPA
+    var lx=knee.x+18, ly=knee.y-12;
+    if (lx+90>W) lx=knee.x-108;
+    ctx.fillStyle='rgba(3,12,28,0.92)'; ctx.fillRect(lx,ly,90,24);
+    ctx.strokeStyle=badMov?'rgba(255,60,60,.7)':'rgba(245,158,11,0.6)';
+    ctx.lineWidth=1; ctx.strokeRect(lx,ly,90,24);
+    ctx.fillStyle=badMov?'#ff3c3c':'#f59e0b';
+    ctx.font='bold 11px monospace';
+    ctx.fillText('FPPA: '+angle+'°',lx+6,ly+16);
+    // Badge VALGUS
+    if (badMov) {
+      ctx.fillStyle='rgba(255,60,60,.15)'; ctx.fillRect(knee.x-65,knee.y-52,130,22);
+      ctx.strokeStyle='rgba(255,60,60,.7)'; ctx.lineWidth=1; ctx.strokeRect(knee.x-65,knee.y-52,130,22);
+      ctx.fillStyle='#ff3c3c'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
+      ctx.fillText('⚠ VALGUS GENOU',knee.x,knee.y-38); ctx.textAlign='left';
+    }
+  }
+
+  // HIP angle
+  var sh=kps[5], hip2=kps[11], kn=kps[13];
+  if (sh&&hip2&&kn&&sh.score>0.4&&hip2.score>0.4) {
+    var hipAngle=calcAngle(sh,hip2,kn);
+    var hx=hip2.x-95, hy=hip2.y-12;
+    if (hx<0) hx=hip2.x+10;
+    ctx.fillStyle='rgba(3,12,28,0.88)'; ctx.fillRect(hx,hy,85,22);
+    ctx.strokeStyle='rgba(0,230,118,0.5)'; ctx.lineWidth=1; ctx.strokeRect(hx,hy,85,22);
+    ctx.fillStyle='#00e676'; ctx.font='10px monospace';
+    ctx.fillText('HIP: '+hipAngle+'°',hx+6,hy+15);
+  }
+
+  // Hauteur CMJ
+  if (cur==='CMJ') {
+    var nose=kps[0], ankL=kps[15];
+    if (nose&&ankL&&nose.score>0.3) {
+      var ax=20;
+      ctx.beginPath(); ctx.moveTo(ax,nose.y); ctx.lineTo(ax,ankL.y);
+      ctx.strokeStyle='rgba(0,200,255,.35)'; ctx.lineWidth=1;
+      ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+      [[ax,nose.y],[ax,ankL.y]].forEach(function(p){
+        ctx.beginPath(); ctx.moveTo(p[0]-6,p[1]); ctx.lineTo(p[0]+6,p[1]);
+        ctx.strokeStyle='rgba(0,200,255,.7)'; ctx.lineWidth=1.5; ctx.stroke();
+      });
+      var my=(nose.y+ankL.y)/2;
+      ctx.fillStyle='rgba(3,12,28,.9)'; ctx.fillRect(ax-22,my-10,44,20);
+      ctx.strokeStyle='rgba(0,200,255,.4)'; ctx.lineWidth=1; ctx.strokeRect(ax-22,my-10,44,20);
+      ctx.fillStyle='#00c8ff'; ctx.font='10px monospace'; ctx.textAlign='center';
+      ctx.fillText('h(cm)',ax,my+4); ctx.textAlign='left';
+    }
+  }
 }
 
-function showResults(){
-  document.getElementById('resultsContent').style.display = 'flex';
-  document.getElementById('resultsContent').style.flexDirection = 'column';
-  document.getElementById('resultsContent').style.gap = '16px';
+function calcAngle(a, b, c) {
+  var v1 = {x: a.x-b.x, y: a.y-b.y};
+  var v2 = {x: c.x-b.x, y: c.y-b.y};
+  var dot = v1.x*v2.x + v1.y*v2.y;
+  var mag = Math.sqrt(v1.x*v1.x+v1.y*v1.y) * Math.sqrt(v2.x*v2.x+v2.y*v2.y);
+  return Math.round(Math.acos(Math.min(1, Math.abs(dot/mag))) * 180 / Math.PI);
 }
 
-// Drag & drop
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
-dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
-dz.addEventListener('drop',e=>{
-  e.preventDefault();dz.classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if(file && file.type.startsWith('video/')){
-    const dt = new DataTransfer();dt.items.add(file);
-    document.getElementById('videoInput').files = dt.files;
-    handleFile(document.getElementById('videoInput'));
+async function startPose(test) {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  var vid = document.getElementById('v-'+test);
+  var cv  = document.getElementById('c-'+test);
+  if (!vid || !cv) return;
+
+  // Badge LIVE
+  var badge = document.querySelector('#vb-'+test+' .live-b');
+  if (badge) badge.style.display = 'flex';
+
+  if (!detector) {
+    var ok = await initDetector();
+    if (!ok) return;
+  }
+  detectLoop(vid, cv);
+}
+
+// ─── FONCTIONS UI ───────────────────────────────────────
+function setTest(t) {
+  cur = t;
+  ['CMJ','SLS','DVJ'].forEach(function(x) {
+    document.getElementById('tb-'+x).className = 'tbtn'+(x===t?' sel':'');
+    document.getElementById('z-'+x).style.display = x===t?'block':'none';
+  });
+  document.getElementById('ulabel').textContent = 'Upload vidéo — '+t;
+  checkRdy();
+}
+
+function onFile(ev, test) {
+  var f = ev.target.files[0];
+  if (!f) return;
+  var url = URL.createObjectURL(f);
+  var vid = document.getElementById('v-'+test);
+  vid.src = url;
+  document.getElementById('vb-'+test).className = 'vid-box show';
+  document.getElementById('vn-'+test).textContent = f.name.substring(0,22);
+  document.getElementById('vs-'+test).textContent = (f.size/1024/1024).toFixed(1)+' MB';
+  vid.onloadedmetadata = function() {
+    var d = Math.floor(vid.duration);
+    document.getElementById('vd-'+test).textContent = Math.floor(d/60)+':'+(d%60+'').padStart(2,'0');
+  };
+  vid.onloadeddata = function() { startPose(test); };
+  rdy[test] = true;
+  checkRdy();
+}
+
+function onFileSide(ev, test, side) {
+  var f = ev.target.files[0]; if (!f) return;
+  var key = test+'-'+side;
+  document.getElementById('bz-'+key).classList.add('loaded');
+  document.getElementById('ok-'+key).style.display = 'block';
+  document.getElementById('on-'+key).textContent = f.name.substring(0,18);
+  rdy[key] = true; checkRdy();
+}
+
+function checkRdy() {
+  var ok = false;
+  if (cur==='CMJ') ok = !!rdy['CMJ'];
+  else if (cur==='SLS') ok = !!(rdy['SLS-R']&&rdy['SLS-L']);
+  else if (cur==='DVJ') ok = !!(rdy['DVJ-R']&&rdy['DVJ-L']);
+  document.getElementById('lbtn').disabled = !ok;
+}
+
+var saveOn = false;
+function toggleSave() {
+  saveOn = !saveOn;
+  document.getElementById('tog').className = 'tog'+(saveOn?' on':'');
+  document.getElementById('sfields').style.display = saveOn?'block':'none';
+}
+
+window.addEventListener('load', function() {
+  var dz = document.querySelector('#z-CMJ .upzone');
+  var inp = document.getElementById('f-CMJ');
+  if(dz && inp) {
+    dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='var(--cyan)';});
+    dz.addEventListener('dragleave',function(){dz.style.borderColor='rgba(0,200,255,0.3)';});
+    dz.addEventListener('drop',function(e){
+      e.preventDefault();dz.style.borderColor='rgba(0,200,255,0.3)';
+      var f=e.dataTransfer.files[0];
+      if(f&&f.type.startsWith('video/')){
+        var dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;
+        onFile({target:{files:inp.files}},'CMJ');
+      }
+    });
   }
 });
 </script>
+
+<script>
+function onFile(ev, test) {
+  var f = ev.target.files[0];
+  if (!f) return;
+  var url = URL.createObjectURL(f);
+  var vid = document.getElementById('v-'+test);
+  vid.src = url;
+  var box = document.getElementById('vb-'+test);
+  box.className = 'vid-box show';
+  document.getElementById('vn-'+test).textContent = f.name.substring(0,22);
+  document.getElementById('vs-'+test).textContent = (f.size/1024/1024).toFixed(1)+' MB';
+  vid.onloadedmetadata = function() {
+    var d = Math.floor(vid.duration);
+    document.getElementById('vd-'+test).textContent = Math.floor(d/60)+':'+(d%60+'').padStart(2,'0');
+  };
+  vid.onloadeddata = function() {
+    startPose(test);
+  };
+  rdy[test] = true;
+  checkRdy();
+}
+
+function onFileSide(ev, test, side) {
+  var f = ev.target.files[0];
+  if (!f) return;
+  var key = test+'-'+side;
+  document.getElementById('bz-'+key).classList.add('loaded');
+  document.getElementById('ok-'+key).style.display = 'block';
+  document.getElementById('on-'+key).textContent = f.name.substring(0,18);
+  rdy[key] = true;
+  checkRdy();
+}
+
+function checkRdy() {
+  var ok = false;
+  if (cur==='CMJ') ok = !!rdy['CMJ'];
+  else if (cur==='SLS') ok = !!(rdy['SLS-R'] && rdy['SLS-L']);
+  else if (cur==='DVJ') ok = !!(rdy['DVJ-R'] && rdy['DVJ-L']);
+  document.getElementById('lbtn').disabled = !ok;
+}
+
+var saveOn = false;
+function toggleSave() {
+  saveOn = !saveOn;
+  document.getElementById('tog').className = 'tog' + (saveOn?' on':'');
+  document.getElementById('sfields').style.display = saveOn ? 'block' : 'none';
+}
+
+function launch() {
+  var btn = document.getElementById('lbtn');
+  btn.disabled = true;
+  btn.textContent = 'Analyse en cours...';
+  document.getElementById('prog').className = 'prog show';
+  document.getElementById('emp').style.display = 'none';
+  var steps = ['p1','p2','p3','p4','p5'];
+  var pcts = [20,40,60,80,100];
+  steps.forEach(function(s,i) {
+    setTimeout(function() {
+      if (i>0) document.getElementById(steps[i-1]).className='ps done';
+      document.getElementById(s).className='ps active';
+      document.getElementById('pbf').style.width=pcts[i]+'%';
+      if (i===4) {
+        setTimeout(function() {
+          document.getElementById(s).className='ps done';
+          document.getElementById('res').style.display='block';
+          btn.textContent='✓ Analyse terminée';
+        }, 800);
+      }
+    }, i*1200);
+  });
+}
+
+// ═══ EXPORT PDF PROFESSIONNEL ═══
+function exportPDF() {
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+  var timeStr = today.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+  var testName = cur === 'CMJ' ? 'Counter Movement Jump (CMJ)' : cur === 'SLS' ? 'Single Leg Squat (SLS)' : 'Drop Vertical Jump (DVJ)';
+
+  var pdfWin = window.open('','_blank');
+  pdfWin.document.write(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Rapport VERTEXTRACK — ${cur}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&family=JetBrains+Mono:wght@400&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow',sans-serif;background:#fff;color:#1a1a2e;font-size:13px;line-height:1.6;}
+  
+  /* HEADER */
+  .header{background:#03080f;color:#fff;padding:28px 40px;display:flex;justify-content:space-between;align-items:center;}
+  .logo-area{display:flex;align-items:center;gap:12px;}
+  .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:3px;color:#fff;}
+  .logo-text span{color:#00c8ff;}
+  .logo-sub{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+  .header-right{text-align:right;}
+  .report-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;color:#00c8ff;letter-spacing:2px;text-transform:uppercase;}
+  .report-date{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;font-family:'JetBrains Mono',monospace;}
+
+  /* PATIENT BANNER */
+  .patient-banner{background:#f8f9fc;border-bottom:3px solid #00c8ff;padding:16px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .pi-label{font-size:9px;font-weight:600;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+  .pi-value{font-size:14px;font-weight:700;color:#1a1a2e;}
+
+  /* CONTENT */
+  .content{padding:28px 40px;}
+
+  /* SECTION TITLE */
+  .sec-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:1px;color:#03080f;border-bottom:2px solid #00c8ff;padding-bottom:6px;margin-bottom:16px;margin-top:24px;display:flex;align-items:center;gap:8px;}
+  .sec-num{background:#00c8ff;color:#03080f;font-size:11px;font-weight:900;padding:2px 8px;letter-spacing:1px;}
+
+  /* METRIC GRID */
+  .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+  .metric-card{border:1px solid #e0e4ee;padding:14px 18px;border-radius:2px;}
+  .mc-label{font-size:9px;font-weight:700;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+  .mc-value{font-size:28px;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:#03080f;line-height:1;}
+  .mc-unit{font-size:11px;color:#888;margin-top:2px;}
+  .mc-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;letter-spacing:1px;margin-top:6px;}
+  .badge-ok{background:#e6f9f0;color:#00804d;border:1px solid #00c85a;}
+  .badge-warn{background:#fff8e6;color:#996600;border:1px solid #f59e0b;}
+  .badge-danger{background:#fef2f2;color:#cc0000;border:1px solid #ef5350;}
+
+  /* BAR CHART */
+  .bar-section{margin-bottom:20px;}
+  .bar-row{display:flex;align-items:center;margin-bottom:8px;gap:12px;}
+  .bar-label{font-size:11px;color:#555;width:160px;flex-shrink:0;}
+  .bar-track{flex:1;height:8px;background:#eef0f5;border-radius:4px;overflow:hidden;}
+  .bar-fill{height:8px;border-radius:4px;}
+  .bar-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;width:50px;text-align:right;color:#1a1a2e;}
+
+  /* RISK GAUGE */
+  .risk-section{border:1px solid #e0e4ee;padding:20px;margin-bottom:20px;display:grid;grid-template-columns:1fr 2fr;gap:20px;align-items:center;}
+  .risk-score-big{text-align:center;}
+  .risk-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;line-height:1;}
+  .risk-val.ok{color:#00804d;}
+  .risk-val.warn{color:#996600;}
+  .risk-val.danger{color:#cc0000;}
+  .risk-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-top:4px;}
+  .risk-details .rd-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}
+  .risk-details .rd-row:last-child{border:none;}
+  .rd-k{color:#666;}
+  .rd-v{font-weight:700;color:#1a1a2e;}
+
+  /* SHAP */
+  .shap-grid{display:grid;gap:8px;margin-bottom:20px;}
+  .shap-row{display:flex;align-items:center;gap:10px;}
+  .shap-feat{font-family:'JetBrains Mono',monospace;font-size:10px;color:#555;width:160px;flex-shrink:0;}
+  .shap-bg{flex:1;height:6px;background:#eef0f5;border-radius:3px;overflow:hidden;}
+  .shap-fill{height:6px;border-radius:3px;}
+  .shap-v{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;width:40px;text-align:right;}
+
+  /* DISCLAIMER */
+  .disclaimer{background:#fffbf0;border-left:4px solid #f59e0b;padding:14px 18px;margin:20px 0;font-size:11px;line-height:1.7;color:#555;}
+  .disclaimer strong{color:#1a1a2e;}
+
+  /* FOOTER */
+  .pdf-footer{background:#f8f9fc;border-top:1px solid #e0e4ee;padding:14px 40px;display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+  .pdf-footer-left{font-size:10px;color:#888;line-height:1.6;}
+  .pdf-footer-right{font-size:10px;color:#888;text-align:right;}
+
+  @media print {
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .no-print{display:none;}
+    @page{margin:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-area">
+    <svg width="32" height="32" viewBox="0 0 32 32"><polygon points="16,2 30,10 30,22 16,30 2,22 2,10" fill="none" stroke="#00c8ff" stroke-width="1.5"/><circle cx="16" cy="16" r="4" fill="#00c8ff"/></svg>
+    <div>
+      <div class="logo-text">VERTEX<span>TRACK</span></div>
+      <div class="logo-sub">Analyse Biomécanique par IA</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="report-title">Rapport d'Analyse Biomécanique</div>
+    <div class="report-date">${dateStr} — ${timeStr}</div>
+  </div>
+</div>
+
+<!-- PATIENT BANNER -->
+<div class="patient-banner">
+  <div><div class="pi-label">Test réalisé</div><div class="pi-value">${testName}</div></div>
+  <div><div class="pi-label">Athlète</div><div class="pi-value" id="r-name">—</div></div>
+  <div><div class="pi-label">Sport / Club</div><div class="pi-value" id="r-club">—</div></div>
+  <div><div class="pi-label">Jambe dominante</div><div class="pi-value" id="r-leg">—</div></div>
+</div>
+
+<div class="content">
+
+  <!-- PERFORMANCE -->
+  <div class="sec-title"><span class="sec-num">01</span> Performance — Saut Vertical CMJ</div>
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="mc-label">Hauteur de saut</div>
+      <div class="mc-value">38.4</div>
+      <div class="mc-unit">centimètres</div>
+      <div class="mc-badge badge-ok">BON</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-label">Temps de vol</div>
+      <div class="mc-value">0.558</div>
+      <div class="mc-unit">secondes</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-label">Vitesse décollage</div>
+      <div class="mc-value">2.73</div>
+      <div class="mc-unit">m/s</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-label">Déplacement COM</div>
+      <div class="mc-value">37.8</div>
+      <div class="mc-unit">centimètres</div>
+    </div>
+  </div>
+
+  <!-- DIAGNOSTIC -->
+  <div class="sec-title"><span class="sec-num">02</span> Diagnostic Neuromusculaire</div>
+  <div class="bar-section">
+    <div class="bar-row">
+      <div class="bar-label">FPPA gauche</div>
+      <div class="bar-track"><div class="bar-fill" style="width:28%;background:#f59e0b;"></div></div>
+      <div class="bar-val">14.2°</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">FPPA droite</div>
+      <div class="bar-track"><div class="bar-fill" style="width:24%;background:#00c8ff;"></div></div>
+      <div class="bar-val">11.8°</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Flexion genou max</div>
+      <div class="bar-track"><div class="bar-fill" style="width:68%;background:#00c8ff;"></div></div>
+      <div class="bar-val">68°</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">ROM hanche</div>
+      <div class="bar-track"><div class="bar-fill" style="width:55%;background:#00e676;"></div></div>
+      <div class="bar-val">42°</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">LSI symétrie</div>
+      <div class="bar-track"><div class="bar-fill" style="width:88%;background:#00e676;"></div></div>
+      <div class="bar-val" style="color:#00804d;">0.88</div>
+    </div>
+  </div>
+
+  <!-- RISQUE LCA -->
+  <div class="sec-title"><span class="sec-num">03</span> Profil de Risque LCA</div>
+  <div class="risk-section">
+    <div class="risk-score-big">
+      <div class="risk-val ok">LOW</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#555;margin-top:4px;">0.18 / 1.00</div>
+      <div class="risk-label">Score Random Forest</div>
+    </div>
+    <div class="risk-details">
+      <div class="rd-row"><span class="rd-k">Modèle</span><span class="rd-v">Random Forest (LOSO-CV)</span></div>
+      <div class="rd-row"><span class="rd-k">AUC-ROC</span><span class="rd-v">0.801</span></div>
+      <div class="rd-row"><span class="rd-k">Seuil risque élevé</span><span class="rd-v">> 0.65</span></div>
+      <div class="rd-row"><span class="rd-k">Interprétation</span><span class="rd-v" style="color:#00804d;">Profil biomécanique favorable</span></div>
+    </div>
+  </div>
+
+  <!-- SHAP -->
+  <div class="sec-title"><span class="sec-num">04</span> Facteurs SHAP — Explicabilité IA</div>
+  <div class="shap-grid">
+    <div class="shap-row"><div class="shap-feat">fppa_angular_vel</div><div class="shap-bg"><div class="shap-fill" style="width:88%;background:#ef5350;"></div></div><div class="shap-v" style="color:#cc0000;">+0.31</div></div>
+    <div class="shap-row"><div class="shap-feat">knee_rom_sls</div><div class="shap-bg"><div class="shap-fill" style="width:65%;background:#f59e0b;"></div></div><div class="shap-v" style="color:#996600;">+0.22</div></div>
+    <div class="shap-row"><div class="shap-feat">hip_angle_cmj</div><div class="shap-bg"><div class="shap-fill" style="width:45%;background:#f59e0b;"></div></div><div class="shap-v" style="color:#996600;">+0.15</div></div>
+    <div class="shap-row"><div class="shap-feat">lsi_hop</div><div class="shap-bg"><div class="shap-fill" style="width:30%;background:#00c8ff;"></div></div><div class="shap-v">-0.11</div></div>
+    <div class="shap-row"><div class="shap-feat">jump_height</div><div class="shap-bg"><div class="shap-fill" style="width:18%;background:#00e676;"></div></div><div class="shap-v" style="color:#00804d;">-0.07</div></div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <strong>⚠ Avertissement médical —</strong> Ce rapport présente un <strong>profil de similarité biomécanique</strong> généré par un modèle d'apprentissage automatique entraîné sur des données historiques. Il ne constitue <strong>pas un diagnostic médical</strong> et ne remplace pas l'évaluation d'un professionnel de santé qualifié (médecin du sport, kinésithérapeute). Toute décision thérapeutique ou d'entraînement doit être prise en concertation avec un spécialiste.
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="pdf-footer">
+  <div class="pdf-footer-left">
+    <strong>VERTEXTRACK</strong> — Plateforme d'Analyse Biomécanique par IA<br>
+    Université Hassan 1er · Settat · Master TDTS 2025–2026<br>
+    Supervisé par Dr. Ali Benaissa
+  </div>
+  <div class="pdf-footer-right">
+    Généré le ${dateStr} à ${timeStr}<br>
+    Test : ${testName}<br>
+    <span style="color:#00c8ff;font-weight:700;">vertextrack.streamlit.app</span>
+  </div>
+</div>
+
+<div class="no-print" style="text-align:center;padding:20px;background:#f0f0f0;">
+  <button onclick="window.print()" style="background:#03080f;color:#fff;border:none;padding:12px 32px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;">
+    🖨️ Imprimer / Sauvegarder en PDF
+  </button>
+  <button onclick="window.close()" style="background:#666;color:#fff;border:none;padding:12px 24px;font-size:14px;cursor:pointer;margin-left:8px;">
+    Fermer
+  </button>
+</div>
+
+</body>
+</html>`);
+  pdfWin.document.close();
+}
+
+// ═══ EXPORT VIDÉO AVEC LANDMARKS ═══
+// Dessiner landmarks sur canvas offscreen (pour export vidéo)
+function drawPoseOnCanvas(ctx, kps, W, H) {
+  var hip=kps[11], knee=kps[13], ank=kps[15];
+  var fppa=180, badMov=false;
+  if (hip&&knee&&ank&&hip.score>0.4&&knee.score>0.4&&ank.score>0.4) {
+    var v1={x:hip.x-knee.x,y:hip.y-knee.y};
+    var v2={x:ank.x-knee.x,y:ank.y-knee.y};
+    var d=v1.x*v2.x+v1.y*v2.y;
+    var m=Math.sqrt(v1.x*v1.x+v1.y*v1.y)*Math.sqrt(v2.x*v2.x+v2.y*v2.y);
+    fppa=Math.round(Math.acos(Math.min(1,Math.abs(d/m)))*180/Math.PI);
+    badMov=fppa<160;
+  }
+  var EDGES=[
+    [5,6,'torso'],[5,7,'arm'],[7,9,'arm'],[6,8,'arm'],[8,10,'arm'],
+    [5,11,'torso'],[6,12,'torso'],[11,12,'torso'],
+    [11,13,'leg'],[13,15,'leg'],[12,14,'leg'],[14,16,'leg']
+  ];
+  var COL={torso:'rgba(0,200,255,.9)',arm:'rgba(0,200,255,.9)',leg:badMov?'rgba(255,60,60,.9)':'rgba(0,230,118,.9)'};
+  EDGES.forEach(function(e){
+    var a=kps[e[0]],b=kps[e[1]];
+    if(!a||!b||a.score<0.3||b.score<0.3)return;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+    ctx.strokeStyle=COL[e[2]];ctx.lineWidth=Math.max(2,W/320);ctx.stroke();
+  });
+  kps.forEach(function(kp,i){
+    if(i<=4||kp.score<0.3)return;
+    var isLeg=i>=11,r=Math.max(4,W/160);
+    var ptC=isLeg&&badMov?'#ff3c3c':isLeg?'#00e676':'#00c8ff';
+    var glC=isLeg&&badMov?'rgba(255,60,60,.18)':isLeg?'rgba(0,230,118,.15)':'rgba(0,200,255,.15)';
+    ctx.beginPath();ctx.arc(kp.x,kp.y,r*2,0,Math.PI*2);ctx.fillStyle=glC;ctx.fill();
+    ctx.beginPath();ctx.arc(kp.x,kp.y,r,0,Math.PI*2);ctx.fillStyle=ptC;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1;ctx.stroke();
+  });
+  if(hip&&knee&&ank&&hip.score>0.4&&knee.score>0.4&&ank.score>0.4){
+    var ang=fppa,fs=Math.max(11,W/58),lw=fs*9;
+    ctx.beginPath();ctx.moveTo(hip.x,hip.y);ctx.lineTo(knee.x,knee.y);
+    ctx.strokeStyle='rgba(255,50,50,.9)';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.beginPath();ctx.arc(knee.x,knee.y,16,0,Math.PI*2);
+    ctx.strokeStyle=badMov?'rgba(255,60,60,.9)':'rgba(245,158,11,.9)';ctx.lineWidth=2.5;ctx.stroke();
+    var lx=knee.x+18,ly=knee.y-13;if(lx+lw>W)lx=knee.x-lw-8;
+    ctx.fillStyle='rgba(3,12,28,.92)';ctx.fillRect(lx,ly,lw,24);
+    ctx.strokeStyle=badMov?'rgba(255,60,60,.7)':'rgba(245,158,11,.6)';ctx.lineWidth=1;ctx.strokeRect(lx,ly,lw,24);
+    ctx.fillStyle=badMov?'#ff3c3c':'#f59e0b';ctx.font='bold '+fs+'px monospace';
+    ctx.fillText('FPPA: '+ang+'°',lx+6,ly+16);
+    if(badMov){
+      ctx.fillStyle='rgba(255,60,60,.15)';ctx.fillRect(knee.x-65,knee.y-52,130,22);
+      ctx.strokeStyle='rgba(255,60,60,.7)';ctx.lineWidth=1;ctx.strokeRect(knee.x-65,knee.y-52,130,22);
+      ctx.fillStyle='#ff3c3c';ctx.font='bold 10px monospace';ctx.textAlign='center';
+      ctx.fillText('⚠ VALGUS GENOU',knee.x,knee.y-38);ctx.textAlign='left';
+    }
+  }
+}
+
+async function exportAnnotatedVideo() {
+  var vid = document.getElementById('v-CMJ');
+  var btn = document.getElementById('exportVidBtn');
+  var prog = document.getElementById('exportProgress');
+  var msg  = document.getElementById('exportMsg');
+  var bar  = document.getElementById('exportBar');
+
+  if (!vid || !vid.src || vid.src === window.location.href) {
+    alert('Uploadez une vidéo CMJ d\'abord.');
+    return;
+  }
+
+  // Vérifier support MediaRecorder
+  if (!window.MediaRecorder) {
+    alert('Votre navigateur ne supporte pas l\'export vidéo. Utilisez Chrome.');
+    return;
+  }
+
+  prog.style.display = 'block';
+  msg.textContent = 'Chargement du modèle IA...';
+  bar.style.width = '5%';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+
+  // Initialiser détecteur si pas encore fait
+  if (!detector) {
+    try {
+      await initDetector();
+    } catch(e) {
+      msg.textContent = '⚠ Erreur modèle: ' + e.message;
+      btn.disabled = false; btn.style.opacity = '1';
+      return;
+    }
+  }
+
+  // Canvas offscreen pour dessiner vidéo + landmarks
+  var offCv = document.createElement('canvas');
+  var offCtx = offCv.getContext('2d');
+
+  // Attendre métadonnées vidéo
+  await new Promise(function(resolve) {
+    if (vid.readyState >= 2) { resolve(); return; }
+    vid.addEventListener('loadeddata', resolve, {once:true});
+  });
+
+  var W = vid.videoWidth  || vid.clientWidth  || 640;
+  var H = vid.videoHeight || vid.clientHeight || 480;
+  offCv.width = W; offCv.height = H;
+
+  var duration = vid.duration;
+  var fps = 25;
+  var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ? 'video/webm;codecs=vp9' : 'video/webm';
+
+  var stream   = offCv.captureStream(fps);
+  var recorder = new MediaRecorder(stream, {mimeType: mimeType, videoBitsPerSecond: 2500000});
+  var chunks   = [];
+
+  recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+
+  recorder.onstop = function() {
+    var blob = new Blob(chunks, {type: mimeType});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url;
+    a.download = 'VERTEXTRACK_' + cur + '_landmarks.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    btn.disabled = false; btn.style.opacity = '1';
+    msg.textContent = '✓ Vidéo téléchargée avec succès !';
+    bar.style.width = '100%'; bar.style.background = 'var(--green)';
+    setTimeout(function() {
+      prog.style.display = 'none';
+      bar.style.background = 'var(--cyan)';
+      bar.style.width = '0%';
+    }, 4000);
+  };
+
+  // Mettre la vidéo en pause et revenir au début
+  vid.pause();
+  vid.currentTime = 0;
+  await new Promise(function(r) {
+    vid.onseeked = r;
+    setTimeout(r, 500);
+  });
+
+  msg.textContent = 'Enregistrement en cours...';
+  bar.style.width = '10%';
+  recorder.start(100); // collecter des chunks toutes les 100ms
+
+  var frameInterval = 1 / fps;
+  var currentTime   = 0;
+
+  // Boucle frame par frame
+  while (currentTime <= duration) {
+    // Aller à la frame
+    vid.currentTime = currentTime;
+    await new Promise(function(r) {
+      vid.onseeked = r;
+      setTimeout(r, 80); // max 80ms par frame
+    });
+
+    // Dessiner la frame vidéo
+    offCtx.clearRect(0, 0, W, H);
+    offCtx.drawImage(vid, 0, 0, W, H);
+
+    // Détecter pose et dessiner landmarks
+    try {
+      var poses = await detector.estimatePoses(offCv);
+      if (poses && poses.length > 0) {
+        drawPoseOnCanvas(offCtx, poses[0].keypoints, W, H);
+      }
+    } catch(e) {}
+
+    // Mise à jour barre de progression
+    var pct = Math.min(95, Math.round((currentTime / duration) * 90) + 10);
+    bar.style.width = pct + '%';
+    msg.textContent = 'Export... ' + Math.round(currentTime) + 's / ' + Math.round(duration) + 's  (' + pct + '%)';
+
+    currentTime += frameInterval;
+
+    // Laisser respirer le navigateur
+    await new Promise(function(r) { setTimeout(r, 0); });
+  }
+
+  recorder.stop();
+  msg.textContent = 'Finalisation...';
+  bar.style.width = '98%';
+}
+// DRAG & DROP
+window.addEventListener('load', function() {
+  var dz = document.querySelector('#z-CMJ .upzone');
+  var inp = document.getElementById('f-CMJ');
+  if (dz && inp) {
+    dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor='var(--cyan)'; });
+    dz.addEventListener('dragleave', function() { dz.style.borderColor='rgba(0,200,255,0.3)'; });
+    dz.addEventListener('drop', function(e) {
+      e.preventDefault(); dz.style.borderColor='rgba(0,200,255,0.3)';
+      var f = e.dataTransfer.files[0];
+      if (f && f.type.startsWith('video/')) {
+        var dt = new DataTransfer(); dt.items.add(f); inp.files = dt.files;
+        onFile({target:{files:inp.files}}, 'CMJ');
+      }
+    });
+  }
+});
+</script>
+
 </body>
 </html>
