@@ -193,7 +193,7 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
           <div class="pipe-num">01</div>
           <div class="pipe-content">
             <h3>Acquisition vidéo</h3>
-            <p>Vidéo frontale 1080p à 60fps. Tests supportés : CMJ (Counter-Movement Jump), SLS (Single Leg Squat), DVJ (Drop Vertical Jump). Positionnement caméra standardisé à 2m de distance.</p>
+            <p>Vidéo 1080p à 60fps. Tests supportés : CMJ (Counter-Movement Jump), SJ (Squat Jump), DVJ (Drop Vertical Jump). Positionnement caméra standardisé à 2m de distance.</p>
           </div>
           <div class="pipe-badge">60fps · 1080p</div>
         </div>
@@ -434,17 +434,17 @@ shap.summary_plot(shap_values[<span class="nm">1</span>], X_athlete, feature_nam
           </div>
         </div>
         <div class="test-card">
-          <div class="test-icon">🦵</div>
-          <div class="test-name">SLS</div>
-          <div class="test-full">Single Leg Squat</div>
+          <div class="test-icon">⬇</div>
+          <div class="test-name">SJ</div>
+          <div class="test-full">Squat Jump</div>
           <div class="test-desc">
-            Squat unipodale en vue frontale. Révèle les asymétries neuromusculaires
-            et le contrôle moteur du membre inférieur. Protocole 5 répétitions par jambe.
+            Saut vertical depuis position squat statique (sans contre-mouvement). Vues sagittale + frontale.
+            Isole la composante concentrique pure et détecte les déficits de symétrie bilatérale.
           </div>
           <div class="test-metrics">
-            <div class="test-metric">→ FPPA moyen et max</div>
-            <div class="test-metric">→ Inclinaison tronc</div>
-            <div class="test-metric">→ LSI genou/hanche</div>
+            <div class="test-metric">→ Hauteur de saut SJ (cm)</div>
+            <div class="test-metric">→ ROM flexion genou au décollage</div>
+            <div class="test-metric">→ Valgus dynamique (vue frontale)</div>
           </div>
         </div>
         <div class="test-card">
@@ -518,7 +518,7 @@ shap.summary_plot(shap_values[<span class="nm">1</span>], X_athlete, feature_nam
     <div class="cta-banner">
       <div class="cta-text">
         <h3>Tester sur votre vidéo</h3>
-        <p>Pipeline complet disponible — uploadez une vidéo frontale CMJ, SLS ou DVJ.</p>
+        <p>Pipeline complet disponible — uploadez une vidéo frontale CMJ, SJ ou DVJ.</p>
       </div>
       <a class="btn-filled" href="analyse.html">Lancer l'analyse →</a>
     </div>

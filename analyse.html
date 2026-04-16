@@ -181,18 +181,25 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
       <div class="tbtn-desc">Counter Movement Jump</div>
     </div>
 
-    <div class="tbtn" id="tb-SLS" onclick="setTest('SLS')">
+    <div class="tbtn" id="tb-SJ" onclick="setTest('SJ')">
       <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-        <circle cx="22" cy="6" r="5" stroke="#00c8ff" stroke-width="2"/>
-        <path d="M22 11v8" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M22 15l-8 4M22 15l8 4" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
-        <path d="M20 19l-4 9-3 9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M24 19l5 7" stroke="rgba(0,200,255,.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2"/>
-        <path d="M13 24 A6 6 0 0 1 19 28" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
-        <line x1="6" y1="37" x2="34" y2="37" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <!-- tête -->
+        <circle cx="22" cy="5" r="4" stroke="#00c8ff" stroke-width="2"/>
+        <!-- tronc court (position squat) -->
+        <path d="M22 9v9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- bras le long du corps -->
+        <path d="M22 13l-5 7M22 13l5 7" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
+        <!-- cuisses (fléchies, genoux écartés) -->
+        <path d="M22 18l-8 9M22 18l8 9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- jambes (tibia vers le bas) -->
+        <path d="M14 27l2 9M30 27l-2 9" stroke="#00c8ff" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- angle genou -->
+        <path d="M14 27 A5 5 0 0 0 19 31" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+        <!-- sol -->
+        <line x1="8" y1="38" x2="38" y2="38" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      <div class="tbtn-name">SLS</div>
-      <div class="tbtn-desc">Single Leg Squat</div>
+      <div class="tbtn-name">SJ</div>
+      <div class="tbtn-desc">Squat Jump — Vue SAG + FRONT</div>
     </div>
 
     <div class="tbtn" id="tb-DVJ" onclick="setTest('DVJ')">
@@ -207,7 +214,7 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
         <line x1="3" y1="37" x2="41" y2="37" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
       </svg>
       <div class="tbtn-name">DVJ</div>
-      <div class="tbtn-desc">Drop Vertical Jump</div>
+      <div class="tbtn-desc">Drop Vertical Jump — Vue FRONT + SAG</div>
     </div>
 
   </div>
@@ -244,31 +251,31 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
     </div>
   </div>
 
-  <!-- SLS -->
-  <div id="z-SLS" style="display:none">
+  <!-- SJ -->
+  <div id="z-SJ" style="display:none">
     <div class="bi-grid">
       <div>
-        <div class="bi-side-label">SLS — Côté Droit</div>
-        <div class="bi-zone" id="bz-SLS-R">
+        <div class="bi-side-label">SJ — Vue Sagittale</div>
+        <div class="bi-zone" id="bz-SJ-R">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">SLS Droit</div>
-          <label class="bi-choose" for="f-SLS-R">Choisir</label>
-          <input type="file" id="f-SLS-R" accept="video/*" style="display:none" onchange="onFileSide(event,'SLS','R')"/>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">SJ — Sagittale</div>
+          <label class="bi-choose" for="f-SJ-R">Choisir</label>
+          <input type="file" id="f-SJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','R')"/>
         </div>
-        <div class="bi-ok" id="ok-SLS-R">✓ <span id="on-SLS-R"></span></div>
+        <div class="bi-ok" id="ok-SJ-R">✓ <span id="on-SJ-R"></span></div>
       </div>
       <div>
-        <div class="bi-side-label">SLS — Côté Gauche</div>
-        <div class="bi-zone" id="bz-SLS-L">
+        <div class="bi-side-label">SJ — Vue Frontale</div>
+        <div class="bi-zone" id="bz-SJ-L">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">SLS Gauche</div>
-          <label class="bi-choose" for="f-SLS-L">Choisir</label>
-          <input type="file" id="f-SLS-L" accept="video/*" style="display:none" onchange="onFileSide(event,'SLS','L')"/>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0">SJ — Frontale</div>
+          <label class="bi-choose" for="f-SJ-L">Choisir</label>
+          <input type="file" id="f-SJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','L')"/>
         </div>
-        <div class="bi-ok" id="ok-SLS-L">✓ <span id="on-SLS-L"></span></div>
+        <div class="bi-ok" id="ok-SJ-L">✓ <span id="on-SJ-L"></span></div>
       </div>
     </div>
-    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;"><span style="color:var(--cyan);font-weight:600;">ℹ Vue frontale obligatoire</span> — Les deux vidéos permettent le calcul du LSI.</div>
+    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;"><span style="color:var(--cyan);font-weight:600;">ℹ Vue SAG + FRONT obligatoires</span> — La vue sagittale mesure la hauteur, la vue frontale détecte le valgus dynamique.</div>
   </div>
 
   <!-- DVJ -->
@@ -639,7 +646,7 @@ async function startPose(test) {
 // ─── FONCTIONS UI ───────────────────────────────────────
 function setTest(t) {
   cur = t;
-  ['CMJ','SLS','DVJ'].forEach(function(x) {
+  ['CMJ','SJ','DVJ'].forEach(function(x) {
     document.getElementById('tb-'+x).className = 'tbtn'+(x===t?' sel':'');
     document.getElementById('z-'+x).style.display = x===t?'block':'none';
   });
@@ -677,7 +684,7 @@ function onFileSide(ev, test, side) {
 function checkRdy() {
   var ok = false;
   if (cur==='CMJ') ok = !!rdy['CMJ'];
-  else if (cur==='SLS') ok = !!(rdy['SLS-R']&&rdy['SLS-L']);
+  else if (cur==='SJ') ok = !!(rdy['SJ-R']&&rdy['SJ-L']);
   else if (cur==='DVJ') ok = !!(rdy['DVJ-R']&&rdy['DVJ-L']);
   document.getElementById('lbtn').disabled = !ok;
 }
@@ -743,7 +750,7 @@ function onFileSide(ev, test, side) {
 function checkRdy() {
   var ok = false;
   if (cur==='CMJ') ok = !!rdy['CMJ'];
-  else if (cur==='SLS') ok = !!(rdy['SLS-R'] && rdy['SLS-L']);
+  else if (cur==='SJ') ok = !!(rdy['SJ-R'] && rdy['SJ-L']);
   else if (cur==='DVJ') ok = !!(rdy['DVJ-R'] && rdy['DVJ-L']);
   document.getElementById('lbtn').disabled = !ok;
 }
@@ -784,7 +791,7 @@ function exportPDF() {
   var today = new Date();
   var dateStr = today.toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
   var timeStr = today.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
-  var testName = cur === 'CMJ' ? 'Counter Movement Jump (CMJ)' : cur === 'SLS' ? 'Single Leg Squat (SLS)' : 'Drop Vertical Jump (DVJ)';
+  var testName = cur === 'CMJ' ? 'Counter Movement Jump (CMJ)' : cur === 'SJ' ? 'Squat Jump (SJ)' : 'Drop Vertical Jump (DVJ)';
 
   var pdfWin = window.open('','_blank');
   pdfWin.document.write(`<!DOCTYPE html>
