@@ -797,48 +797,8 @@ height:48px;gap:0;position:sticky;top:64px;z-index:90;">
 </footer>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js">
-function bcSet(step) {
-  for(var i=1; i<=4; i++) {
-    var el = document.getElementById('bc-'+i);
-    if(!el) continue;
-    el.className = 'bc-step';
-    if(i < step) el.classList.add('done');
-    else if(i === step) el.classList.add('active');
-  }
-}
-
-function bcGo(step) {
-  if(step === 1) {
-    document.getElementById('res').style.display = 'none';
-    document.getElementById('emp').style.display = 'block';
-    document.getElementById('prog').className = 'prog';
-    bcSet(1);
-  }
-}
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js">
-function bcSet(step) {
-  for(var i=1; i<=4; i++) {
-    var el = document.getElementById('bc-'+i);
-    if(!el) continue;
-    el.className = 'bc-step';
-    if(i < step) el.classList.add('done');
-    else if(i === step) el.classList.add('active');
-  }
-}
-
-function bcGo(step) {
-  if(step === 1) {
-    document.getElementById('res').style.display = 'none';
-    document.getElementById('emp').style.display = 'block';
-    document.getElementById('prog').className = 'prog';
-    bcSet(1);
-  }
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
 
 <script>
 var cur = 'CMJ';
@@ -1149,26 +1109,6 @@ window.addEventListener('load', function() {
     });
   }
 });
-
-function bcSet(step) {
-  for(var i=1; i<=4; i++) {
-    var el = document.getElementById('bc-'+i);
-    if(!el) continue;
-    el.className = 'bc-step';
-    if(i < step) el.classList.add('done');
-    else if(i === step) el.classList.add('active');
-  }
-}
-
-function bcGo(step) {
-  if(step === 1) {
-    document.getElementById('res').style.display = 'none';
-    document.getElementById('emp').style.display = 'block';
-    document.getElementById('prog').className = 'prog';
-    bcSet(1);
-  }
-}
-
 </script>
 
 <script>
@@ -1462,48 +1402,6 @@ function exportPDF() {
 .wiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;}
 .ck-item{margin-bottom:8px;}
 .ck-item label{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.8);cursor:pointer;}
-
-.bc-step {
-  display:flex;align-items:center;gap:8px;
-  padding:0 20px;height:48px;cursor:pointer;
-  transition:all .2s;opacity:0.3;
-  border-bottom:2px solid transparent;
-}
-.bc-step.active {
-  opacity:1;
-  border-bottom:2px solid var(--cyan);
-}
-.bc-step.done {
-  opacity:0.7;
-  border-bottom:2px solid rgba(0,230,118,0.5);
-}
-.bc-step.active .bc-num {
-  background:var(--cyan);color:#03080f;
-}
-.bc-step.done .bc-num {
-  background:rgba(0,230,118,0.15);
-  color:#00e676;border:1px solid #00e676;
-}
-.bc-num {
-  width:22px;height:22px;border-radius:50%;
-  background:rgba(255,255,255,0.08);
-  color:rgba(255,255,255,0.4);
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:900;font-size:12px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-.bc-txt {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:700;font-size:13px;
-  text-transform:uppercase;letter-spacing:1px;
-  white-space:nowrap;
-}
-.bc-arrow {
-  color:rgba(255,255,255,0.15);
-  font-size:18px;margin-left:12px;
-}
-
 </style>
 </head>
 <body>
