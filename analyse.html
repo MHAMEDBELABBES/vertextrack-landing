@@ -391,18 +391,26 @@ height:48px;gap:0;position:sticky;top:64px;z-index:90;">
 
   </div>
   
-  <!-- BOUTON DÉMO -->
-  <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
-      Pas de vidéo disponible ?
-    </div>
-    <button onclick="loadDemo()" style="background:transparent;color:var(--cyan);border:1.5px solid rgba(0,200,255,0.4);padding:10px 28px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">
-      ▶ Voir un exemple de démonstration
-    </button>
-    <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:8px;">
-      Données fictives — Athlète USB · Basketball · 22 ans
-    </div>
-  </div>
+  
+<div style="text-align:center;margin-top:24px;
+padding-top:20px;
+border-top:1px solid rgba(255,255,255,0.06);">
+  <p style="font-size:11px;color:rgba(255,255,255,0.3);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:12px;">Pas de vidéo disponible ?</p>
+  <button id="demoBtn" onclick="loadDemo()"
+  style="background:transparent;color:#00c8ff;
+  border:1.5px solid rgba(0,200,255,0.4);
+  padding:10px 28px;font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;font-family:'Barlow',sans-serif;">
+    ▶ Voir un exemple de démonstration
+  </button>
+  <p style="font-size:10px;color:rgba(255,255,255,0.2);
+  margin-top:8px;">
+    Données fictives — Karim Amrani · USB · Basketball · 22 ans
+  </p>
+</div>
 
   <div class="wiz-actions" style="justify-content:flex-end;">
     <button class="wbtn" onclick="goStep(2)" id="btnNext1">Suivant →</button>
@@ -2016,139 +2024,138 @@ window.addEventListener('load', function() {
   }
 });
 
+
 function loadDemo() {
-  // Sélectionner CMJ
-  setTest('CMJ');
+  // Etape 1 : selectionner CMJ
+  cur = 'CMJ';
+  ['CMJ','SJ','DVJ'].forEach(function(x) {
+    var tb = document.getElementById('tb-'+x);
+    var zn = document.getElementById('z-'+x);
+    if(tb) tb.className = 'tbtn'+(x==='CMJ'?' sel':'');
+    if(zn) zn.style.display = x==='CMJ'?'block':'none';
+  });
 
-  // Remplir formulaire athlète
-  var inputs = document.querySelectorAll('.fi');
-  if(inputs[0]) inputs[0].value = 'Amrani';
-  if(inputs[1]) inputs[1].value = 'Karim';
-  if(inputs[2]) inputs[2].value = '22';
-  if(inputs[3]) inputs[3].value = 'USB';
-  var selects = document.querySelectorAll('.fs');
-  if(selects[0]) selects[0].value = 'Basketball';
-  if(selects[1]) selects[1].value = 'Droite';
+  // Etape 2 : marquer video prete
+  rdy['CMJ'] = true;
+  var lbtn = document.getElementById('lbtn');
+  if(lbtn) lbtn.disabled = false;
 
-  // Afficher badge DÉMO dans la zone upload
-  var dz = document.getElementById('dz-CMJ');
-  if(dz) {
-    dz.style.borderColor = 'var(--cyan)';
-    dz.style.borderStyle = 'solid';
-    dz.style.background = 'rgba(0,200,255,0.05)';
-    dz.innerHTML = '<div style="text-align:center;padding:24px;">' +
-      '<div style="font-size:36px;margin-bottom:10px;">🎬</div>' +
+  // Etape 3 : afficher badge demo dans zone upload
+  var zones = ['dz-CMJ','upzone-CMJ'];
+  var demoZone = null;
+  zones.forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) demoZone = el;
+  });
+  if(!demoZone) {
+    // Chercher la zone upload CMJ par classe
+    demoZone = document.querySelector('#z-CMJ .upzone');
+  }
+  if(demoZone) {
+    demoZone.style.border = '2px solid #00c8ff';
+    demoZone.style.background = 'rgba(0,200,255,0.05)';
+    demoZone.innerHTML = 
+      '<div style="text-align:center;padding:20px;">' +
+      '<div style="font-size:32px;margin-bottom:8px;">🎬</div>' +
       '<div style="font-family:\'Barlow Condensed\',sans-serif;' +
-      'font-weight:900;font-size:20px;color:var(--cyan);' +
-      'text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">' +
-      'Mode Démonstration</div>' +
-      '<div style="font-size:12px;color:var(--muted);">' +
+      'font-weight:900;font-size:18px;color:#00c8ff;' +
+      'text-transform:uppercase;letter-spacing:2px;' +
+      'margin-bottom:6px;">Mode Démonstration</div>' +
+      '<div style="font-size:12px;color:rgba(255,255,255,0.5);">' +
       'Karim Amrani · USB · Basketball · 22 ans</div>' +
-      '<div style="font-size:10px;color:rgba(0,200,255,0.4);margin-top:4px;">' +
-      'Données fictives à titre illustratif</div>' +
       '</div>';
   }
 
-  // Activer le bouton lancer analyse
-  rdy['CMJ'] = true;
-  checkRdy();
-
-  // Lancer la progression automatiquement après 800ms
+  // Etape 4 : lancer la progression apres 600ms
   setTimeout(function() {
-    document.getElementById('prog').className = 'prog show';
-    document.getElementById('emp').style.display = 'none';
-    var lbtn = document.getElementById('lbtn');
-    lbtn.disabled = true;
-    lbtn.textContent = 'Chargement démonstration...';
+    var prog = document.getElementById('prog');
+    var emp = document.getElementById('emp');
+    if(prog) prog.className = prog.className + ' show';
+    if(emp) emp.style.display = 'none';
+    if(lbtn) {
+      lbtn.disabled = true;
+      lbtn.textContent = 'Démonstration en cours...';
+    }
 
     var steps = ['p1','p2','p3','p4','p5'];
-    var pcts = [20,40,60,80,100];
-    steps.forEach(function(s,i) {
+    var pcts  = [20,40,60,80,100];
+    var msgs  = [
+      'Extraction landmarks MediaPipe...',
+      'Filtrage signal Savitzky-Golay...',
+      'Calcul FPPA, ROM, hauteur saut...',
+      'Classification Random Forest...',
+      'Génération rapport SHAP...'
+    ];
+
+    steps.forEach(function(s, i) {
       setTimeout(function() {
-        if(i>0) document.getElementById(steps[i-1]).className='ps done';
-        document.getElementById(s).className='ps active';
-        document.getElementById('pbf').style.width = pcts[i]+'%';
-        if(i===4) {
-          setTimeout(function() {
-            document.getElementById(s).className='ps done';
-            loadDemoResults();
-          }, 600);
+        if(i > 0) {
+          var prev = document.getElementById(steps[i-1]);
+          if(prev) prev.className = 'ps done';
         }
-      }, i*700);
+        var cur_s = document.getElementById(s);
+        if(cur_s) cur_s.className = 'ps active';
+        var pbf = document.getElementById('pbf');
+        if(pbf) pbf.style.width = pcts[i] + '%';
+
+        // Derniere etape
+        if(i === steps.length - 1) {
+          setTimeout(function() {
+            var last = document.getElementById(s);
+            if(last) last.className = 'ps done';
+            
+            // Afficher resultats
+            var res = document.getElementById('res');
+            if(res) {
+              res.style.display = 'block';
+              
+              // Badge demo
+              var existing = document.getElementById('demo-badge');
+              if(!existing) {
+                var badge = document.createElement('div');
+                badge.id = 'demo-badge';
+                badge.style.cssText = 
+                  'background:rgba(0,200,255,0.06);' +
+                  'border:1px solid rgba(0,200,255,0.25);' +
+                  'padding:10px 16px;margin-bottom:16px;' +
+                  'font-size:11px;color:#00c8ff;' +
+                  'letter-spacing:2px;text-transform:uppercase;' +
+                  'display:flex;align-items:center;gap:8px;';
+                badge.innerHTML = 
+                  '<span>🎬</span> MODE DÉMONSTRATION — ' +
+                  'Karim Amrani · USB · Basketball · CMJ';
+                res.insertBefore(badge, res.firstChild);
+              }
+
+              // Mettre a jour valeur CMJ
+              var cmjV = res.querySelector('.bign .v');
+              if(cmjV) cmjV.textContent = '38.4';
+
+              // Mettre a jour risque
+              var riskDivs = res.querySelectorAll('div');
+              riskDivs.forEach(function(d) {
+                if(d.textContent.trim() === 'LOW') {
+                  d.style.color = '#00e676';
+                }
+              });
+
+              // Scroll vers resultats
+              res.scrollIntoView({behavior:'smooth',block:'start'});
+            }
+
+            // Bouton quitter demo
+            if(lbtn) {
+              lbtn.disabled = false;
+              lbtn.textContent = '↩ Quitter le mode démonstration';
+              lbtn.style.background = 'rgba(255,255,255,0.06)';
+              lbtn.style.color = 'rgba(255,255,255,0.5)';
+              lbtn.onclick = function() { location.reload(); };
+            }
+          }, 700);
+        }
+      }, i * 900);
     });
-  }, 800);
-}
-
-function loadDemoResults() {
-  var res = document.getElementById('res');
-  res.style.display = 'block';
-
-  // Badge DÉMO en haut
-  var badge = document.createElement('div');
-  badge.style.cssText = 'background:rgba(0,200,255,0.06);' +
-    'border:1px solid rgba(0,200,255,0.25);padding:10px 16px;' +
-    'font-size:11px;color:var(--cyan);letter-spacing:2px;' +
-    'text-transform:uppercase;margin-bottom:16px;' +
-    'display:flex;align-items:center;gap:8px;';
-  badge.innerHTML = '<span>🎬</span> MODE DÉMONSTRATION — ' +
-    'Karim Amrani · USB · Basketball · 22 ans · CMJ';
-  res.insertBefore(badge, res.firstChild);
-
-  // Mettre à jour valeur CMJ
-  var cmjVal = document.querySelector('.bign .v');
-  if(cmjVal) cmjVal.textContent = '38.4';
-
-  // Mettre à jour FPPA
-  var barInfos = document.querySelectorAll('.bi');
-  if(barInfos[0]) {
-    var v = barInfos[0].querySelector('span:last-child');
-    if(v) v.textContent = '14.2°';
-  }
-  if(barInfos[1]) {
-    var v2 = barInfos[1].querySelector('span:last-child');
-    if(v2) v2.textContent = '11.8°';
-  }
-
-  // Risque LCA LOW en vert
-  var riskDivs = res.querySelectorAll('div');
-  riskDivs.forEach(function(d) {
-    if(d.textContent.trim() === 'LOW' && d.style.fontSize) {
-      d.style.color = 'var(--green)';
-    }
-  });
-
-  // Bouton quitter démo
-  var lbtn = document.getElementById('lbtn');
-  lbtn.disabled = false;
-  lbtn.textContent = '↩ Quitter le mode démonstration';
-  lbtn.style.background = 'rgba(255,255,255,0.06)';
-  lbtn.style.color = 'rgba(255,255,255,0.5)';
-  lbtn.style.fontSize = '14px';
-  lbtn.onclick = function() { location.reload(); };
-
-  // Scroll smooth vers résultats
-  setTimeout(function() {
-    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 300);
-}
-
-function bcSet(step) {
-  for(var i=1; i<=4; i++) {
-    var el = document.getElementById('bc-'+i);
-    if(!el) continue;
-    el.className = 'bc-step';
-    if(i < step) el.classList.add('done');
-    else if(i === step) el.classList.add('active');
-  }
-}
-
-function bcGo(step) {
-  if(step === 1) {
-    document.getElementById('res').style.display = 'none';
-    document.getElementById('emp').style.display = 'block';
-    document.getElementById('prog').className = 'prog';
-    bcSet(1);
-  }
+  }, 600);
 }
 
 </script>
