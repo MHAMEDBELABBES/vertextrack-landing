@@ -85,6 +85,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .lbtn:hover:not(:disabled){box-shadow:0 0 28px rgba(0,200,255,.5);}
 .lbtn:disabled{background:rgba(255,255,255,.06);color:rgba(255,255,255,.2);cursor:not-allowed;}
 
+/* WIZARD SÉQUENTIEL */
+.upload-step{background:rgba(255,255,255,0.03);border:1px solid rgba(0,200,255,0.15);border-radius:12px;padding:24px;margin-bottom:20px;transition:all 0.4s ease;}
+.upload-step.locked{opacity:0.4;pointer-events:none;filter:grayscale(0.5);}
+.upload-step.active{opacity:1;pointer-events:all;border-color:rgba(0,200,255,0.5);box-shadow:0 0 20px rgba(0,200,255,0.1);}
+.upload-step.done{opacity:1;pointer-events:all;border-color:rgba(0,255,136,0.4);box-shadow:0 0 12px rgba(0,255,136,0.08);}
+.step-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.step-number{width:32px;height:32px;border-radius:50%;background:rgba(0,200,255,0.15);border:2px solid rgba(0,200,255,0.3);color:#00c8ff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+.step-number.active{background:rgba(0,200,255,0.3);border-color:#00c8ff;box-shadow:0 0 12px rgba(0,200,255,0.4);}
+.step-label{color:#e0e0e0;font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;text-transform:uppercase;}
+.step-check{font-size:18px;}
+.lock-icon{font-size:16px;margin-left:auto;}
+.step-unlock-msg{color:#00c8ff;font-size:13px;font-family:'JetBrains Mono',monospace;margin-top:12px;opacity:0.8;}
+.drop-zone{border:2px dashed rgba(0,200,255,0.3);border-radius:10px;padding:32px 16px;text-align:center;cursor:pointer;transition:border-color 0.3s;color:#e0e0e0;font-family:'Barlow Condensed',monospace;font-size:16px;letter-spacing:1px;}
+.drop-zone:hover{border-color:#00c8ff;}
+.btn-upload{background:#00c8ff;color:#03080f;border:none;padding:12px 28px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:6px;cursor:pointer;margin-top:12px;transition:all 0.2s;}
+.btn-upload:hover{background:#00a8d8;transform:translateY(-1px);}
+.format-tags{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+.format-tags span{border:1px solid rgba(0,200,255,0.3);color:#00c8ff;padding:3px 10px;border-radius:4px;font-size:11px;font-family:'JetBrains Mono',monospace;}
+.file-info{margin-top:8px;color:#888;font-size:12px;font-family:'JetBrains Mono',monospace;display:flex;gap:16px;}
+.btn-analyse{width:100%;padding:20px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;transition:all 0.3s ease;}
+.locked-btn{background:rgba(255,255,255,0.08);color:#555;cursor:not-allowed;}
+.ready-btn{background:linear-gradient(135deg,#00c8ff,#0090cc);color:#03080f;cursor:pointer;animation:pulse-ready 2s infinite;box-shadow:0 0 30px rgba(0,200,255,0.4);}
+@keyframes pulse-ready{0%,100%{box-shadow:0 0 20px rgba(0,200,255,0.4);}50%{box-shadow:0 0 50px rgba(0,200,255,0.8),0 0 80px rgba(0,200,255,0.3);}}
+
 /* PROGRESS */
 .prog{display:none;margin-top:14px;}
 .prog.show{display:block;}
@@ -550,230 +574,124 @@ border-top:1px solid rgba(255,255,255,0.06);">
   </div>
 </div>
 
-<!-- STEP 3: UPLOAD -->
+<!-- STEP 3: UPLOAD — WIZARD SÉQUENTIEL -->
 <div class="card wiz-card" id="wc-3" style="display:none;">
-  <div class="card-t" id="ulabel" style="border:none;margin-bottom:4px;padding-bottom:0;">Étape 3 — Upload vidéo CMJ</div>
+  <div class="card-t" style="border:none;margin-bottom:20px;padding-bottom:0;">
+    Étape 3 — Upload des vidéos
+  </div>
 
-  <!-- CMJ -->
-  <div id="z-CMJ">
-    <div class="upzone">
-      <div style="margin-bottom:12px;opacity:0.8;">
-        <!-- Miniature (FRONT) pour CMJ -->
-        <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
-          <circle cx="40" cy="15" r="4" stroke="#f59e0b" stroke-width="2"/>
-          <path d="M40 19v12 M35 24h10 M36 31l-4 12 M44 31l4 12" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-          <rect x="34" y="38" width="12" height="8" rx="1" stroke="#fff" stroke-width="1.5"/>
-          <circle cx="40" cy="42" r="2" stroke="#fff" stroke-width="1.5"/>
-          <path d="M40 34v-8 M37 29l3-4 3 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="margin:0 auto 12px;display:block;">
-        <rect x="3" y="3" width="38" height="38" rx="4" stroke="rgba(0,200,255,.4)" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <path d="M22 30V18M22 18L16 24M22 18L28 24" stroke="#00c8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="upzone-title">Glissez votre vidéo ici</div>
-      <div class="upzone-sub">ou utilisez le bouton ci-dessous · Vue frontale · 60fps</div>
-      <label class="choose-label" for="f-CMJ">Choisir un fichier vidéo</label>
-      <input type="file" id="f-CMJ" accept="video/*" style="display:none" onchange="onFile(event,'CMJ')"/>
-      <div class="fmts"><span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">AVI</span><span class="fmt">200MB max</span></div>
+  <!-- ÉTAPE 1 : CMJ -->
+  <div class="upload-step active" id="stepCMJ">
+    <div class="step-header">
+      <span class="step-number active">1</span>
+      <span class="step-label">TEST CMJ — Counter Movement Jump</span>
+      <span class="badge-vue badge-front">Vue SAGITTALE</span>
+      <span class="step-check" id="checkCMJ" style="display:none">✅</span>
     </div>
-    <div class="vid-box" id="vb-CMJ">
-      <div class="vid-rel">
-        <video id="v-CMJ" controls></video>
-        <canvas id="c-CMJ"></canvas>
-        <div class="live-b"><div class="live-dot"></div>POSE DETECTION</div>
+    <div class="drop-zone" id="zoneCMJ">
+      <div class="drop-inner">
+        <p style="margin:0 0 4px;font-size:16px;letter-spacing:1px;">GLISSEZ VOTRE VIDÉO ICI</p>
+        <p style="color:#888;font-size:13px;margin:0 0 4px;">ou utilisez le bouton ci-dessous · Vue sagittale · 60fps</p>
+        <button class="btn-upload" onclick="document.getElementById('inputCMJ').click()">
+          CHOISIR UN FICHIER VIDÉO
+        </button>
+        <input type="file" id="inputCMJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
+        <div class="format-tags"><span>MP4</span><span>MOV</span><span>AVI</span><span>200MB max</span></div>
       </div>
-      <div class="vid-info">
-        <span>📄 <strong id="vn-CMJ">—</strong></span>
-        <span>⏱ <strong id="vd-CMJ">—</strong></span>
-        <span>💾 <strong id="vs-CMJ">—</strong></span>
+    </div>
+    <video id="previewCMJ" style="display:none;width:100%;border-radius:8px;margin-top:12px;max-height:200px;" controls></video>
+    <div class="file-info" id="infoCMJ" style="display:none"></div>
+    <div class="step-unlock-msg" id="msgCMJ">↑ Uploadez la vidéo CMJ pour continuer vers SJ →</div>
+  </div>
+
+  <!-- ÉTAPE 2 : SJ -->
+  <div class="upload-step locked" id="stepSJ">
+    <div class="step-header">
+      <span class="step-number" id="numSJ">2</span>
+      <span class="step-label">TEST SJ — Squat Jump</span>
+      <span class="badge-vue badge-sag">Vue SAGITTALE</span>
+      <span class="step-check" id="checkSJ" style="display:none">✅</span>
+      <span class="lock-icon" id="lockSJ">🔒</span>
+    </div>
+    <div class="drop-zone" id="zoneSJ">
+      <div class="drop-inner">
+        <p style="margin:0 0 4px;font-size:16px;letter-spacing:1px;">GLISSEZ VOTRE VIDÉO ICI</p>
+        <p style="color:#888;font-size:13px;margin:0 0 4px;">Vue sagittale · 60fps</p>
+        <button class="btn-upload" onclick="document.getElementById('inputSJ').click()">
+          CHOISIR UN FICHIER VIDÉO
+        </button>
+        <input type="file" id="inputSJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
+        <div class="format-tags"><span>MP4</span><span>MOV</span><span>AVI</span><span>200MB max</span></div>
       </div>
-      <div id="qual-CMJ" style="margin-top:8px;">
-        <div class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo détectée — athlète visible</strong><br>
-            <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
+    </div>
+    <video id="previewSJ" style="display:none;width:100%;border-radius:8px;margin-top:12px;max-height:200px;" controls></video>
+    <div class="file-info" id="infoSJ" style="display:none"></div>
+  </div>
+
+  <!-- ÉTAPE 3 : DVJ -->
+  <div class="upload-step locked" id="stepDVJ">
+    <div class="step-header">
+      <span class="step-number" id="numDVJ">3</span>
+      <span class="step-label">TEST DVJ — Drop Vertical Jump</span>
+      <span class="badge-vue badge-sag">Vue SAGITTALE</span>
+      <span class="badge-vue badge-front">Vue FRONTALE</span>
+      <span class="step-check" id="checkDVJ" style="display:none">✅</span>
+      <span class="lock-icon" id="lockDVJ">🔒</span>
+    </div>
+    <p style="color:#888;font-size:13px;margin:0 0 12px;">2 vidéos requises : vue sagittale + vue frontale</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <!-- DVJ SAG -->
+      <div>
+        <p style="color:#ffa500;font-size:12px;margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;">VUE SAGITTALE</p>
+        <div class="drop-zone" id="zoneDVJsag">
+          <div class="drop-inner">
+            <button class="btn-upload" onclick="document.getElementById('inputDVJsag').click()">
+              CHOISIR VIDÉO SAG
+            </button>
+            <input type="file" id="inputDVJsag" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
           </div>
+        </div>
+        <video id="previewDVJsag" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:150px;" controls></video>
+        <div class="file-info" id="infoDVJsag" style="display:none"></div>
+      </div>
+      <!-- DVJ FRONT -->
+      <div>
+        <p style="color:#00c8ff;font-size:12px;margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;">VUE FRONTALE</p>
+        <div class="drop-zone" id="zoneDVJfront">
+          <div class="drop-inner">
+            <button class="btn-upload" onclick="document.getElementById('inputDVJfront').click()">
+              CHOISIR VIDÉO FRONT
+            </button>
+            <input type="file" id="inputDVJfront" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
+          </div>
+        </div>
+        <video id="previewDVJfront" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:150px;" controls></video>
+        <div class="file-info" id="infoDVJfront" style="display:none"></div>
       </div>
     </div>
   </div>
 
-  <!-- SJ -->
-  <div id="z-SJ" style="display:none">
-    <div class="bi-grid">
-      <div>
-        <div class="bi-side-label">SJ — Vue Sagittale (SAG)</div>
-        <div class="bi-zone" id="bz-SJ-R" id2="sjDropZoneSag">
-          <div style="margin-bottom:8px;opacity:0.8;">
-            <!-- Miniature SAG -->
-            <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
-              <circle cx="20" cy="15" r="4" stroke="#00c8ff" stroke-width="2"/>
-              <path d="M20 19v12 M20 23l-4 6 M20 31l-3 12 M20 31l3 12" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
-              <rect x="55" y="25" width="12" height="8" rx="1" stroke="#fff" stroke-width="1.5"/>
-              <path d="M55 27l-5-2v6l5-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M61 33v6 M58 39h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M45 29H30 M33 26l-4 3 4 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">Vidéo SAG</div>
-          <label class="bi-choose" for="f-SJ-R">Choisir</label>
-          <input type="file" id="f-SJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','R')"/>
-        </div>
-        <div class="bi-ok" id="ok-SJ-R">
-          <div style="margin-bottom:4px;">✓ <span id="on-SJ-R"></span> <span id="sjFileNameSag" style="font-size:9px;color:var(--muted);"></span> <span id="sjFileSizeSag" style="font-size:9px;color:var(--muted);"></span></div>
-          <video id="sjPreviewSag" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(0,200,255,0.2);" controls></video>
-          <div id="sjStatusSag" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo SJ SAG détectée — athlète visible</strong><br>
-            <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="bi-side-label">SJ — Vue Frontale (FRONT)</div>
-        <div class="bi-zone" id="bz-SJ-L" id2="sjDropZoneFront">
-          <div style="margin-bottom:8px;opacity:0.8;">
-            <!-- Miniature FRONT -->
-            <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
-              <circle cx="40" cy="15" r="4" stroke="#f59e0b" stroke-width="2"/>
-              <path d="M40 19v12 M35 24h10 M36 31l-4 12 M44 31l4 12" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-              <rect x="34" y="38" width="12" height="8" rx="1" stroke="#fff" stroke-width="1.5"/>
-              <circle cx="40" cy="42" r="2" stroke="#fff" stroke-width="1.5"/>
-              <path d="M40 34v-8 M37 29l3-4 3 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">Vidéo FRONT</div>
-          <label class="bi-choose" for="f-SJ-L">Choisir</label>
-          <input type="file" id="f-SJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','L')"/>
-        </div>
-        <div class="bi-ok" id="ok-SJ-L">
-          <div style="margin-bottom:4px;">✓ <span id="on-SJ-L"></span> <span id="sjFileNameFront" style="font-size:9px;color:var(--muted);"></span> <span id="sjFileSizeFront" style="font-size:9px;color:var(--muted);"></span></div>
-          <video id="sjPreviewFront" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(0,200,255,0.2);" controls></video>
-          <div id="sjStatusFront" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo SJ FRONT détectée — athlète visible</strong><br>
-            <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;">
-      Vue SAG = caméra placée sur le côté de l'athlète<br>Vue FRONT = caméra placée face à l'athlète (obligatoire pour FPPA)
-    </div>
+  <!-- BOUTON ANALYSER -->
+  <div style="margin-top:32px;">
+    <button id="lbtn" class="btn-analyse locked-btn" disabled onclick="launch()">
+      🔒 UPLOADEZ LES 3 TESTS POUR ANALYSER
+    </button>
   </div>
 
-  <!-- DVJ -->
-  <div id="z-DVJ" style="display:none">
-    <div class="bi-grid">
-      <div>
-        <div class="bi-side-label">DVJ — Vue Sagittale (SAG)</div>
-        <div class="bi-zone" id="bz-DVJ-R" id2="dvjDropZoneSag">
-          <div style="margin-bottom:8px;opacity:0.8;">
-            <!-- Miniature SAG -->
-            <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
-              <circle cx="20" cy="15" r="4" stroke="#00c8ff" stroke-width="2"/>
-              <path d="M20 19v12 M20 23l-4 6 M20 31l-3 12 M20 31l3 12" stroke="#00c8ff" stroke-width="2" stroke-linecap="round"/>
-              <rect x="55" y="25" width="12" height="8" rx="1" stroke="#fff" stroke-width="1.5"/>
-              <path d="M55 27l-5-2v6l5-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M61 33v6 M58 39h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M45 29H30 M33 26l-4 3 4 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">Vidéo SAG</div>
-          <label class="bi-choose" for="f-DVJ-R">Choisir</label>
-          <input type="file" id="f-DVJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','R')"/>
-        </div>
-        <div class="bi-ok" id="ok-DVJ-R">
-          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-R"></span> <span id="dvjFileNameSag" style="font-size:9px;color:var(--muted);"></span> <span id="dvjFileSizeSag" style="font-size:9px;color:var(--muted);"></span></div>
-          <video id="dvjPreviewSag" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(245,158,11,0.2);" controls></video>
-          <div id="dvjStatusSag" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo DVJ SAG détectée — athlète visible</strong><br>
-            <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="bi-side-label">DVJ — Vue Frontale (FRONT)</div>
-        <div class="bi-zone" id="bz-DVJ-L" id2="dvjDropZoneFront">
-          <div style="margin-bottom:8px;opacity:0.8;">
-            <!-- Miniature FRONT -->
-            <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
-              <circle cx="40" cy="15" r="4" stroke="#f59e0b" stroke-width="2"/>
-              <path d="M40 19v12 M35 24h10 M36 31l-4 12 M44 31l4 12" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-              <rect x="34" y="38" width="12" height="8" rx="1" stroke="#fff" stroke-width="1.5"/>
-              <circle cx="40" cy="42" r="2" stroke="#fff" stroke-width="1.5"/>
-              <path d="M40 34v-8 M37 29l3-4 3 4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="24" height="24" rx="3" stroke="rgba(0,200,255,.4)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="M14 20V10M14 10L9 15M14 10L19 15" stroke="#00c8ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:12px;color:var(--muted);margin:6px 0">Vidéo FRONT</div>
-          <label class="bi-choose" for="f-DVJ-L">Choisir</label>
-          <input type="file" id="f-DVJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','L')"/>
-        </div>
-        <div class="bi-ok" id="ok-DVJ-L">
-          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-L"></span> <span id="dvjFileNameFront" style="font-size:9px;color:var(--muted);"></span> <span id="dvjFileSizeFront" style="font-size:9px;color:var(--muted);"></span></div>
-          <video id="dvjPreviewFront" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(245,158,11,0.2);" controls></video>
-          <div id="dvjStatusFront" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo DVJ FRONT détectée — athlète visible</strong><br>
-            <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.1);padding:10px 14px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;">
-      Vue SAG = caméra placée sur le côté de l'athlète<br>Vue FRONT = caméra placée face à l'athlète (obligatoire pour FPPA)
-    </div>
+  <!-- PROGRESS -->
+  <div class="prog" id="prog" style="margin-top:16px;">
+    <div style="height:10px"></div>
+    <div class="ps" id="p1"><div class="pd"></div>Extraction landmarks MediaPipe...</div>
+    <div class="ps" id="p2"><div class="pd"></div>Filtrage Savitzky-Golay 60fps...</div>
+    <div class="ps" id="p3"><div class="pd"></div>Calcul features biomécaniques...</div>
+    <div class="ps" id="p4"><div class="pd"></div>Prédiction Random Forest + SHAP...</div>
+    <div class="ps" id="p5"><div class="pd"></div>Génération du rapport...</div>
+    <div class="pb-bg"><div class="pb-fill" id="pbf"></div></div>
   </div>
+
   <div class="wiz-actions">
     <button class="wbtn-o" onclick="goStep(2)">← Retour</button>
   </div>
-</div>
-
-<!-- ATHLÈTE -->
-<div class="card">
-  <div class="card-t">Informations athlète</div>
-  <div class="fg">
-    <div class="fgroup"><label class="fl">Nom</label><input class="fi" type="text" placeholder="Ex: Amrani"/></div>
-    <div class="fgroup"><label class="fl">Prénom</label><input class="fi" type="text" placeholder="Ex: Karim"/></div>
-    <div class="fgroup"><label class="fl">Sport</label><select class="fs"><option>Basketball</option><option>Football</option></select></div>
-    <div class="fgroup"><label class="fl">Club</label><input class="fi" type="text" placeholder="Ex: USB"/></div>
-    <div class="fgroup"><label class="fl">Âge</label><input class="fi" type="number" placeholder="22"/></div>
-    <div class="fgroup"><label class="fl">Jambe dominante</label><select class="fs"><option>Droite</option><option>Gauche</option></select></div>
-  </div>
-</div>
-
-<!-- SAUVEGARDE -->
-<div class="card">
-  <div class="card-t">Sauvegarde base de données</div>
-  <div class="save-row" onclick="toggleSave()">
-    <div>
-      <div style="font-size:13px;font-weight:600;">Sauvegarder cette analyse</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px;">Enregistre dans SQLite locale</div>
-    </div>
-    <div class="tog" id="tog"></div>
-  </div>
-  <div id="sfields" style="display:none">
-    <div class="fg" style="margin-bottom:10px;">
-      <div class="fgroup"><label class="fl">Session</label><input class="fi" type="text" placeholder="Session_01_Avril2026"/></div>
-      <div class="fgroup"><label class="fl">Terrain</label><select class="fs"><option>Intérieur</option><option>Extérieur</option><option>Salle</option></select></div>
-      <div class="fgroup s2"><label class="fl">Notes</label><input class="fi" type="text" placeholder="Ex: Post-blessure semaine 3..."/></div>
-    </div>
-    <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15);padding:9px 12px;font-size:11px;color:rgba(0,230,118,.8);">✓ Résultats sauvegardés dans la table <code style="background:rgba(0,0,0,.3);padding:1px 5px;">analyses</code></div>
-  </div>
-</div>
-
-<!-- BOUTON LANCER -->
-<button class="lbtn" id="lbtn" onclick="launch()" disabled>Lancer l'analyse IA</button>
-
-<!-- PROGRESS -->
-<div class="prog" id="prog">
-  <div style="height:10px"></div>
-  <div class="ps" id="p1"><div class="pd"></div>Extraction landmarks MediaPipe...</div>
-  <div class="ps" id="p2"><div class="pd"></div>Filtrage Savitzky-Golay 60fps...</div>
-  <div class="ps" id="p3"><div class="pd"></div>Calcul features biomécaniques...</div>
-  <div class="ps" id="p4"><div class="pd"></div>Prédiction Random Forest + SHAP...</div>
-  <div class="ps" id="p5"><div class="pd"></div>Génération du rapport...</div>
-  <div class="pb-bg"><div class="pb-fill" id="pbf"></div></div>
 </div>
 
 </div><!-- end col gauche -->
@@ -1464,6 +1382,150 @@ function toggleSave() {
   document.getElementById('tog').className = 'tog' + (saveOn?' on':'');
   document.getElementById('sfields').style.display = saveOn ? 'block' : 'none';
 }
+
+
+// ═══ ÉTAT DES UPLOADS (wizard séquentiel) ═══
+var uploadedFiles = { CMJ: false, SJ: false, DVJsag: false, DVJfront: false };
+
+function handleUpload(testKey, file, previewId, infoId) {
+  if (!file) return;
+  var preview = document.getElementById(previewId);
+  var info = document.getElementById(infoId);
+  
+  // Preview vidéo
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  
+  // Info fichier
+  var sizeMB = (file.size / 1024 / 1024).toFixed(1);
+  info.innerHTML = '📄 ' + file.name + ' &nbsp;|&nbsp; 💾 ' + sizeMB + ' MB';
+  info.style.display = 'flex';
+  
+  // Marquer comme uploadé
+  uploadedFiles[testKey] = true;
+  
+  // Also update legacy rdy[] for compatibility with existing launch()
+  if (testKey === 'CMJ') { rdy['CMJ'] = true; cur = 'CMJ'; }
+  else if (testKey === 'SJ') { rdy['SJ-R'] = true; rdy['SJ-L'] = true; }
+  else if (testKey === 'DVJsag') { rdy['DVJ-R'] = true; }
+  else if (testKey === 'DVJfront') { rdy['DVJ-L'] = true; }
+  
+  // Mettre à jour le wizard séquentiel
+  updateSequentialWizard();
+}
+
+function updateSequentialWizard() {
+  var cmjDone = uploadedFiles.CMJ;
+  var sjDone = uploadedFiles.SJ;
+  var dvjDone = uploadedFiles.DVJsag && uploadedFiles.DVJfront;
+  
+  // STEP CMJ
+  var stepCMJ = document.getElementById('stepCMJ');
+  if (stepCMJ) {
+    if (cmjDone) {
+      stepCMJ.className = 'upload-step done';
+      var chk = document.getElementById('checkCMJ');
+      if (chk) chk.style.display = 'inline';
+      var msg = document.getElementById('msgCMJ');
+      if (msg) msg.style.display = 'none';
+    }
+  }
+  
+  // STEP SJ — déverrouiller si CMJ fait
+  var stepSJ = document.getElementById('stepSJ');
+  if (stepSJ && cmjDone) {
+    stepSJ.classList.remove('locked');
+    stepSJ.classList.add(sjDone ? 'done' : 'active');
+    var lockSJ = document.getElementById('lockSJ');
+    if (lockSJ) lockSJ.style.display = 'none';
+    var numSJ = document.getElementById('numSJ');
+    if (numSJ) numSJ.classList.add('active');
+    if (sjDone) {
+      var chkSJ = document.getElementById('checkSJ');
+      if (chkSJ) chkSJ.style.display = 'inline';
+    }
+  }
+  
+  // STEP DVJ — déverrouiller si SJ fait
+  var stepDVJ = document.getElementById('stepDVJ');
+  if (stepDVJ && sjDone) {
+    stepDVJ.classList.remove('locked');
+    stepDVJ.classList.add(dvjDone ? 'done' : 'active');
+    var lockDVJ = document.getElementById('lockDVJ');
+    if (lockDVJ) lockDVJ.style.display = 'none';
+    var numDVJ = document.getElementById('numDVJ');
+    if (numDVJ) numDVJ.classList.add('active');
+    if (dvjDone) {
+      var chkDVJ = document.getElementById('checkDVJ');
+      if (chkDVJ) chkDVJ.style.display = 'inline';
+    }
+  }
+  
+  // BOUTON ANALYSER — activer si tout est fait
+  var lbtn = document.getElementById('lbtn');
+  if (lbtn) {
+    if (cmjDone && sjDone && dvjDone) {
+      lbtn.disabled = false;
+      lbtn.className = 'btn-analyse ready-btn';
+      lbtn.innerHTML = '⚡ LANCER L\'ANALYSE IA';
+      lbtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+}
+
+// ─── Event listeners upload ───────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  var inputCMJ = document.getElementById('inputCMJ');
+  var inputSJ = document.getElementById('inputSJ');
+  var inputDVJsag = document.getElementById('inputDVJsag');
+  var inputDVJfront = document.getElementById('inputDVJfront');
+
+  if(inputCMJ) inputCMJ.addEventListener('change', function(e) {
+    if(e.target.files[0]) handleUpload('CMJ', e.target.files[0], 'previewCMJ', 'infoCMJ');
+  });
+  if(inputSJ) inputSJ.addEventListener('change', function(e) {
+    if(e.target.files[0]) handleUpload('SJ', e.target.files[0], 'previewSJ', 'infoSJ');
+  });
+  if(inputDVJsag) inputDVJsag.addEventListener('change', function(e) {
+    if(e.target.files[0]) handleUpload('DVJsag', e.target.files[0], 'previewDVJsag', 'infoDVJsag');
+  });
+  if(inputDVJfront) inputDVJfront.addEventListener('change', function(e) {
+    if(e.target.files[0]) handleUpload('DVJfront', e.target.files[0], 'previewDVJfront', 'infoDVJfront');
+  });
+
+  // Drag & drop pour chaque zone
+  var dndMap = [
+    { zone: 'zoneCMJ',     key: 'CMJ',      preview: 'previewCMJ',     info: 'infoCMJ' },
+    { zone: 'zoneSJ',      key: 'SJ',       preview: 'previewSJ',      info: 'infoSJ' },
+    { zone: 'zoneDVJsag',  key: 'DVJsag',   preview: 'previewDVJsag',  info: 'infoDVJsag' },
+    { zone: 'zoneDVJfront',key: 'DVJfront', preview: 'previewDVJfront',info: 'infoDVJfront' }
+  ];
+  dndMap.forEach(function(item) {
+    var zone = document.getElementById(item.zone);
+    if (!zone) return;
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      zone.style.borderColor = '#00c8ff';
+    });
+    zone.addEventListener('dragleave', function() {
+      zone.style.borderColor = 'rgba(0,200,255,0.3)';
+    });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      zone.style.borderColor = 'rgba(0,200,255,0.3)';
+      var file = e.dataTransfer.files[0];
+      if (file) handleUpload(item.key, file, item.preview, item.info);
+    });
+  });
+
+  // Initialisation — step CMJ déjà active via CSS
+  // Activer le wizard step 3 si on revient dessus
+  var stepCMJ = document.getElementById('stepCMJ');
+  if(stepCMJ && !stepCMJ.classList.contains('done')) {
+    stepCMJ.classList.add('active');
+  }
+});
+
 
 function launch() {
   var lbtn = document.getElementById('lbtn');
