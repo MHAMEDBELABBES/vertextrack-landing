@@ -311,6 +311,20 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
     </div>
 
   </div>
+  
+  <!-- BOUTON DÉMO -->
+  <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
+      Pas de vidéo disponible ?
+    </div>
+    <button onclick="loadDemo()" style="background:transparent;color:var(--cyan);border:1.5px solid rgba(0,200,255,0.4);padding:10px 28px;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">
+      ▶ Voir un exemple de démonstration
+    </button>
+    <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:8px;">
+      Données fictives — Athlète USB · Basketball · 22 ans
+    </div>
+  </div>
+
   <div class="wiz-actions" style="justify-content:flex-end;">
     <button class="wbtn" onclick="goStep(2)" id="btnNext1">Suivant →</button>
   </div>
@@ -1832,6 +1846,122 @@ window.addEventListener('load', function() {
     });
   }
 });
+
+function loadDemo() {
+  // Sélectionner CMJ
+  setTest('CMJ');
+
+  // Remplir formulaire athlète
+  var inputs = document.querySelectorAll('.fi');
+  if(inputs[0]) inputs[0].value = 'Amrani';
+  if(inputs[1]) inputs[1].value = 'Karim';
+  if(inputs[2]) inputs[2].value = '22';
+  if(inputs[3]) inputs[3].value = 'USB';
+  var selects = document.querySelectorAll('.fs');
+  if(selects[0]) selects[0].value = 'Basketball';
+  if(selects[1]) selects[1].value = 'Droite';
+
+  // Afficher badge DÉMO dans la zone upload
+  var dz = document.getElementById('dz-CMJ');
+  if(dz) {
+    dz.style.borderColor = 'var(--cyan)';
+    dz.style.borderStyle = 'solid';
+    dz.style.background = 'rgba(0,200,255,0.05)';
+    dz.innerHTML = '<div style="text-align:center;padding:24px;">' +
+      '<div style="font-size:36px;margin-bottom:10px;">🎬</div>' +
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;' +
+      'font-weight:900;font-size:20px;color:var(--cyan);' +
+      'text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">' +
+      'Mode Démonstration</div>' +
+      '<div style="font-size:12px;color:var(--muted);">' +
+      'Karim Amrani · USB · Basketball · 22 ans</div>' +
+      '<div style="font-size:10px;color:rgba(0,200,255,0.4);margin-top:4px;">' +
+      'Données fictives à titre illustratif</div>' +
+      '</div>';
+  }
+
+  // Activer le bouton lancer analyse
+  rdy['CMJ'] = true;
+  checkRdy();
+
+  // Lancer la progression automatiquement après 800ms
+  setTimeout(function() {
+    document.getElementById('prog').className = 'prog show';
+    document.getElementById('emp').style.display = 'none';
+    var lbtn = document.getElementById('lbtn');
+    lbtn.disabled = true;
+    lbtn.textContent = 'Chargement démonstration...';
+
+    var steps = ['p1','p2','p3','p4','p5'];
+    var pcts = [20,40,60,80,100];
+    steps.forEach(function(s,i) {
+      setTimeout(function() {
+        if(i>0) document.getElementById(steps[i-1]).className='ps done';
+        document.getElementById(s).className='ps active';
+        document.getElementById('pbf').style.width = pcts[i]+'%';
+        if(i===4) {
+          setTimeout(function() {
+            document.getElementById(s).className='ps done';
+            loadDemoResults();
+          }, 600);
+        }
+      }, i*700);
+    });
+  }, 800);
+}
+
+function loadDemoResults() {
+  var res = document.getElementById('res');
+  res.style.display = 'block';
+
+  // Badge DÉMO en haut
+  var badge = document.createElement('div');
+  badge.style.cssText = 'background:rgba(0,200,255,0.06);' +
+    'border:1px solid rgba(0,200,255,0.25);padding:10px 16px;' +
+    'font-size:11px;color:var(--cyan);letter-spacing:2px;' +
+    'text-transform:uppercase;margin-bottom:16px;' +
+    'display:flex;align-items:center;gap:8px;';
+  badge.innerHTML = '<span>🎬</span> MODE DÉMONSTRATION — ' +
+    'Karim Amrani · USB · Basketball · 22 ans · CMJ';
+  res.insertBefore(badge, res.firstChild);
+
+  // Mettre à jour valeur CMJ
+  var cmjVal = document.querySelector('.bign .v');
+  if(cmjVal) cmjVal.textContent = '38.4';
+
+  // Mettre à jour FPPA
+  var barInfos = document.querySelectorAll('.bi');
+  if(barInfos[0]) {
+    var v = barInfos[0].querySelector('span:last-child');
+    if(v) v.textContent = '14.2°';
+  }
+  if(barInfos[1]) {
+    var v2 = barInfos[1].querySelector('span:last-child');
+    if(v2) v2.textContent = '11.8°';
+  }
+
+  // Risque LCA LOW en vert
+  var riskDivs = res.querySelectorAll('div');
+  riskDivs.forEach(function(d) {
+    if(d.textContent.trim() === 'LOW' && d.style.fontSize) {
+      d.style.color = 'var(--green)';
+    }
+  });
+
+  // Bouton quitter démo
+  var lbtn = document.getElementById('lbtn');
+  lbtn.disabled = false;
+  lbtn.textContent = '↩ Quitter le mode démonstration';
+  lbtn.style.background = 'rgba(255,255,255,0.06)';
+  lbtn.style.color = 'rgba(255,255,255,0.5)';
+  lbtn.style.fontSize = '14px';
+  lbtn.onclick = function() { location.reload(); };
+
+  // Scroll smooth vers résultats
+  setTimeout(function() {
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
 </script>
 
 </body>
