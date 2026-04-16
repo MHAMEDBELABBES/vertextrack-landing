@@ -258,6 +258,34 @@ body {
 .btn-pulse {
   animation: pulse-btn 2s infinite;
 }
+
+.test-section {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.test-section-title {
+  color: #00c8ff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.badge-vue {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 8px;
+}
+.badge-sag { background: rgba(255,165,0,0.2); color: #ffa500; }
+.badge-front { background: rgba(0,200,255,0.2); color: #00c8ff; }
+.step-success { color: #00ff88; font-weight: bold; }
+
 </style>
 </head>
 <body>
@@ -574,7 +602,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     <div class="bi-grid">
       <div>
         <div class="bi-side-label">SJ — Vue Sagittale (SAG)</div>
-        <div class="bi-zone" id="bz-SJ-R">
+        <div class="bi-zone" id="bz-SJ-R" id2="sjDropZoneSag">
           <div style="margin-bottom:8px;opacity:0.8;">
             <!-- Miniature SAG -->
             <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
@@ -592,16 +620,17 @@ border-top:1px solid rgba(255,255,255,0.06);">
           <input type="file" id="f-SJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','R')"/>
         </div>
         <div class="bi-ok" id="ok-SJ-R">
-          <div style="margin-bottom:4px;">✓ <span id="on-SJ-R"></span></div>
-          <div class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo détectée — athlète visible</strong><br>
+          <div style="margin-bottom:4px;">✓ <span id="on-SJ-R"></span> <span id="sjFileNameSag" style="font-size:9px;color:var(--muted);"></span> <span id="sjFileSizeSag" style="font-size:9px;color:var(--muted);"></span></div>
+          <video id="sjPreviewSag" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(0,200,255,0.2);" controls></video>
+          <div id="sjStatusSag" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
+            <strong>✓ Vidéo SJ SAG détectée — athlète visible</strong><br>
             <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
           </div>
         </div>
       </div>
       <div>
         <div class="bi-side-label">SJ — Vue Frontale (FRONT)</div>
-        <div class="bi-zone" id="bz-SJ-L">
+        <div class="bi-zone" id="bz-SJ-L" id2="sjDropZoneFront">
           <div style="margin-bottom:8px;opacity:0.8;">
             <!-- Miniature FRONT -->
             <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
@@ -618,9 +647,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
           <input type="file" id="f-SJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'SJ','L')"/>
         </div>
         <div class="bi-ok" id="ok-SJ-L">
-          <div style="margin-bottom:4px;">✓ <span id="on-SJ-L"></span></div>
-          <div class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo détectée — athlète visible</strong><br>
+          <div style="margin-bottom:4px;">✓ <span id="on-SJ-L"></span> <span id="sjFileNameFront" style="font-size:9px;color:var(--muted);"></span> <span id="sjFileSizeFront" style="font-size:9px;color:var(--muted);"></span></div>
+          <video id="sjPreviewFront" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(0,200,255,0.2);" controls></video>
+          <div id="sjStatusFront" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
+            <strong>✓ Vidéo SJ FRONT détectée — athlète visible</strong><br>
             <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
           </div>
         </div>
@@ -636,7 +666,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     <div class="bi-grid">
       <div>
         <div class="bi-side-label">DVJ — Vue Sagittale (SAG)</div>
-        <div class="bi-zone" id="bz-DVJ-R">
+        <div class="bi-zone" id="bz-DVJ-R" id2="dvjDropZoneSag">
           <div style="margin-bottom:8px;opacity:0.8;">
             <!-- Miniature SAG -->
             <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
@@ -654,16 +684,17 @@ border-top:1px solid rgba(255,255,255,0.06);">
           <input type="file" id="f-DVJ-R" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','R')"/>
         </div>
         <div class="bi-ok" id="ok-DVJ-R">
-          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-R"></span></div>
-          <div class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo détectée — athlète visible</strong><br>
+          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-R"></span> <span id="dvjFileNameSag" style="font-size:9px;color:var(--muted);"></span> <span id="dvjFileSizeSag" style="font-size:9px;color:var(--muted);"></span></div>
+          <video id="dvjPreviewSag" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(245,158,11,0.2);" controls></video>
+          <div id="dvjStatusSag" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
+            <strong>✓ Vidéo DVJ SAG détectée — athlète visible</strong><br>
             <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
           </div>
         </div>
       </div>
       <div>
         <div class="bi-side-label">DVJ — Vue Frontale (FRONT)</div>
-        <div class="bi-zone" id="bz-DVJ-L">
+        <div class="bi-zone" id="bz-DVJ-L" id2="dvjDropZoneFront">
           <div style="margin-bottom:8px;opacity:0.8;">
             <!-- Miniature FRONT -->
             <svg width="40" height="30" viewBox="0 0 80 60" fill="none">
@@ -680,9 +711,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
           <input type="file" id="f-DVJ-L" accept="video/*" style="display:none" onchange="onFileSide(event,'DVJ','L')"/>
         </div>
         <div class="bi-ok" id="ok-DVJ-L">
-          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-L"></span></div>
-          <div class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
-            <strong>✓ Vidéo détectée — athlète visible</strong><br>
+          <div style="margin-bottom:4px;">✓ <span id="on-DVJ-L"></span> <span id="dvjFileNameFront" style="font-size:9px;color:var(--muted);"></span> <span id="dvjFileSizeFront" style="font-size:9px;color:var(--muted);"></span></div>
+          <video id="dvjPreviewFront" style="display:none;width:100%;max-height:100px;margin-top:6px;border:1px solid rgba(245,158,11,0.2);" controls></video>
+          <div id="dvjStatusFront" class="vid-qual" style="margin-top:4px;padding:4px;background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-size:9px;text-align:left;line-height:1.4;">
+            <strong>✓ Vidéo DVJ FRONT détectée — athlète visible</strong><br>
             <span style="color:var(--amber);">⚠ Vérifiez que l'athlète est entièrement visible</span>
           </div>
         </div>
@@ -1325,6 +1357,31 @@ function onFileSide(ev, test, side) {
   document.getElementById('ok-'+key).style.display = 'block';
   document.getElementById('on-'+key).textContent = f.name.substring(0,18);
   rdy[key] = true; checkRdy();
+
+  // Enhanced previews for SJ and DVJ
+  var url = URL.createObjectURL(f);
+  var sizeStr = (f.size/1024/1024).toFixed(1) + ' MB';
+  if(test === 'SJ') {
+    var vidId = side === 'R' ? 'sjPreviewSag' : 'sjPreviewFront';
+    var nameId = side === 'R' ? 'sjFileNameSag' : 'sjFileNameFront';
+    var sizeId = side === 'R' ? 'sjFileSizeSag' : 'sjFileSizeFront';
+    var vid = document.getElementById(vidId);
+    if(vid) { vid.src = url; vid.style.display = 'block'; }
+    var nameEl = document.getElementById(nameId);
+    var sizeEl = document.getElementById(sizeId);
+    if(nameEl) nameEl.textContent = '· ' + f.name.substring(0,20);
+    if(sizeEl) sizeEl.textContent = '· ' + sizeStr;
+  } else if(test === 'DVJ') {
+    var vidId2 = side === 'R' ? 'dvjPreviewSag' : 'dvjPreviewFront';
+    var nameId2 = side === 'R' ? 'dvjFileNameSag' : 'dvjFileNameFront';
+    var sizeId2 = side === 'R' ? 'dvjFileSizeSag' : 'dvjFileSizeFront';
+    var vid2 = document.getElementById(vidId2);
+    if(vid2) { vid2.src = url; vid2.style.display = 'block'; }
+    var nameEl2 = document.getElementById(nameId2);
+    var sizeEl2 = document.getElementById(sizeId2);
+    if(nameEl2) nameEl2.textContent = '· ' + f.name.substring(0,20);
+    if(sizeEl2) sizeEl2.textContent = '· ' + sizeStr;
+  }
 }
 
 function checkRdy() {
@@ -1410,11 +1467,15 @@ function toggleSave() {
 
 function launch() {
   var lbtn = document.getElementById('lbtn');
+  // Guard: si rien uploadé (bouton encore disabled), afficher alerte
+  if(lbtn.disabled) {
+    var testLabels = {CMJ:'vidéo CMJ', SJ:'vidéos SJ (SAG et FRONT)', DVJ:'vidéos DVJ (SAG et FRONT)'};
+    alert('Veuillez uploader la/les ' + (testLabels[cur]||'vidéos') + ' avant de lancer l\'analyse.\nOu cliquez "Voir un exemple de démonstration" pour tester sans vidéo.');
+    return;
+  }
+  lbtn.disabled = true;
   lbtn.classList.add('btn-loading');
-  lbtn.textContent = 'Analyse en cours';
-  var btn = document.getElementById('lbtn');
-  btn.disabled = true;
-  btn.textContent = 'Analyse en cours...';
+  lbtn.textContent = 'Analyse en cours...';
   document.getElementById('prog').className = 'prog show';
   document.getElementById('emp').style.display = 'none';
   bcSet(2);
@@ -1708,6 +1769,34 @@ body {
 .btn-pulse {
   animation: pulse-btn 2s infinite;
 }
+
+.test-section {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.test-section-title {
+  color: #00c8ff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.badge-vue {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 8px;
+}
+.badge-sag { background: rgba(255,165,0,0.2); color: #ffa500; }
+.badge-front { background: rgba(0,200,255,0.2); color: #00c8ff; }
+.step-success { color: #00ff88; font-weight: bold; }
+
 </style>
 </head>
 <body>
