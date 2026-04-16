@@ -132,7 +132,7 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
 .flogo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;letter-spacing:3px;}
 .flogo span{color:var(--cyan);}
 /* MODAL DISCLAIMER */
-#discModal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+#discModal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;transition:opacity 0.3s ease;}
 .disc-card{background:#040a14;border:1px solid rgba(245,158,11,0.4);border-radius:4px;padding:32px;max-width:560px;width:100%;position:relative;}
 .disc-h{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
 .disc-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin:0;}
@@ -206,7 +206,7 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
         Je confirme utiliser VERTEXTRACK à des fins d'analyse sportive uniquement et non à des fins de diagnostic médical.
       </div>
     </label>
-    <button class="disc-btn" id="discBtn" onclick="acceptDisc()" disabled>Accéder à la plateforme</button>
+    <button class="disc-btn" id="discBtn" onclick="acceptDisc()">Accéder à la plateforme</button>
     <div class="disc-foot">
       Développé par Mhamed Belabbes · Encadré par Dr. Ali Benaissa<br>Université Hassan 1er · Settat · Master TDTS 2025-2026
     </div>
@@ -707,48 +707,42 @@ function checkDisc() {
     btn.disabled = true;
     btn.classList.remove('active');
   }
-}
 function acceptDisc() {
   sessionStorage.setItem('disclaimer_accepted', 'true');
-  document.getElementById('discModal').style.display = 'none';
+  var modal = document.getElementById('discModal');
+  modal.style.display = 'none';
+  modal.style.visibility = 'hidden';
+  modal.style.opacity = '0';
+  modal.style.pointerEvents = 'none';
   document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 }
-window.addEventListener('load', function() {
-  if(!sessionStorage.getItem('disclaimer_accepted')) {
-    document.getElementById('discModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-});
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
-
-<script>
-function checkDisc() {
-  var chk = document.getElementById('discChk');
-  var btn = document.getElementById('discBtn');
-  if(chk.checked) {
-    btn.disabled = false;
-    btn.classList.add('active');
-  } else {
-    btn.disabled = true;
-    btn.classList.remove('active');
-  }
-}
-function acceptDisc() {
-  sessionStorage.setItem('disclaimer_accepted', 'true');
-  document.getElementById('discModal').style.display = 'none';
-  document.body.style.overflow = '';
-}
-window.addEventListener('load', function() {
-  if(!sessionStorage.getItem('disclaimer_accepted')) {
-    document.getElementById('discModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-});
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
 
 <script>
+window.addEventListener('load', function() {
+  var modal = document.getElementById('discModal');
+  if (!sessionStorage.getItem('disclaimer_accepted')) {
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'all';
+    document.body.style.overflow = 'hidden';
+    
+    // Assurez-vous que le bouton est désactivé au démarrage
+    var btn = document.getElementById('discBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.remove('active');
+    }
+  } else {
+    modal.style.display = 'none';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+  }
+});
+</script>
 var cur = 'CMJ';
 var rdy = {};
 var detector = null;
