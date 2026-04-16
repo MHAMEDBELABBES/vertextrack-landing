@@ -1386,123 +1386,122 @@ function toggleSave() {
 
 
 function launch() {
+  console.log('launch() called');
   var lbtn = document.getElementById('lbtn');
-  // Guard: si rien uploadé (bouton encore disabled), afficher alerte
-  if(lbtn.disabled) {
-    var testLabels = {CMJ:'vidéo CMJ', SJ:'vidéos SJ (SAG et FRONT)', DVJ:'vidéos DVJ (SAG et FRONT)'};
-    alert('Veuillez uploader la/les ' + (testLabels[cur]||'vidéos') + ' avant de lancer l\'analyse.\nOu cliquez "Voir un exemple de démonstration" pour tester sans vidéo.');
+
+  // Vérifier l'état via window._vtUploaded (wizard séquentiel)
+  var vtUp = window._vtUploaded || {};
+  var allDone = vtUp.CMJ && vtUp.SJ && vtUp.DVJsag && vtUp.DVJfront;
+
+  // Fallback : si bouton encore disabled et rien uploadé
+  if (!allDone && lbtn && lbtn.disabled) {
+    alert('Veuillez uploader les vidéos CMJ, SJ et DVJ avant de lancer l\'analyse.\nOu cliquez "Voir un exemple de démonstration" pour tester sans vidéo.');
     return;
   }
-  lbtn.disabled = true;
-  lbtn.classList.add('btn-loading');
-  lbtn.textContent = 'Analyse en cours...';
-  document.getElementById('prog').className = 'prog show';
-  document.getElementById('emp').style.display = 'none';
-  bcSet(2);
 
-  // Étapes avec durées réalistes et messages détaillés
-  var steps = [
-    {
-      id: 'p1',
-      pct: 20,
-      duration: 1200,
-      label: 'Étape 1/5 — Extraction des landmarks MediaPipe',
-      detail: 'Détection des 33 points squelettiques...',
-      remaining: 'environ 48 secondes restantes'
-    },
-    {
-      id: 'p2',
-      pct: 40,
-      duration: 1400,
-      label: 'Étape 2/5 — Filtrage du signal biomécanique',
-      detail: 'Savitzky-Golay filtering à 60fps...',
-      remaining: 'environ 36 secondes restantes'
-    },
-    {
-      id: 'p3',
-      pct: 60,
-      duration: 1200,
-      label: 'Étape 3/5 — Extraction des features',
-      detail: 'Calcul FPPA, ROM, LSI, hauteur de saut...',
-      remaining: 'environ 22 secondes restantes'
-    },
-    {
-      id: 'p4',
-      pct: 80,
-      duration: 1000,
-      label: 'Étape 4/5 — Classification Random Forest',
-      detail: 'Prédiction du profil de risque LCA...',
-      remaining: 'environ 10 secondes restantes'
-    },
-    {
-      id: 'p5',
-      pct: 100,
-      duration: 800,
-      label: 'Étape 5/5 — Génération du rapport SHAP',
-      detail: 'Calcul des valeurs d\'explicabilité...',
-      remaining: 'Finalisation...'
-    }
-  ];
-
-  // Créer ou mettre à jour le div d'information détaillée
-  var infoDiv = document.getElementById('prog-detail');
-  if(!infoDiv) {
-    infoDiv = document.createElement('div');
-    infoDiv.id = 'prog-detail';
-    infoDiv.style.cssText = 'margin-top:12px;padding:12px 16px;' +
-      'background:rgba(0,200,255,0.04);' +
-      'border:1px solid rgba(0,200,255,0.1);';
-    document.getElementById('prog').appendChild(infoDiv);
+  if (lbtn) {
+    lbtn.disabled = true;
+    lbtn.innerHTML = '\u23F3 Analyse en cours...';
+    lbtn.style.animation = 'none';
+    lbtn.style.background = 'rgba(0,200,255,0.2)';
+    lbtn.style.color = '#00c8ff';
+    lbtn.style.border = '1px solid rgba(0,200,255,0.3)';
   }
 
+  // Afficher section résultats (col droite)
+  var emp = document.getElementById('emp');
+  if (emp) emp.style.display = 'none';
+
+  // Créer ou trouver le feedback
+  var fb = document.getElementById('analysisFeedback');
+  if (!fb) {
+    fb = document.createElement('div');
+    fb.id = 'analysisFeedback';
+    fb.style.cssText = [
+      'margin:20px 0',
+      'padding:20px',
+      'background:rgba(0,200,255,0.06)',
+      'border:1px solid rgba(0,200,255,0.3)',
+      'border-radius:10px',
+      'color:#00c8ff',
+      'font-family:JetBrains Mono,monospace',
+      'font-size:13px',
+      'line-height:2'
+    ].join(';');
+    if (lbtn && lbtn.parentNode) {
+      lbtn.parentNode.insertBefore(fb, lbtn);
+    }
+  }
+  fb.innerHTML = '';
+  fb.style.display = 'block';
+
+  // Breadcrumb step 2 si disponible
+  if (typeof bcSet === 'function') bcSet(2);
+  // Progress bar (optionnel — compatible avec l'ancien prog si présent)
+  var prog = document.getElementById('prog');
+  if (prog) prog.className = 'prog show';
+
+  var steps = [
+    '\u2699\uFE0F \u00c9tape 1/5 \u2014 Extraction landmarks MediaPipe BlazePose...',
+    '\u{1F4CA} \u00c9tape 2/5 \u2014 Filtrage signal Savitzky-Golay...',
+    '\u{1F4D0} \u00c9tape 3/5 \u2014 Calcul FPPA \u00b7 ROM \u00b7 LSI \u00b7 hauteur saut...',
+    '\u{1F916} \u00c9tape 4/5 \u2014 Classification Random Forest + SHAP...',
+    '\u{1F4C4} \u00c9tape 5/5 \u2014 G\u00e9n\u00e9ration rapport biom\u00e9canique...'
+  ];
+  var pcts = [20, 40, 60, 80, 100];
+  var durations = [1200, 1400, 1200, 1000, 800];
+
+  var i = 0;
   var cumTime = 0;
-  steps.forEach(function(step, i) {
-    cumTime += (i === 0 ? 0 : steps[i-1].duration);
+
+  steps.forEach(function(label, idx) {
+    cumTime += (idx === 0 ? 0 : durations[idx - 1]);
     setTimeout(function() {
-      // Mettre à jour les étapes précédentes
-      if(i > 0) {
-        document.getElementById(steps[i-1].id).className = 'ps done';
+      // Update progress bar steps
+      var pId = document.getElementById('p' + (idx + 1));
+      if (pId) pId.className = 'ps active';
+      if (idx > 0) {
+        var prev = document.getElementById('p' + idx);
+        if (prev) prev.className = 'ps done';
       }
-      document.getElementById(step.id).className = 'ps active';
-      document.getElementById('pbf').style.width = step.pct + '%';
+      var pbf = document.getElementById('pbf');
+      if (pbf) pbf.style.width = pcts[idx] + '%';
 
-      // Mettre à jour le feedback détaillé
-      infoDiv.innerHTML =
-        '<div style="display:flex;justify-content:space-between;' +
-        'align-items:center;margin-bottom:6px;">' +
-        '<span style="font-family:\'Barlow Condensed\',sans-serif;' +
-        'font-weight:700;font-size:13px;color:#fff;' +
-        'text-transform:uppercase;letter-spacing:1px;">' +
-        step.label + '</span>' +
-        '<span style="font-family:\'JetBrains Mono\',monospace;' +
-        'font-size:10px;color:var(--cyan);">' +
-        step.remaining + '</span>' +
-        '</div>' +
-        '<div style="font-size:11px;color:var(--muted);">' +
-        step.detail + '</div>';
+      // Append to feedback div
+      fb.innerHTML += '<div>' + label + '</div>';
 
-      // Dernière étape
-      if(i === steps.length - 1) {
+      // Last step
+      if (idx === steps.length - 1) {
         setTimeout(function() {
-          document.getElementById(step.id).className = 'ps done';
-          infoDiv.innerHTML =
-            '<div style="font-family:\'Barlow Condensed\',sans-serif;' +
-            'font-weight:700;font-size:14px;color:var(--green);' +
-            'text-transform:uppercase;letter-spacing:1px;">' +
-            '✓ Analyse terminée — Résultats disponibles</div>';
-          document.getElementById('res').style.display = 'block';
-          lbtn.classList.remove('btn-loading');
-          lbtn.classList.add('btn-success');
-          lbtn.textContent = '✓ Analyse terminée';
-          bcSet(3);
-          document.getElementById('res').scrollIntoView(
-            { behavior: 'smooth', block: 'start' }
-          );
-        }, step.duration);
+          var pLast = document.getElementById('p5');
+          if (pLast) pLast.className = 'ps done';
+
+          fb.innerHTML += '<div style="margin-top:12px;color:#00ff88;font-weight:bold">'
+            + '\u2705 Analyse termin\u00e9e \u2014 R\u00e9sultats disponibles ci-dessous</div>';
+
+          if (lbtn) {
+            lbtn.innerHTML = '\u2705 ANALYSE TERMIN\u00c9E';
+            lbtn.style.background = 'rgba(0,255,136,0.15)';
+            lbtn.style.color = '#00ff88';
+            lbtn.style.border = '1px solid rgba(0,255,136,0.4)';
+          }
+
+          if (typeof bcSet === 'function') bcSet(3);
+
+          // Afficher la section résultats
+          var res = document.getElementById('res');
+          if (res) {
+            res.style.display = 'block';
+            setTimeout(function() {
+              res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+          }
+        }, durations[idx]);
       }
     }, cumTime);
   });
 }
+
 
 // ═══ EXPORT PDF PROFESSIONNEL ═══
 function exportPDF() {
@@ -2120,6 +2119,7 @@ async function exportGeneric(vid, btn, prog, msg, bar, filename) {
       if (check) check.style.display = 'inline';
 
       up[key] = true;
+      window._vtUploaded = up; // expose to global scope for launch()
       console.log('Uploaded:', key, up);
       updateWizard();
     }
