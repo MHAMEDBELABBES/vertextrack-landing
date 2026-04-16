@@ -166,6 +166,18 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
 .hero-badge{animation:fadeUp .6s ease both;}
 .hero-title{animation:fadeUp .7s .1s ease both;}
 .hero-btns{animation:fadeUp .7s .2s ease both;}
+
+body {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
 </style>
 </head>
 <body>
@@ -268,10 +280,10 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
 
 <!-- STATS STRIP -->
 <div class="stats-strip">
-  <div class="stat-item"><div class="stat-num">60fps</div><div class="stat-lbl">Analyse vidéo</div></div>
-  <div class="stat-item"><div class="stat-num">33</div><div class="stat-lbl">Landmarks IA</div></div>
-  <div class="stat-item"><div class="stat-num">0.80</div><div class="stat-lbl">AUC-ROC</div></div>
-  <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">Tests biomécanique</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-fps">60</div><div class="stat-lbl">Analyse vidéo</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-lm">33</div><div class="stat-lbl">Landmarks IA</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-auc">0.80</div><div class="stat-lbl">AUC-ROC</div></div>
+  <div class="stat-item"><div class="stat-num" id="stat-tests">3</div><div class="stat-lbl">Tests biomécanique</div></div>
 </div>
 
 <!-- TICKER -->
@@ -391,5 +403,76 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
   </div>
 </footer>
 
+<script>
+
+function animateCounter(element, target, duration, suffix) {
+  var start = 0;
+  var startTime = null;
+  var isFloat = target % 1 !== 0;
+  
+  function step(timestamp) {
+    if(!startTime) startTime = timestamp;
+    var progress = Math.min((timestamp - startTime) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var current = start + (target - start) * eased;
+    
+    if(isFloat) {
+      element.textContent = current.toFixed(2) + (suffix || '');
+    } else {
+      element.textContent = Math.floor(current) + (suffix || '');
+    }
+    
+    if(progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = (isFloat ? target.toFixed(2) : target) 
+        + (suffix || '');
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function initCounters() {
+  var counters = [
+    { id: 'stat-fps',   target: 60,   suffix: 'fps', duration: 1500 },
+    { id: 'stat-lm',    target: 33,   suffix: '',    duration: 1200 },
+    { id: 'stat-auc',   target: 0.80, suffix: '',    duration: 2000 },
+    { id: 'stat-tests', target: 3,    suffix: '',    duration: 800  }
+  ];
+  counters.forEach(function(c) {
+    var el = document.getElementById(c.id);
+    if(el) animateCounter(el, c.target, c.duration, c.suffix);
+  });
+}
+
+// Observer pour déclencher au scroll
+var statsObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if(entry.isIntersecting) {
+      initCounters();
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+
+var statsStrip = document.querySelector('.stats-strip');
+if(statsStrip) statsObserver.observe(statsStrip);
+
+</script>
+<script>
+
+document.querySelectorAll('a[href]').forEach(function(link) {
+  var href = link.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http')) return;
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageOut 0.3s ease both';
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+});
+
+</script>
 </body>
 </html>

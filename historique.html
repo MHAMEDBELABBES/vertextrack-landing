@@ -183,6 +183,18 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
 @media(max-width:600px){
   .kpi-row{grid-template-columns:1fr;}
 }
+
+body {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
 </style>
 </head>
 <body>
@@ -703,6 +715,21 @@ function exportPDF(){
 
 // Init
 window.addEventListener('DOMContentLoaded', updateRadar);
+</script>
+<script>
+
+document.querySelectorAll('a[href]').forEach(function(link) {
+  var href = link.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http')) return;
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageOut 0.3s ease both';
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+});
+
 </script>
 </body>
 </html>

@@ -109,6 +109,33 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
 .footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;letter-spacing:3px;}
 .footer-logo span{color:var(--cyan);}
 .footer-info{font-size:11px;color:rgba(255,255,255,0.18);text-align:right;line-height:1.8;}
+
+@keyframes growUp {
+  from { height: 0; opacity: 0; }
+  to   { height: var(--h); opacity: 1; }
+}
+@keyframes growRight {
+  from { width: 0; opacity: 0; }
+  to   { width: var(--w); opacity: 1; }
+}
+.bar-animated {
+  animation: growUp 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.bar-h-animated {
+  animation: growRight 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+body {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
 </style>
 </head>
 <body>
@@ -453,5 +480,43 @@ function hideDemoBanner() {
 window.addEventListener('load', loadSupabaseData);
 </script>
 
+<script>
+
+function animateBars() {
+  var bars = document.querySelectorAll('.chart-bar, .bar-fill, .bf');
+  bars.forEach(function(bar, i) {
+    bar.style.animationDelay = (i * 0.1) + 's';
+    bar.classList.add('bar-animated');
+  });
+}
+
+var chartObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if(entry.isIntersecting) {
+      animateBars();
+      chartObserver.disconnect();
+    }
+  });
+}, { threshold: 0.2 });
+
+var chart = document.querySelector('.chart-area, .chart, .bars');
+if(chart) chartObserver.observe(chart);
+
+</script>
+<script>
+
+document.querySelectorAll('a[href]').forEach(function(link) {
+  var href = link.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http')) return;
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageOut 0.3s ease both';
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+});
+
+</script>
 </body>
 </html>

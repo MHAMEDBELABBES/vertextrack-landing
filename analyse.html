@@ -211,6 +211,53 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
   font-size:18px;margin-left:12px;
 }
 
+
+body {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pulse-btn {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(0,200,255,0); }
+}
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(3,8,15,0.3);
+  border-top-color: #03080f;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.btn-success {
+  background: var(--green) !important;
+  color: #03080f !important;
+  animation: pulse-btn 1s ease 2;
+}
+.btn-pulse {
+  animation: pulse-btn 2s infinite;
+}
 </style>
 </head>
 <body>
@@ -1269,6 +1316,9 @@ function toggleSave() {
 }
 
 function launch() {
+  var lbtn = document.getElementById('lbtn');
+  lbtn.classList.add('btn-loading');
+  lbtn.textContent = 'Analyse en cours';
   var btn = document.getElementById('lbtn');
   btn.disabled = true;
   btn.textContent = 'Analyse en cours...';
@@ -1367,7 +1417,9 @@ function launch() {
             'text-transform:uppercase;letter-spacing:1px;">' +
             '✓ Analyse terminée — Résultats disponibles</div>';
           document.getElementById('res').style.display = 'block';
-          btn.textContent = '✓ Analyse terminée';
+          lbtn.classList.remove('btn-loading');
+          lbtn.classList.add('btn-success');
+          lbtn.textContent = '✓ Analyse terminée';
           bcSet(3);
           document.getElementById('res').scrollIntoView(
             { behavior: 'smooth', block: 'start' }
@@ -1381,6 +1433,11 @@ function launch() {
 // ═══ EXPORT PDF PROFESSIONNEL ═══
 function exportPDF() {
   bcSet(4);
+  var btn = document.getElementById('exportPdfBtn') || document.getElementById('btn-export-pdf') || document.querySelector('.btn-sm[onclick=\"exportPDF()\"]');
+  if(btn) {
+    btn.classList.add('btn-loading');
+    btn.textContent = 'Export en cours';
+  }
   var today = new Date();
   var dateStr = today.toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
   var timeStr = today.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
@@ -1511,6 +1568,53 @@ function exportPDF() {
 .wiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;}
 .ck-item{margin-bottom:8px;}
 .ck-item label{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.8);cursor:pointer;}
+
+body {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pulse-btn {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(0,200,255,0); }
+}
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(3,8,15,0.3);
+  border-top-color: #03080f;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.btn-success {
+  background: var(--green) !important;
+  color: #03080f !important;
+  animation: pulse-btn 1s ease 2;
+}
+.btn-pulse {
+  animation: pulse-btn 2s infinite;
+}
 </style>
 </head>
 <body>
@@ -1692,6 +1796,21 @@ function exportPDF() {
   </button>
 </div>
 
+<script>
+
+document.querySelectorAll('a[href]').forEach(function(link) {
+  var href = link.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http')) return;
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageOut 0.3s ease both';
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+});
+
+</script>
 </body>
 </html>`);
   pdfWin.document.close();
@@ -2261,5 +2380,20 @@ function loadDemo() {
 
 </script>
 
+<script>
+
+document.querySelectorAll('a[href]').forEach(function(link) {
+  var href = link.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http')) return;
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.body.style.animation = 'pageOut 0.3s ease both';
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+});
+
+</script>
 </body>
 </html>
