@@ -133,6 +133,63 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .step-item.done::after {
   background: #00ff88 !important;
 }
+
+/* Checklist Caméra - NEW */
+.camera-checklist {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.check-item:hover {
+  background: rgba(0,200,255,0.05);
+  border-color: rgba(0,200,255,0.2);
+}
+.check-item.checked {
+  background: rgba(0,255,136,0.05);
+  border-color: rgba(0,255,136,0.3);
+}
+.check-box {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 2px solid rgba(0,200,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: bold;
+  color: transparent;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  background: rgba(0,200,255,0.05);
+}
+.check-item.checked .check-box {
+  background: #00ff88;
+  border-color: #00ff88;
+  color: #03080f;
+}
+.check-title {
+  color: #e0e0e0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.check-desc {
+  color: #888;
+  font-size: 13px;
+  line-height: 1.5;
+}
 .pd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;}
 .ps.active .pd{background:var(--cyan);}
 .ps.done .pd{background:var(--green);}
@@ -577,18 +634,79 @@ border-top:1px solid rgba(255,255,255,0.06);">
   
   <div style="font-size:11px;color:#ef5350;text-align:center;margin-bottom:20px;font-weight:600;">⚠ Cette vue est essentielle pour détecter le valgus du genou</div>
 
-  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);padding:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Checklist avant de filmer</div>
-    <div class="ck-item"><label><input type="checkbox" onchange="checkCamera()"> Caméra fixe sur trépied (pas de main tremblante)</label></div>
-    <div class="ck-item"><label><input type="checkbox" onchange="checkCamera()"> Athlète entièrement visible dans le cadre</label></div>
-    <div class="ck-item"><label><input type="checkbox" onchange="checkCamera()"> Sol visible sous les pieds</label></div>
-    <div class="ck-item"><label><input type="checkbox" onchange="checkCamera()"> Bonne luminosité</label></div>
-    <div class="ck-item"><label><input type="checkbox" onchange="checkCamera()"> Distance respectée</label></div>
-  </div>
+  <div class="camera-checklist" id="cameraChecklist">
+    <h3 style="color:#00c8ff;font-family:'Barlow Condensed',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:16px">
+      📋 CHECKLIST PLACEMENT CAMÉRA
+    </h3>
+    <div class="checklist-items">
+      
+      <label class="check-item" onclick="toggleCheck(this, 'dist')">
+        <div class="check-box" id="check-dist">✓</div>
+        <div class="check-content">
+          <div class="check-title">📏 Distance : 3–4 mètres</div>
+          <div class="check-desc">Caméra placée à 3–4m de l'athlète, centrée dans le champ de vision</div>
+        </div>
+      </label>
 
-  <div class="wiz-actions">
-    <button class="wbtn-o" onclick="goStep(1)">← Retour</button>
-    <button class="wbtn" id="btnCam" onclick="goStep(3)" disabled>J'ai bien placé ma caméra →</button>
+      <label class="check-item" onclick="toggleCheck(this, 'height')">
+        <div class="check-box" id="check-height">✓</div>
+        <div class="check-content">
+          <div class="check-title">📐 Hauteur : niveau hanche (≈ 1m)</div>
+          <div class="check-desc">Objectif aligné avec la hauteur des hanches de l'athlète</div>
+        </div>
+      </label>
+
+      <label class="check-item" onclick="toggleCheck(this, 'view')">
+        <div class="check-box" id="check-view">✓</div>
+        <div class="check-content">
+          <div class="check-title">🎥 Vue selon le test</div>
+          <div class="check-desc">
+            CMJ/SJ : Vue <strong style="color:#ffa500">SAGITTALE</strong> (de côté)<br>
+            DVJ : Vue <strong style="color:#ffa500">SAGITTALE</strong> + Vue <strong style="color:#00c8ff">FRONTALE</strong> (de face)
+          </div>
+        </div>
+      </label>
+
+      <label class="check-item" onclick="toggleCheck(this, 'fps')">
+        <div class="check-box" id="check-fps">✓</div>
+        <div class="check-content">
+          <div class="check-title">⚡ Qualité : 60fps / 1080p minimum</div>
+          <div class="check-desc">Smartphone en mode vidéo HD, stabilisé sur trépied ou support fixe</div>
+        </div>
+      </label>
+
+      <label class="check-item" onclick="toggleCheck(this, 'light')">
+        <div class="check-box" id="check-light">✓</div>
+        <div class="check-content">
+          <div class="check-title">💡 Éclairage suffisant</div>
+          <div class="check-desc">Éviter contre-jour, préférer lumière naturelle ou salle bien éclairée</div>
+        </div>
+      </label>
+
+      <label class="check-item" onclick="toggleCheck(this, 'body')">
+        <div class="check-box" id="check-body">✓</div>
+        <div class="check-content">
+          <div class="check-title">🏃 Corps entier visible</div>
+          <div class="check-desc">Tête et pieds doivent être visibles dans le cadre pendant tout le saut</div>
+        </div>
+      </label>
+
+    </div>
+
+    <div id="checklistProgress" style="margin-top:20px;display:none">
+      <div style="color:#00ff88;font-weight:bold;font-size:15px">
+        ✅ Checklist complète — Passez à l'upload vidéo
+      </div>
+    </div>
+
+    <div class="wiz-actions" style="margin-top:30px;">
+      <button class="wbtn-o" onclick="goStep(1)">← Retour</button>
+      <button id="btnNextToUpload" 
+              style="width:100%;padding:14px;background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.4);color:#00c8ff;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all 0.3s"
+              onclick="goToVideoUpload()">
+        CONTINUER → UPLOADER LES VIDÉOS
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1600,6 +1718,68 @@ function trackExport(type) {
   markBreadcrumbDone(4);
   if (typeof vtToast === 'function') vtToast('✅ ' + type + ' téléchargé !');
 }
+
+/* ===== CHECKLIST & BREADCRUMB PROGRESS ===== */
+var checklistState = {};
+var totalChecks = 6;
+
+function toggleCheck(labelEl, key) {
+  checklistState[key] = !checklistState[key];
+  if (checklistState[key]) {
+    labelEl.classList.add('checked');
+  } else {
+    labelEl.classList.remove('checked');
+  }
+  var doneCount = Object.values(checklistState).filter(Boolean).length;
+  var progress = document.getElementById('checklistProgress');
+  if (doneCount === totalChecks && progress) {
+    progress.style.display = 'block';
+    markBcStep(2);
+  }
+}
+
+function markBcStep(n) {
+  var allSteps = document.querySelectorAll('.bc-step, .step-dot, .wizard-step, [class*="step-item"]');
+  if (allSteps.length === 0) { allSteps = document.querySelectorAll('div, span'); }
+  
+  allSteps.forEach(function(el) {
+    var txt = el.textContent.trim();
+    if (txt === String(n) || txt === '0' + n) {
+      el.style.cssText += ';background:#00ff88!important;border-color:#00ff88!important;color:#03080f!important;box-shadow:0 0 12px rgba(0,255,136,.5)!important;';
+      el.textContent = '✓';
+      if (el.parentElement) {
+        var lbl = el.parentElement.querySelector('[class*="label"],[class*="title"]');
+        if (lbl) lbl.style.color = '#00ff88';
+      }
+    }
+  });
+  console.log('[VT] BC step', n, 'done');
+}
+
+function goToVideoUpload() {
+  markBcStep(2);
+  var camSection = document.getElementById('cameraChecklist') || document.querySelector('[class*="camera"]');
+  if (camSection) {
+    var parent = camSection.closest('[id*="wc"],[class*="wc"],[data-step]');
+    if (parent) parent.style.display = 'none';
+  }
+  var upload = document.getElementById('stepCMJ') || document.getElementById('wc-3');
+  if (upload) {
+    var container = upload.closest('[id*="wc"],[class*="wc"],[data-step]') || upload;
+    container.style.display = 'block';
+    markBcStep(3);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var testCards = document.querySelectorAll('[onclick*="setTest"],[onclick*="selectTest"],[data-test]');
+  testCards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      markBcStep(1);
+    });
+  });
+});
 
 /* ===== END VERTEXTRACK ===== */
 </script>
