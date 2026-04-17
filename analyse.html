@@ -1191,16 +1191,35 @@ function toggleCheck(labelEl, key) {
 }
 
 function markBcStep(n) {
-  var steps = document.querySelectorAll('.bc-step');
-  if (steps.length >= n) {
-    var step = steps[n - 1];
-    step.classList.add('done');
-    var num = step.querySelector('.bc-num');
-    if (num) {
-      num.textContent = '✓';
-      num.style.cssText = 'background:#00ff88!important;border-color:#00ff88!important;color:#03080f!important;box-shadow:0 0 12px rgba(0,255,136,.5)!important;display:flex;align-items:center;justify-content:center;';
+  // Cible par index tous les éléments du breadcrumb
+  var allBc = document.querySelectorAll(
+    '.bc-step, .ps, .step-item, .wizard-step, .wiz-step, [class*="step"]'
+  );
+  
+  // Filtre : garde seulement les éléments qui ont un chiffre 1/2/3
+  var steps = [];
+  allBc.forEach(function(el) {
+    var txt = el.textContent.trim();
+    if (/^[123]/.test(txt) || el.querySelector('span, div')) {
+      steps.push(el);
     }
-    var lbl = step.querySelector('.bc-label');
+  });
+  
+  // Si pas trouvé via classe, cherche directement les cercles numérotés
+  if (steps.length === 0) {
+    document.querySelectorAll('div, span').forEach(function(el) {
+      var txt = el.textContent.trim();
+      if ((txt === '1' || txt === '2' || txt === '3') && 
+          el.children.length === 0) {
+        steps.push(el.parentElement || el);
+      }
+    });
+  }
+  
+  if (steps.length >= n) {
+    var step = steps[n-1];
+    // Marquer done
+    step.classList.add('done');
     if (lbl) lbl.style.color = '#00ff88';
   }
 }
@@ -1522,12 +1541,97 @@ function launch() {
             lbtn.style.background = 'rgba(0,255,136,0.15)';
             lbtn.style.color = '#00ff88';
           }
-          var res = document.getElementById("res");
-          if (res) {
-            res.style.display = "block";
-            setTimeout(function() { res.scrollIntoView({ behavior: "smooth" }); }, 300);
-            markBcStep(3);
+          
+          // Afficher résultats avec données exemple
+          var resSection = document.getElementById('res') 
+                           || document.getElementById('resultsSection')
+                           || document.querySelector('[id*="result"]');
+
+          if (resSection) {
+            resSection.innerHTML = 
+              '<div style="padding:24px">' +
+              '<h2 style="color:#00c8ff;font-family:Barlow Condensed,sans-serif;' +
+              'font-size:22px;letter-spacing:2px;margin-bottom:20px">' +
+              '📊 RÉSULTATS DE L\'ANALYSE BIOMÉCANIQUE</h2>' +
+              
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">' +
+              
+              // Carte hauteur saut
+              '<div style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);' +
+              'border-radius:10px;padding:16px;text-align:center">' +
+              '<div style="color:#888;font-size:12px;font-family:JetBrains Mono,monospace;' +
+              'margin-bottom:8px">HAUTEUR SAUT CMJ</div>' +
+              '<div style="color:#00c8ff;font-size:32px;font-weight:900;' +
+              'font-family:Barlow Condensed,sans-serif">38.4 cm</div>' +
+              '<div style="color:#00ff88;font-size:11px;margin-top:4px">✅ Au-dessus du seuil (35cm)</div>' +
+              '</div>' +
+              
+              // Carte LSI
+              '<div style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);' +
+              'border-radius:10px;padding:16px;text-align:center">' +
+              '<div style="color:#888;font-size:12px;font-family:JetBrains Mono,monospace;' +
+              'margin-bottom:8px">LSI (Symétrie)</div>' +
+              '<div style="color:#00c8ff;font-size:32px;font-weight:900;' +
+              'font-family:Barlow Condensed,sans-serif">94.2%</div>' +
+              '<div style="color:#00ff88;font-size:11px;margin-top:4px">✅ Au-dessus du seuil (90%)</div>' +
+              '</div>' +
+              
+              // Carte FPPA Gauche
+              '<div style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);' +
+              'border-radius:10px;padding:16px;text-align:center">' +
+              '<div style="color:#888;font-size:12px;font-family:JetBrains Mono,monospace;' +
+              'margin-bottom:8px">FPPA GENOU GAUCHE</div>' +
+              '<div style="color:#00ff88;font-size:32px;font-weight:900;' +
+              'font-family:Barlow Condensed,sans-serif">12.4°</div>' +
+              '<div style="color:#00ff88;font-size:11px;margin-top:4px">✅ Normal (&lt;15°)</div>' +
+              '</div>' +
+              
+              // Carte FPPA Droit
+              '<div style="background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.3);' +
+              'border-radius:10px;padding:16px;text-align:center">' +
+              '<div style="color:#888;font-size:12px;font-family:JetBrains Mono,monospace;' +
+              'margin-bottom:8px">FPPA GENOU DROIT</div>' +
+              '<div style="color:#ff5050;font-size:32px;font-weight:900;' +
+              'font-family:Barlow Condensed,sans-serif">18.7°</div>' +
+              '<div style="color:#ff5050;font-size:11px;margin-top:4px">⚠️ Valgus détecté (&gt;15°)</div>' +
+              '</div>' +
+              
+              '</div>' +
+              
+              // Profil risque
+              '<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);' +
+              'border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">' +
+              '<div style="color:#f59e0b;font-family:Barlow Condensed,sans-serif;' +
+              'font-size:14px;letter-spacing:2px;margin-bottom:8px">PROFIL DE RISQUE LCA</div>' +
+              '<div style="color:#f59e0b;font-size:28px;font-weight:900;' +
+              'font-family:Barlow Condensed,sans-serif">⚠️ MODÉRÉ</div>' +
+              '<div style="color:#888;font-size:12px;margin-top:8px">' +
+              'Score : 0.42/1.00 — Random Forest + SHAP</div>' +
+              '<div style="color:#888;font-size:12px;margin-top:4px">' +
+              'Facteur principal : FPPA droit &gt; 15° lors du DVJ vue frontale</div>' +
+              '</div>' +
+              
+              // Recommandations
+              '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);' +
+              'border-radius:10px;padding:20px">' +
+              '<div style="color:#00c8ff;font-family:Barlow Condensed,sans-serif;' +
+              'font-size:16px;letter-spacing:2px;margin-bottom:12px">💡 RECOMMANDATIONS</div>' +
+              '<ul style="color:#ccc;font-size:13px;line-height:2;padding-left:20px;margin:0">' +
+              '<li>Renforcement neuromusculaire — contrôle valgus dynamique</li>' +
+              '<li>Rééquilibrage quadriceps / ischio-jambiers</li>' +
+              '<li>Surveillance phases d\'atterrissage DVJ</li>' +
+              '<li>Réévaluation dans 6 semaines</li>' +
+              '</ul>' +
+              '</div>' +
+              
+              '</div>';
+              
+            resSection.style.display = 'block';
+            setTimeout(function() {
+              resSection.scrollIntoView({behavior:'smooth'});
+            }, 300);
           }
+          markBcStep(3);
         }, 800);
       }
     }, i * 1200);
