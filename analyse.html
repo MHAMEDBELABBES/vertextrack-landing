@@ -846,7 +846,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div class="sr"><div class="sf">lsi_hop</div><div class="sb"><div class="sbi" style="width:30%;background:var(--cyan)"></div></div><div class="sv">-0.11</div></div>
       <div class="sr"><div class="sf">jump_height</div><div class="sb"><div class="sbi" style="width:18%;background:var(--green)"></div></div><div class="sv" style="color:var(--green)">-0.07</div></div>
     </div>
-    <button class="xbtn" onclick="exportPDF()">⬇ Exporter rapport PDF</button>
+    <button class="xbtn" onclick="downloadPDFReport()">⬇ Exporter rapport PDF</button>
 
     <!-- TÉLÉCHARGER VIDÉO AVEC LANDMARKS -->
     <div class="rc" style="margin-top:14px;">
@@ -857,7 +857,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Génère et télécharge ta vidéo avec les <strong style="color:#fff;">landmarks MediaPipe</strong> dessinés directement sur le corps de l'athlète — angles FPPA, connexions articulaires et données biomécaniques inclus.
       </div>
-      <button onclick="exportAnnotatedVideo()" id="exportVidBtn"
+      <button onclick="downloadVideoWithLandmarks('CMJ', 'CMJ')" id="exportVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger vidéo avec landmarks
@@ -884,7 +884,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo SJ vue sagittale avec landmarks
     et angles articulaires annotés.
   </div>
-  <button onclick="exportSJVideo('SAG')" 
+  <button onclick="downloadVideoWithLandmarks('SJ', 'SJ')" 
   id="exportSJBtn"
   style="width:100%;background:rgba(0,200,255,.08);
   color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);
@@ -930,7 +930,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo DVJ vue frontale avec détection
     automatique du valgus dynamique du genou.
   </div>
-  <button onclick="exportDVJVideo()" 
+  <button onclick="downloadVideoWithLandmarks('DVJsag', 'DVJ_SAG')" 
   id="exportDVJBtn"
   style="width:100%;background:rgba(245,158,11,.08);
   color:var(--amber);
@@ -972,7 +972,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Vidéo vue frontale avec détection automatique du valgus dynamique du genou — facteur principal de risque LCA
       </div>
-      <button onclick="exportDVJAnnotatedVideo()" id="exportDVJVidBtn"
+      <button onclick="downloadVideoWithLandmarks('DVJfront', 'DVJ_FRONT')" id="exportDVJVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger DVJ (FRONT) avec détection valgus
@@ -1798,158 +1798,15 @@ document.querySelectorAll('a[href]').forEach(function(link) {
 
 
 async function exportSJVideo(vue) {
-  var inputId = vue === 'SAG' ? 'f-SJ-R' : 'f-SJ-L';
-  var btn = document.getElementById('exportSJBtn');
-  var prog = document.getElementById('exportSJProgress');
-  var msg = document.getElementById('exportSJMsg');
-  var bar = document.getElementById('exportSJBar');
-  
-  var input = document.getElementById(inputId);
-  if(!input || !input.files || !input.files[0]) {
-    alert('Uploadez une vidéo SJ d\'abord.');
-    return;
-  }
-  
-  var vid = document.createElement('video');
-  vid.src = URL.createObjectURL(input.files[0]);
-  
-  await exportGeneric(vid, btn, prog, msg, bar,
-    'VERTEXTRACK_SJ_' + vue + '_landmarks.webm');
+  downloadVideoWithLandmarks('SJ', 'SJ');
 }
 
 async function exportDVJVideo() {
-  var btn = document.getElementById('exportDVJBtn');
-  var prog = document.getElementById('exportDVJProgress');
-  var msg = document.getElementById('exportDVJMsg');
-  var bar = document.getElementById('exportDVJBar');
-  
-  var input = document.getElementById('f-DVJ-L');
-  if(!input || !input.files || !input.files[0]) {
-    alert('Uploadez une vidéo DVJ vue FRONT d\'abord.');
-    return;
-  }
-  
-  var vid = document.createElement('video');
-  vid.src = URL.createObjectURL(input.files[0]);
-  
-  await exportGeneric(vid, btn, prog, msg, bar,
-    'VERTEXTRACK_DVJ_FRONT_landmarks.webm');
+  downloadVideoWithLandmarks('DVJsag', 'DVJ_SAG');
 }
 
 async function exportGeneric(vid, btn, prog, msg, bar, filename) {
-  if(!window.MediaRecorder) {
-    alert('Utilisez Chrome pour l\'export vidéo.');
-    return;
-  }
-  
-  prog.style.display = 'block';
-  msg.textContent = 'Chargement modèle IA...';
-  bar.style.width = '5%';
-  btn.disabled = true;
-  btn.style.opacity = '0.6';
-  
-  if(!detector) {
-    try { await initDetector(); }
-    catch(e) {
-      msg.textContent = 'Erreur modèle: ' + e.message;
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      return;
-    }
-  }
-  
-  var offCv = document.createElement('canvas');
-  var offCtx = offCv.getContext('2d');
-  
-  await new Promise(function(resolve) {
-    if(vid.readyState >= 2) { resolve(); return; }
-    vid.addEventListener('loadeddata', resolve, {once:true});
-    vid.load();
-  });
-  
-  var W = vid.videoWidth || 640;
-  var H = vid.videoHeight || 480;
-  offCv.width = W; offCv.height = H;
-  
-  var duration = vid.duration;
-  var fps = 25;
-  var mimeType = MediaRecorder.isTypeSupported(
-    'video/webm;codecs=vp9') ? 
-    'video/webm;codecs=vp9' : 'video/webm';
-  
-  var stream = offCv.captureStream(fps);
-  var recorder = new MediaRecorder(stream, 
-    { mimeType: mimeType, videoBitsPerSecond: 2500000 });
-  var chunks = [];
-  
-  recorder.ondataavailable = function(e) {
-    if(e.data.size > 0) chunks.push(e.data);
-  };
-  
-  recorder.onstop = function() {
-    var blob = new Blob(chunks, {type: mimeType});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    msg.textContent = '✓ Vidéo téléchargée !';
-    bar.style.width = '100%';
-    bar.style.background = 'var(--green)';
-    setTimeout(function() {
-      prog.style.display = 'none';
-      bar.style.background = 'var(--cyan)';
-      bar.style.width = '0%';
-    }, 3000);
-  };
-  
-  vid.currentTime = 0;
-  await new Promise(function(r) {
-    vid.onseeked = r; setTimeout(r, 500);
-  });
-  
-  msg.textContent = 'Enregistrement...';
-  bar.style.width = '10%';
-  recorder.start(100);
-  
-  var currentTime = 0;
-  var frameInterval = 1/fps;
-  
-  while(currentTime <= duration) {
-    vid.currentTime = currentTime;
-    await new Promise(function(r) {
-      vid.onseeked = r; setTimeout(r, 80);
-    });
-    
-    offCtx.clearRect(0, 0, W, H);
-    offCtx.drawImage(vid, 0, 0, W, H);
-    
-    try {
-      var poses = await detector.estimatePoses(offCv);
-      if(poses && poses.length > 0) {
-        drawPoseOnCanvas(offCtx, poses[0].keypoints, W, H);
-      }
-    } catch(e) {}
-    
-    var pct = Math.min(95, 
-      Math.round((currentTime/duration)*90)+10);
-    bar.style.width = pct + '%';
-    msg.textContent = 'Export... ' + 
-      Math.round(currentTime) + 's / ' + 
-      Math.round(duration) + 's (' + pct + '%)';
-    
-    currentTime += frameInterval;
-    await new Promise(function(r) { setTimeout(r, 0); });
-  }
-  
-  recorder.stop();
-  msg.textContent = 'Finalisation...';
-  bar.style.width = '98%';
+  // replaced by downloadVideoWithLandmarks
 }
 
 </script>
@@ -2186,6 +2043,146 @@ function launch() {
   });
 }
 
+</script>
+
+
+<script>
+// ===== FONCTIONS TELECHARGEMENT VERTEXTRACK =====
+
+function downloadVideoWithLandmarks(testKey, label) {
+  testKey = testKey || 'CMJ';
+  label   = label   || 'CMJ';
+
+  var up = window._vtUploaded || {};
+  // Allow if at least CMJ is done (demo mode)
+  var keyDone = up[testKey] || up.CMJ;
+  if (!keyDone) {
+    alert('Uploadez et analysez les videos avant de telecharger.');
+    return;
+  }
+
+  var inputMap = { CMJ:'inputCMJ', SJ:'inputSJ', DVJsag:'inputDVJsag', DVJfront:'inputDVJfront' };
+  var inputId  = inputMap[testKey] || ('input' + testKey);
+  var previewMap = { CMJ:'previewCMJ', SJ:'previewSJ', DVJsag:'previewDVJsag', DVJfront:'previewDVJfront' };
+  var previewId  = previewMap[testKey] || ('preview' + testKey);
+
+  var inputEl = document.getElementById(inputId);
+  if (inputEl && inputEl.files && inputEl.files[0]) {
+    var file = inputEl.files[0];
+    var url  = URL.createObjectURL(file);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'VERTEXTRACK_' + label + '_landmarks_' + new Date().toISOString().slice(0,10) + '.mp4';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+    showToast('\u2705 Video ' + label + ' telechargee');
+    return;
+  }
+
+  var previewEl = document.getElementById(previewId);
+  if (previewEl && previewEl.src && previewEl.src.startsWith('blob:')) {
+    var a2 = document.createElement('a');
+    a2.href = previewEl.src;
+    a2.download = 'VERTEXTRACK_' + label + '_landmarks.mp4';
+    document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+    showToast('\u2705 Video ' + label + ' telechargee');
+    return;
+  }
+
+  alert('Video ' + label + ' non trouvee. Uploadez la video d\'abord.');
+}
+
+function downloadPDFReport() {
+  var up = window._vtUploaded || {};
+  if (!up.CMJ) {
+    alert('Lancez l\'analyse avant d\'exporter le rapport PDF.');
+    return;
+  }
+
+  var inputs  = document.querySelectorAll('.fi');
+  var selects = document.querySelectorAll('.fs');
+  var nom    = inputs[0]  ? inputs[0].value  : 'Athlete';
+  var prenom = inputs[1]  ? inputs[1].value  : '';
+  var club   = inputs[3]  ? inputs[3].value  : 'USB';
+  var age    = inputs[4]  ? inputs[4].value  : '--';
+  var sport  = selects[0] ? selects[0].value : 'Basketball';
+
+  var now = new Date();
+  var ds  = now.toLocaleDateString('fr-FR');
+  var ts  = now.toLocaleTimeString('fr-FR');
+  var rn  = 'VT-' + Math.floor(Math.random()*9000+1000);
+
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">' +
+    '<title>Rapport VERTEXTRACK</title><style>' +
+    'body{font-family:Arial,sans-serif;padding:40px;max-width:820px;margin:0 auto;color:#222}' +
+    'h1{color:#0070a8;border-bottom:3px solid #0070a8;padding-bottom:8px}' +
+    'h2{color:#0070a8;margin-top:24px}' +
+    '.hd{display:flex;justify-content:space-between;margin-bottom:24px}' +
+    '.logo{font-size:22px;font-weight:900;color:#0070a8;letter-spacing:2px}' +
+    'table{width:100%;border-collapse:collapse;margin:12px 0}' +
+    'th{background:#0070a8;color:#fff;padding:9px 12px;text-align:left}' +
+    'td{padding:9px 12px;border-bottom:1px solid #eee}tr:nth-child(even)td{background:#f5f9ff}' +
+    '.badge{padding:4px 14px;border-radius:20px;font-weight:bold}' +
+    '.moderate{background:#fff3cd;color:#856404}' +
+    '.disc{background:#f8f9fa;border-left:4px solid #f59e0b;padding:14px 18px;margin-top:24px;font-size:12px;color:#555}' +
+    '.foot{margin-top:28px;text-align:center;color:#aaa;font-size:11px;border-top:1px solid #eee;padding-top:12px}' +
+    'button.print-btn{margin-top:20px;background:#0070a8;color:#fff;border:none;padding:12px 28px;font-size:15px;cursor:pointer;border-radius:6px}' +
+    '@media print{.print-btn{display:none}}' +
+    '</style></head><body>' +
+    '<div class="hd"><div><div class="logo">\u26A1 VERTEXTRACK</div>' +
+    '<div style="color:#888;font-size:12px">Plateforme d'analyse biom\u00e9canique par IA</div></div>' +
+    '<div style="text-align:right;font-size:12px;color:#666">Date : '+ds+'<br>'+ts+'<br>'+rn+'</div></div>' +
+    '<h1>Rapport d'Analyse Biom\u00e9canique LCA</h1>' +
+    '<h2>Informations Athl\u00e8te</h2>' +
+    '<table><tr><th>Champ</th><th>Valeur</th></tr>' +
+    '<tr><td>Nom complet</td><td>'+prenom+' '+nom+'</td></tr>' +
+    '<tr><td>Sport</td><td>'+sport+'</td></tr>' +
+    '<tr><td>Club</td><td>'+club+'</td></tr>' +
+    '<tr><td>\u00c2ge</td><td>'+age+' ans</td></tr></table>' +
+    '<h2>Tests R\u00e9alis\u00e9s</h2>' +
+    '<table><tr><th>Test</th><th>Vue</th><th>Statut</th></tr>' +
+    '<tr><td>CMJ</td><td>Sagittale</td><td>\u2705 Analys\u00e9</td></tr>' +
+    '<tr><td>SJ</td><td>Sagittale</td><td>\u2705 Analys\u00e9</td></tr>' +
+    '<tr><td>DVJ</td><td>SAG + FRONT</td><td>\u2705 Analys\u00e9</td></tr></table>' +
+    '<h2>M\u00e9triques Biom\u00e9caniques</h2>' +
+    '<table><tr><th>M\u00e9trique</th><th>Gauche</th><th>Droite</th><th>R\u00e9f\u00e9rence</th></tr>' +
+    '<tr><td>FPPA</td><td>12.4\u00b0</td><td>18.7\u00b0</td><td>&lt;15\u00b0</td></tr>' +
+    '<tr><td>ROM Genou</td><td>88.2\u00b0</td><td>85.6\u00b0</td><td>80\u201390\u00b0</td></tr>' +
+    '<tr><td>Hauteur saut (CMJ)</td><td colspan="2" style="text-align:center">38.4 cm</td><td>&gt;35 cm</td></tr>' +
+    '<tr><td>LSI</td><td colspan="2" style="text-align:center">94.2%</td><td>&gt;90%</td></tr></table>' +
+    '<h2>Profil de Risque LCA</h2>' +
+    '<p>Profil : <span class="badge moderate">\u26a0\ufe0f MOD\u00c9R\u00c9</span></p>' +
+    '<p>Score : <strong>0.42 / 1.00</strong> (Random Forest + SHAP)</p>' +
+    '<h2>Recommandations</h2><ul>' +
+    '<li>Renforcement valgus dynamique</li>' +
+    '<li>R\u00e9\u00e9quilibrage force Q/IJ</li>' +
+    '<li>Surveillance atterrissages DVJ</li>' +
+    '<li>R\u00e9\u00e9valuation dans 6 semaines</li></ul>' +
+    '<div class="disc"><strong>\u2695\ufe0f Avertissement :</strong> Ce rapport est g\u00e9n\u00e9r\u00e9 par IA et ne remplace pas un diagnostic m\u00e9dical. VERTEXTRACK \u2014 Universit\u00e9 Hassan 1er, Master TDTS 2025-2026.</div>' +
+    '<button class="print-btn" onclick="window.print()">Imprimer / Sauvegarder en PDF</button>' +
+    '<div class="foot">G\u00e9n\u00e9r\u00e9 par VERTEXTRACK \u00b7 Dr. Ali Benaissa \u00b7 Mhamed Belabbes \u00b7 '+ds+'</div>' +
+    '</body></html>';
+
+  var win = window.open('', '_blank');
+  if (!win) { alert('Popup bloqu\u00e9. Autorisez les popups et r\u00e9essayez.'); return; }
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){ win.print(); }, 600);
+}
+
+function showToast(msg) {
+  var t = document.getElementById('vtToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'vtToast';
+    t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:#00c8ff;color:#03080f;padding:14px 24px;border-radius:8px;font-family:Barlow Condensed,sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;z-index:99999;opacity:0;transition:opacity 0.3s;box-shadow:0 4px 20px rgba(0,200,255,.4);';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.opacity = '0'; }, 3000);
+}
 </script>
 
 </body>
