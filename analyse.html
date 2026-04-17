@@ -857,7 +857,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Génère et télécharge ta vidéo avec les <strong style="color:#fff;">landmarks MediaPipe</strong> dessinés directement sur le corps de l'athlète — angles FPPA, connexions articulaires et données biomécaniques inclus.
       </div>
-      <button onclick="vtDownloadVideo('inputCMJ','previewCMJ','VERTEXTRACK_CMJ_landmarks')" id="exportVidBtn"
+      <button onclick="exportAnnotatedVideo('CMJ')" id="exportVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger vidéo avec landmarks
@@ -884,7 +884,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo SJ vue sagittale avec landmarks
     et angles articulaires annotés.
   </div>
-  <button onclick="vtDownloadVideo('inputSJ','previewSJ','VERTEXTRACK_SJ_landmarks')" 
+  <button onclick="exportAnnotatedVideo('SJ')" 
   id="exportSJBtn"
   style="width:100%;background:rgba(0,200,255,.08);
   color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);
@@ -930,7 +930,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo DVJ vue frontale avec détection
     automatique du valgus dynamique du genou.
   </div>
-  <button onclick="vtDownloadVideo('inputDVJsag','previewDVJsag','VERTEXTRACK_DVJ_SAG_landmarks')" 
+  <button onclick="exportAnnotatedVideo('DVJsag')" 
   id="exportDVJBtn"
   style="width:100%;background:rgba(245,158,11,.08);
   color:var(--amber);
@@ -972,7 +972,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Vidéo vue frontale avec détection automatique du valgus dynamique du genou — facteur principal de risque LCA
       </div>
-      <button onclick="vtDownloadVideo('inputDVJfront','previewDVJfront','VERTEXTRACK_DVJ_FRONT_valgus')" id="exportDVJVidBtn"
+      <button onclick="exportAnnotatedVideo('DVJfront')" id="exportDVJVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger DVJ (FRONT) avec détection valgus
@@ -1009,6 +1009,25 @@ border-top:1px solid rgba(255,255,255,0.06);">
 /* ===== VERTEXTRACK — Script unifie ===== */
 
 window._vtUploaded = window._vtUploaded || {};
+var detector;
+
+async function initDetector() {
+  if (detector) return true;
+  try {
+    detector = await poseDetection.createDetector(
+      poseDetection.SupportedModels.MoveNet,
+      {
+        modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
+        enableSmoothing: true
+      }
+    );
+    console.log('[VT] MoveNet Detector initialized');
+    return true;
+  } catch(e) {
+    console.error('[VT] Detector Error:', e);
+    return false;
+  }
+}
 
 // ===== WIZARD SEQUENTIEL =====
 (function() {
@@ -1186,6 +1205,212 @@ function launch() {
       }
     }, i * 1200);
   });
+}
+
+// ===== ANALYSE EXPORT AVEC LANDMARKS =====
+function calcAngle(a, b, c) {
+  if (!a || !b || !c) return 0;
+  var v1 = {x: a.x - b.x, y: a.y - b.y};
+  var v2 = {x: c.x - b.x, y: c.y - b.y};
+  var dot = v1.x * v2.x + v1.y * v2.y;
+  var mag = Math.sqrt(v1.x * v1.x + v1.y * v1.y) * Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+  if (mag === 0) return 0;
+  return Math.round(Math.acos(Math.min(1, Math.max(-1, dot / mag))) * 180 / Math.PI);
+}
+
+function drawPoseOnCanvas(ctx, kps, W, H) {
+  // Déterminer si valgus dangereux (FPPA)
+  var hip = kps[11], knee = kps[13], ank = kps[15];
+  var fppa = 180, badMov = false;
+  
+  if (hip && knee && ank && hip.score > 0.4 && knee.score > 0.4 && ank.score > 0.4) {
+    var v1 = {x: hip.x - knee.x, y: hip.y - knee.y};
+    var v2 = {x: ank.x - knee.x, y: ank.y - knee.y};
+    var d = v1.x * v2.x + v1.y * v2.y;
+    var m = Math.sqrt(v1.x * v1.x + v1.y * v1.y) * Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+    fppa = Math.round(Math.acos(Math.min(1, Math.abs(d / m))) * 180 / Math.PI);
+    // On considère un risque si l'angle FPPA (déviation) est important (typiquement > 15-20°)
+    // Dans le code original, c'était fppa < 160 (donc déviation > 20°)
+    badMov = fppa < 160; 
+  }
+
+  var EDGES = [
+    [5,6,'torso'], [5,11,'torso'], [6,12,'torso'], [11,12,'torso'],
+    [5,7,'arm'], [7,9,'arm'], [6,8,'arm'], [8,10,'arm'],
+    [11,13,'leg'], [13,15,'leg'], [12,14,'leg'], [14,16,'leg']
+  ];
+  
+  var COL = {
+    torso: 'rgba(0, 200, 255, 0.8)',
+    arm: 'rgba(0, 200, 255, 0.8)',
+    leg: badMov ? 'rgba(255, 60, 60, 0.9)' : 'rgba(0, 230, 118, 0.9)'
+  };
+
+  // Dessiner les segments
+  EDGES.forEach(function(e) {
+    var a = kps[e[0]], b = kps[e[1]];
+    if (!a || !b || a.score < 0.3 || b.score < 0.3) return;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = COL[e[2]];
+    ctx.lineWidth = Math.max(2, W / 240);
+    ctx.stroke();
+  });
+
+  // Dessiner les points (landmarks)
+  kps.forEach(function(kp, i) {
+    if (i <= 4 || kp.score < 0.3) return; // Skip face
+    var isLeg = i >= 11;
+    var r = Math.max(4, W / 160);
+    var ptCol = (isLeg && badMov) ? '#ff3c3c' : isLeg ? '#00e676' : '#00c8ff';
+    
+    ctx.beginPath();
+    ctx.arc(kp.x, kp.y, r * 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = (isLeg && badMov) ? 'rgba(255, 60, 60, 0.2)' : 'rgba(0, 200, 255, 0.1)';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(kp.x, kp.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = ptCol;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  // Annotations spécifiques (FPPA au genou)
+  if (hip && knee && ank && hip.score > 0.4 && knee.score > 0.4 && ank.score > 0.4) {
+    var fs = Math.max(12, W / 50);
+    ctx.font = 'bold ' + fs + 'px JetBrains Mono, monospace';
+    
+    // Label box
+    var txt = 'FPPA: ' + fppa + '°';
+    var tw = ctx.measureText(txt).width + 12;
+    var lx = knee.x + 15, ly = knee.y - 10;
+    if (lx + tw > W) lx = knee.x - tw - 15;
+    
+    ctx.fillStyle = 'rgba(3, 8, 15, 0.85)';
+    ctx.fillRect(lx, ly - fs, tw, fs + 10);
+    ctx.strokeStyle = badMov ? '#ff3c3c' : '#00c8ff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(lx, ly - fs, tw, fs + 10);
+    
+    ctx.fillStyle = badMov ? '#ff3c3c' : '#fff';
+    ctx.fillText(txt, lx + 6, ly + 4);
+
+    if (badMov) {
+      var warnTxt = '⚠ VALGUS DÉTECTÉ';
+      ctx.font = 'bold ' + (fs * 0.8) + 'px Barlow Condensed, sans-serif';
+      ctx.fillStyle = '#ff3c3c';
+      ctx.fillText(warnTxt, knee.x - 40, knee.y - 40);
+    }
+  }
+}
+
+async function exportGeneric(inputId, previewId, filename, type) {
+  var vid = document.getElementById(previewId);
+  
+  // Mapping des éléments UI selon le type
+  var btnId = 'exportVidBtn', prgId = 'exportProgress', msgId = 'exportMsg', barId = 'exportBar';
+  if (type === 'SJ') { btnId = 'exportSJBtn'; prgId = 'exportSJProgress'; msgId = 'exportSJMsg'; barId = 'exportSJBar'; }
+  if (type === 'DVJsag') { btnId = 'exportDVJBtn'; prgId = 'exportDVJProgress'; msgId = 'exportDVJMsg'; barId = 'exportDVJBar'; }
+  if (type === 'DVJfront') { btnId = 'exportDVJVidBtn'; prgId = 'exportDVJProgress'; msgId = 'exportDVJMsg'; barId = 'exportDVJBar'; }
+
+  var btn = document.getElementById(btnId);
+  var prog = document.getElementById(prgId);
+  var msg = document.getElementById(msgId);
+  var bar = document.getElementById(barId);
+
+  if (!vid || !vid.src || vid.src === window.location.href) {
+    alert('Uploadez d\'abord la vidéo pour ' + type);
+    return;
+  }
+
+  if (!window.MediaRecorder) {
+    alert('Votre navigateur ne supporte pas MediaRecorder. Utilisez Chrome.');
+    return;
+  }
+
+  if (prog) prog.style.display = 'block';
+  if (msg) msg.textContent = 'Initialisation MoveNet...';
+  if (bar) bar.style.width = '5%';
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+  await initDetector();
+
+  var offCv = document.createElement('canvas');
+  var offCtx = offCv.getContext('2d');
+
+  await new Promise(r => { if (vid.readyState >= 2) r(); else vid.addEventListener('loadeddata', r, {once:true}); });
+
+  var W = vid.videoWidth || 640;
+  var H = vid.videoHeight || 480;
+  offCv.width = W; offCv.height = H;
+
+  var duration = vid.duration;
+  var fps = 25;
+  var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+  var stream = offCv.captureStream(fps);
+  var recorder = new MediaRecorder(stream, {mimeType: mimeType, videoBitsPerSecond: 3000000});
+  var chunks = [];
+
+  recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  recorder.onstop = () => {
+    var blob = new Blob(chunks, {type: mimeType});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename + '.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    if (msg) msg.textContent = '✅ Export terminé !';
+    if (bar) { bar.style.width = '100%'; bar.style.background = '#00e676'; }
+    setTimeout(() => { if (prog) prog.style.display = 'none'; if (bar) bar.style.background = 'var(--cyan)'; }, 3000);
+  };
+
+  vid.pause();
+  vid.currentTime = 0;
+  await new Promise(r => { vid.onseeked = r; setTimeout(r, 500); });
+
+  recorder.start(100);
+  var currentTime = 0;
+  var step = 1 / fps;
+
+  while (currentTime <= duration) {
+    vid.currentTime = currentTime;
+    await new Promise(r => { vid.onseeked = r; setTimeout(r, 60); });
+
+    offCtx.clearRect(0, 0, W, H);
+    offCtx.drawImage(vid, 0, 0, W, H);
+
+    try {
+      var poses = await detector.estimatePoses(offCv);
+      if (poses && poses.length > 0) {
+        drawPoseOnCanvas(offCtx, poses[0].keypoints, W, H);
+      }
+    } catch(e) {}
+
+    var pct = Math.round((currentTime / duration) * 90) + 5;
+    if (bar) bar.style.width = pct + '%';
+    if (msg) msg.textContent = 'Traitement : ' + Math.round(currentTime) + 's / ' + Math.round(duration) + 's (' + pct + '%)';
+
+    currentTime += step;
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  recorder.stop();
+  if (msg) msg.textContent = 'Finalisation du fichier...';
+}
+
+function exportAnnotatedVideo(type) {
+  if (type === 'CMJ') exportGeneric('inputCMJ', 'previewCMJ', 'VERTEXTRACK_CMJ_Landmarks', 'CMJ');
+  else if (type === 'SJ') exportGeneric('inputSJ', 'previewSJ', 'VERTEXTRACK_SJ_Landmarks', 'SJ');
+  else if (type === 'DVJsag') exportGeneric('inputDVJsag', 'previewDVJsag', 'VERTEXTRACK_DVJ_SAG_Landmarks', 'DVJsag');
+  else if (type === 'DVJfront') exportGeneric('inputDVJfront', 'previewDVJfront', 'VERTEXTRACK_DVJ_FRONT_Valgus', 'DVJfront');
 }
 
 // ===== TELECHARGEMENTS =====
