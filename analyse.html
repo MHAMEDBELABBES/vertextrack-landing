@@ -114,7 +114,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .prog.show{display:block;}
 .ps{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);margin-bottom:6px;font-size:12px;color:var(--muted);}
 .ps.active{border-color:rgba(0,200,255,.3);color:#fff;}
-.ps.done{border-color:rgba(0,230,118,.2);color:var(--green);}
+.bc-step.done .bc-num { border-color: var(--green); color: var(--green); }
+
+/* Breadcrumb états - NEW */
+.bc-step.done .bc-num,
+.step-item.done .step-num,
+[class*="bc-"].done span:first-child {
+  background: #00ff88 !important;
+  border-color: #00ff88 !important;
+  color: #03080f !important;
+  box-shadow: 0 0 12px rgba(0,255,136,0.5) !important;
+}
+.bc-step.done .bc-label,
+.step-item.done .step-label {
+  color: #00ff88 !important;
+}
+.bc-step.done::after,
+.step-item.done::after {
+  background: #00ff88 !important;
+}
 .pd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;}
 .ps.active .pd{background:var(--cyan);}
 .ps.done .pd{background:var(--green);}
@@ -1200,6 +1218,7 @@ function launch() {
           if (res) {
             res.style.display = 'block';
             setTimeout(function() { res.scrollIntoView({ behavior: 'smooth' }); }, 300);
+            markBreadcrumbDone(3);
           }
         }, 800);
       }
@@ -1328,6 +1347,7 @@ async function exportGeneric(inputId, previewId, filename, type) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    trackExport(filename);
     
     if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
     if (msg) msg.textContent = '✅ Export terminé !';
@@ -1387,7 +1407,7 @@ function vtDownloadVideo(inputId, previewId, filename) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    vtToast('\u2705 ' + filename + ' telechargee !');
+    trackExport(filename);
     return;
   }
   var prev = document.getElementById(previewId);
@@ -1398,7 +1418,7 @@ function vtDownloadVideo(inputId, previewId, filename) {
     document.body.appendChild(a2);
     a2.click();
     document.body.removeChild(a2);
-    vtToast('\u2705 ' + filename + ' telechargee !');
+    trackExport(filename);
     return;
   }
   alert('Uploadez la video ' + filename + ' d\'abord.');
@@ -1465,6 +1485,7 @@ function vtDownloadPDF() {
   w.document.write(html);
   w.document.close();
   setTimeout(function() { w.print(); }, 600);
+  trackExport('Rapport PDF');
 }
 
 function vtToast(msg) {
@@ -1515,6 +1536,69 @@ function goToUpload() {
 
 function bcGo(n) {
   goStep(n);
+}
+
+/* ===== BREADCRUMB ENHANCEMENTS ===== */
+function markBreadcrumbDone(stepNumber) {
+  // Cherche l'étape par numéro dans le breadcrumb
+  var selectors = [
+    '[data-step="' + stepNumber + '"]',
+    '.bc-step:nth-child(' + stepNumber + ')',
+    '.step-item:nth-child(' + stepNumber + ')',
+    '#bc-' + stepNumber,
+    '#step-' + stepNumber
+  ];
+  
+  var el = null;
+  for (var i = 0; i < selectors.length; i++) {
+    el = document.querySelector(selectors[i]);
+    if (el) break;
+  }
+  
+  // Fallback : cherche par texte
+  if (!el) {
+    var labels = {
+      1: ['UPLOAD', 'VIDÉO'],
+      2: ['ANALYSE', 'IA'],
+      3: ['RÉSULTATS', 'RESULT'],
+      4: ['EXPORT']
+    };
+    var targets = labels[stepNumber] || [];
+    var allBcItems = document.querySelectorAll(
+      '.bc-step, .step-item, [class*="bc-step"], [class*="step-dot"]'
+    );
+    allBcItems.forEach(function(item) {
+      var txt = item.textContent.toUpperCase();
+      targets.forEach(function(t) {
+        if (txt.indexOf(t) !== -1) el = item;
+      });
+    });
+  }
+  
+  if (el) {
+    el.classList.add('done');
+    // Changer le numéro en checkmark
+    var numEl = el.querySelector('.bc-num, .step-num, span, div');
+    if (numEl && numEl.textContent.trim() === String(stepNumber)) {
+      numEl.innerHTML = '✓';
+      numEl.style.cssText = 'background:#00ff88!important;border-color:#00ff88!important;color:#03080f!important;box-shadow:0 0 12px rgba(0,255,136,.5)!important;';
+    }
+    // Label en vert
+    var labelEl = el.querySelector('.bc-label, .step-label, span:last-child');
+    if (labelEl) labelEl.style.color = '#00ff88';
+    
+    console.log('[VT] Breadcrumb step', stepNumber, 'marked done');
+  } else {
+    console.warn('[VT] Breadcrumb step', stepNumber, 'not found');
+  }
+}
+
+// Tracker export
+window._vtExported = false;
+function trackExport(type) {
+  window._vtExported = true;
+  markBreadcrumbDone(4);
+  if (typeof vtToast === 'function') vtToast('✅ ' + type + ' téléchargé !');
 }
 
 /* ===== END VERTEXTRACK ===== */
