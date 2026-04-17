@@ -999,427 +999,207 @@ border-top:1px solid rgba(255,255,255,0.06);">
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
 
+
+
+
+
+
+
 <script>
-var cur = 'CMJ';
-var rdy = {};
-var detector = null;
-var animFrame = null;
-var detecting = false;
+/* ===== VERTEXTRACK — Script unifie ===== */
 
-// CONNEXIONS MoveNet (17 keypoints)
-// 0=nose,1=left_eye,2=right_eye,3=left_ear,4=right_ear
-// 5=left_shoulder,6=right_shoulder,7=left_elbow,8=right_elbow
-// 9=left_wrist,10=right_wrist,11=left_hip,12=right_hip
-// 13=left_knee,14=right_knee,15=left_ankle,16=right_ankle
-var EDGES = [
-  [0,1,'face'],[0,2,'face'],[1,3,'face'],[2,4,'face'],
-  [5,6,'torso'],[5,7,'left'],[7,9,'left'],[6,8,'right'],[8,10,'right'],
-  [5,11,'torso'],[6,12,'torso'],[11,12,'torso'],
-  [11,13,'left'],[13,15,'left'],[12,14,'right'],[14,16,'right']
-];
+window._vtUploaded = window._vtUploaded || {};
 
-var COLORS = {
-  face:'rgba(255,220,50,0.8)',
-  torso:'rgba(0,200,255,0.9)',
-  left:'rgba(0,200,255,0.9)',
-  right:'rgba(0,230,118,0.9)'
-};
+// ===== WIZARD SEQUENTIEL =====
+(function() {
+  var up = window._vtUploaded;
 
-async function initDetector() {
-  try {
-    detector = await poseDetection.createDetector(
-      poseDetection.SupportedModels.MoveNet,
-      {
-        modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
-        enableSmoothing: true
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+
+  ready(function() {
+
+    function handleFile(key, file) {
+      if (!file) return;
+      var preview = document.getElementById('preview' + key);
+      var info    = document.getElementById('info' + key);
+      var check   = document.getElementById('check' + key);
+      if (preview) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
       }
-    );
-    console.log('MoveNet loaded!');
-    return true;
-  } catch(e) {
-    console.error('MoveNet error:', e);
-    return false;
-  }
-}
-
-async function detectLoop(vid, cv) {
-  if (!detector || !vid || vid.paused || vid.ended) {
-    animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
-    return;
-  }
-
-  var W = vid.clientWidth, H = vid.clientHeight;
-  if (W === 0 || H === 0) {
-    animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
-    return;
-  }
-
-  cv.width = W; cv.height = H;
-  var ctx = cv.getContext('2d');
-  ctx.clearRect(0, 0, W, H);
-
-  try {
-    var poses = await detector.estimatePoses(vid);
-    if (poses && poses.length > 0) {
-      drawPose(ctx, poses[0].keypoints, W, H);
+      if (info) {
+        var mb = (file.size / 1024 / 1024).toFixed(1);
+        info.innerHTML = '\u{1F4C4} ' + file.name + ' &nbsp;|&nbsp; \u{1F4BE} ' + mb + ' MB';
+        info.style.display = 'flex';
+      }
+      if (check) check.style.display = 'inline';
+      up[key] = true;
+      window._vtUploaded = up;
+      updateWizard();
     }
-  } catch(e) {}
 
-  animFrame = requestAnimationFrame(function() { detectLoop(vid, cv); });
-}
+    function updateWizard() {
+      var stepCMJ = document.getElementById('stepCMJ');
+      var stepSJ  = document.getElementById('stepSJ');
+      var stepDVJ = document.getElementById('stepDVJ');
 
-function drawPose(ctx, kps, W, H) {
-  // Calculer FPPA d'abord pour colorer les connexions
-  var hip=kps[11], knee=kps[13], ankle=kps[15];
-  var fppa=0, badMov=false;
-  if (hip&&knee&&ankle&&hip.score>0.4&&knee.score>0.4&&ankle.score>0.4) {
-    // FPPA = déviation latérale du genou par rapport à l'axe hanche-cheville
-    var v1={x:hip.x-knee.x,y:hip.y-knee.y};
-    var v2={x:ankle.x-knee.x,y:ankle.y-knee.y};
-    var d=v1.x*v2.x+v1.y*v2.y;
-    var m=Math.sqrt(v1.x*v1.x+v1.y*v1.y)*Math.sqrt(v2.x*v2.x+v2.y*v2.y);
-    fppa=Math.round(Math.acos(Math.min(1,Math.abs(d/m)))*180/Math.PI);
-    // Valgus dangereux si genou trop en dedans (FPPA > 15° ou angle genou < 90°)
-    badMov = fppa > 15;
-  }
+      if (up.CMJ && stepCMJ) {
+        stepCMJ.classList.remove('active');
+        stepCMJ.classList.add('done');
+        var mc = document.getElementById('msgCMJ');
+        if (mc) mc.style.display = 'none';
+      }
+      if (up.CMJ && stepSJ) {
+        stepSJ.classList.remove('locked');
+        if (!up.SJ) stepSJ.classList.add('active');
+        var lk = document.getElementById('lockSJ');
+        if (lk) lk.style.display = 'none';
+        var nm = document.getElementById('numSJ');
+        if (nm) nm.classList.add('active');
+      }
+      if (up.SJ && stepSJ) {
+        stepSJ.classList.remove('active');
+        stepSJ.classList.add('done');
+      }
+      if (up.SJ && stepDVJ) {
+        stepDVJ.classList.remove('locked');
+        if (!(up.DVJsag && up.DVJfront)) stepDVJ.classList.add('active');
+        var lk2 = document.getElementById('lockDVJ');
+        if (lk2) lk2.style.display = 'none';
+        var nm2 = document.getElementById('numDVJ');
+        if (nm2) nm2.classList.add('active');
+      }
+      if (up.DVJsag && up.DVJfront && stepDVJ) {
+        stepDVJ.classList.remove('active');
+        stepDVJ.classList.add('done');
+      }
 
-  // Connexions SANS visage
-  var EDGES2 = [
-    [5,6,'torso'],[5,7,'arm'],[7,9,'arm'],[6,8,'arm'],[8,10,'arm'],
-    [5,11,'torso'],[6,12,'torso'],[11,12,'torso'],
-    [11,13,'leg'],[13,15,'leg'],[12,14,'leg'],[14,16,'leg']
-  ];
-  var COL2 = {
-    torso:'rgba(0,200,255,0.9)',
-    arm:'rgba(0,200,255,0.9)',
-    leg: badMov ? 'rgba(255,60,60,0.9)' : 'rgba(0,230,118,0.9)'
-  };
-
-  EDGES2.forEach(function(e) {
-    var a=kps[e[0]], b=kps[e[1]], color=COL2[e[2]];
-    if (!a||!b||a.score<0.3||b.score<0.3) return;
-    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-    ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.stroke();
-  });
-
-  // Points — SKIP visage (i <= 4)
-  kps.forEach(function(kp,i) {
-    if (i<=4) return; // Supprimer landmarks visage
-    if (kp.score<0.3) return;
-    var isLeg=i>=11;
-    var ptCol = isLeg&&badMov ? '#ff3c3c' : isLeg ? '#00e676' : '#00c8ff';
-    var glCol  = isLeg&&badMov ? 'rgba(255,60,60,.18)' : isLeg ? 'rgba(0,230,118,0.15)' : 'rgba(0,200,255,0.18)';
-    ctx.beginPath(); ctx.arc(kp.x,kp.y,8,0,Math.PI*2);
-    ctx.fillStyle=glCol; ctx.fill();
-    ctx.beginPath(); ctx.arc(kp.x,kp.y,4,0,Math.PI*2);
-    ctx.fillStyle=ptCol; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=1; ctx.stroke();
-  });
-
-  // FPPA + labels
-  if (hip&&knee&&ankle&&hip.score>0.4&&knee.score>0.4&&ankle.score>0.4) {
-    var angle=fppa;
-    // Ligne rouge hanche→genou
-    ctx.beginPath(); ctx.moveTo(hip.x,hip.y); ctx.lineTo(knee.x,knee.y);
-    ctx.strokeStyle='rgba(255,50,50,0.9)'; ctx.lineWidth=2; ctx.stroke();
-    // Cercle au genou
-    ctx.beginPath(); ctx.arc(knee.x,knee.y,16,0,Math.PI*2);
-    ctx.strokeStyle=badMov?'rgba(255,60,60,0.9)':'rgba(245,158,11,0.9)';
-    ctx.lineWidth=2.5; ctx.stroke();
-    // Label FPPA
-    var lx=knee.x+18, ly=knee.y-12;
-    if (lx+90>W) lx=knee.x-108;
-    ctx.fillStyle='rgba(3,12,28,0.92)'; ctx.fillRect(lx,ly,90,24);
-    ctx.strokeStyle=badMov?'rgba(255,60,60,.7)':'rgba(245,158,11,0.6)';
-    ctx.lineWidth=1; ctx.strokeRect(lx,ly,90,24);
-    ctx.fillStyle=badMov?'#ff3c3c':'#f59e0b';
-    ctx.font='bold 11px monospace';
-    ctx.fillText('FPPA: '+angle+'°',lx+6,ly+16);
-    // Badge VALGUS
-    if (badMov) {
-      ctx.fillStyle='rgba(255,60,60,.15)'; ctx.fillRect(knee.x-65,knee.y-52,130,22);
-      ctx.strokeStyle='rgba(255,60,60,.7)'; ctx.lineWidth=1; ctx.strokeRect(knee.x-65,knee.y-52,130,22);
-      ctx.fillStyle='#ff3c3c'; ctx.font='bold 10px monospace'; ctx.textAlign='center';
-      ctx.fillText('⚠ VALGUS GENOU',knee.x,knee.y-38); ctx.textAlign='left';
+      var lbtn = document.getElementById('lbtn');
+      if (up.CMJ && up.SJ && up.DVJsag && up.DVJfront && lbtn) {
+        lbtn.disabled = false;
+        lbtn.classList.remove('locked-btn');
+        lbtn.classList.add('ready-btn');
+        lbtn.innerHTML = '\u26A1 LANCER L\'ANALYSE IA';
+        setTimeout(function() {
+          lbtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 400);
+      }
     }
-  }
 
-  // HIP angle
-  var sh=kps[5], hip2=kps[11], kn=kps[13];
-  if (sh&&hip2&&kn&&sh.score>0.4&&hip2.score>0.4) {
-    var hipAngle=calcAngle(sh,hip2,kn);
-    var hx=hip2.x-95, hy=hip2.y-12;
-    if (hx<0) hx=hip2.x+10;
-    ctx.fillStyle='rgba(3,12,28,0.88)'; ctx.fillRect(hx,hy,85,22);
-    ctx.strokeStyle='rgba(0,230,118,0.5)'; ctx.lineWidth=1; ctx.strokeRect(hx,hy,85,22);
-    ctx.fillStyle='#00e676'; ctx.font='10px monospace';
-    ctx.fillText('HIP: '+hipAngle+'°',hx+6,hy+15);
-  }
-
-  // Hauteur CMJ
-  if (cur==='CMJ') {
-    var nose=kps[0], ankL=kps[15];
-    if (nose&&ankL&&nose.score>0.3) {
-      var ax=20;
-      ctx.beginPath(); ctx.moveTo(ax,nose.y); ctx.lineTo(ax,ankL.y);
-      ctx.strokeStyle='rgba(0,200,255,.35)'; ctx.lineWidth=1;
-      ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
-      [[ax,nose.y],[ax,ankL.y]].forEach(function(p){
-        ctx.beginPath(); ctx.moveTo(p[0]-6,p[1]); ctx.lineTo(p[0]+6,p[1]);
-        ctx.strokeStyle='rgba(0,200,255,.7)'; ctx.lineWidth=1.5; ctx.stroke();
+    function attachInput(id, key) {
+      var el = document.getElementById(id);
+      if (!el) { console.warn('input not found:', id); return; }
+      el.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) handleFile(key, e.target.files[0]);
       });
-      var my=(nose.y+ankL.y)/2;
-      ctx.fillStyle='rgba(3,12,28,.9)'; ctx.fillRect(ax-22,my-10,44,20);
-      ctx.strokeStyle='rgba(0,200,255,.4)'; ctx.lineWidth=1; ctx.strokeRect(ax-22,my-10,44,20);
-      ctx.fillStyle='#00c8ff'; ctx.font='10px monospace'; ctx.textAlign='center';
-      ctx.fillText('h(cm)',ax,my+4); ctx.textAlign='left';
     }
-  }
-}
 
-function calcAngle(a, b, c) {
-  var v1 = {x: a.x-b.x, y: a.y-b.y};
-  var v2 = {x: c.x-b.x, y: c.y-b.y};
-  var dot = v1.x*v2.x + v1.y*v2.y;
-  var mag = Math.sqrt(v1.x*v1.x+v1.y*v1.y) * Math.sqrt(v2.x*v2.x+v2.y*v2.y);
-  return Math.round(Math.acos(Math.min(1, Math.abs(dot/mag))) * 180 / Math.PI);
-}
-
-async function startPose(test) {
-  if (animFrame) cancelAnimationFrame(animFrame);
-  var vid = document.getElementById('v-'+test);
-  var cv  = document.getElementById('c-'+test);
-  if (!vid || !cv) return;
-
-  // Badge LIVE
-  var badge = document.querySelector('#vb-'+test+' .live-b');
-  if (badge) badge.style.display = 'flex';
-
-  if (!detector) {
-    var ok = await initDetector();
-    if (!ok) return;
-  }
-  detectLoop(vid, cv);
-}
-
-// ─── FONCTIONS UI ───────────────────────────────────────
-
-var curStep = 1;
-function goStep(n) {
-  for(let i=1; i<=3; i++) {
-    var c = document.getElementById('wc-'+i);
-    var s = document.getElementById('ws-'+i);
-    if(c && s) {
-      if (i < n) {
-        c.style.display = 'block';
-        c.classList.add('disabled');
-        s.classList.add('done');
-        s.classList.remove('active');
-      } else if (i === n) {
-        c.style.display = 'block';
-        c.classList.remove('disabled');
-        s.classList.add('active');
-        s.classList.remove('done');
-      } else {
-        c.style.display = 'none';
-        c.classList.remove('disabled');
-        s.classList.remove('active');
-        s.classList.remove('done');
-      }
+    function attachDrop(zoneId, key) {
+      var zone = document.getElementById(zoneId);
+      if (!zone) { console.warn('drop zone not found:', zoneId); return; }
+      zone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        zone.style.borderColor = '#00c8ff';
+      });
+      zone.addEventListener('dragleave', function() {
+        zone.style.borderColor = 'rgba(0,200,255,0.3)';
+      });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        zone.style.borderColor = 'rgba(0,200,255,0.3)';
+        if (e.dataTransfer.files[0]) handleFile(key, e.dataTransfer.files[0]);
+      });
     }
-  }
-  curStep = n;
-}
 
-function checkCamera() {
-  var cks = document.querySelectorAll('.ck-item input[type="checkbox"]');
-  var n = 0;
-  cks.forEach(function(c){ if(c.checked) n++; });
-  document.getElementById('btnCam').disabled = (n < 3);
-}
+    attachInput('inputCMJ',      'CMJ');
+    attachInput('inputSJ',       'SJ');
+    attachInput('inputDVJsag',   'DVJsag');
+    attachInput('inputDVJfront', 'DVJfront');
+    attachDrop('zoneCMJ',        'CMJ');
+    attachDrop('zoneSJ',         'SJ');
+    attachDrop('zoneDVJsag',     'DVJsag');
+    attachDrop('zoneDVJfront',   'DVJfront');
 
-function setTest(t) {
-  cur = t;
-  ['CMJ','SJ','DVJ'].forEach(function(x) {
-    document.getElementById('tb-'+x).className = 'tbtn'+(x===t?' sel':'');
-    document.getElementById('z-'+x).style.display = x===t?'block':'none';
+    var stepCMJ = document.getElementById('stepCMJ');
+    if (stepCMJ && !stepCMJ.classList.contains('done')) {
+      stepCMJ.classList.add('active');
+    }
+    console.log('VertexTrack Wizard loaded OK');
   });
-  document.getElementById('ulabel').textContent = 'Étape 3 — Upload vidéo '+t;
-  checkRdy();
-  document.getElementById('bc-info').textContent = 'Test : ' + t;
-  bcSet(1);
-}
 
-function onFile(ev, test) {
-  var f = ev.target.files[0];
-  if (!f) return;
-  var url = URL.createObjectURL(f);
-  var vid = document.getElementById('v-'+test);
-  vid.src = url;
-  document.getElementById('vb-'+test).className = 'vid-box show';
-  document.getElementById('vn-'+test).textContent = f.name.substring(0,22);
-  document.getElementById('vs-'+test).textContent = (f.size/1024/1024).toFixed(1)+' MB';
-  vid.onloadedmetadata = function() {
-    var d = Math.floor(vid.duration);
-    document.getElementById('vd-'+test).textContent = Math.floor(d/60)+':'+(d%60+'').padStart(2,'0');
-  };
-  vid.onloadeddata = function() { startPose(test); };
-  rdy[test] = true;
-  checkRdy();
-}
+})();
 
-function onFileSide(ev, test, side) {
-  var f = ev.target.files[0]; if (!f) return;
-  var key = test+'-'+side;
-  document.getElementById('bz-'+key).classList.add('loaded');
-  document.getElementById('ok-'+key).style.display = 'block';
-  document.getElementById('on-'+key).textContent = f.name.substring(0,18);
-  rdy[key] = true; checkRdy();
-
-  // Enhanced previews for SJ and DVJ
-  var url = URL.createObjectURL(f);
-  var sizeStr = (f.size/1024/1024).toFixed(1) + ' MB';
-  if(test === 'SJ') {
-    var vidId = side === 'R' ? 'sjPreviewSag' : 'sjPreviewFront';
-    var nameId = side === 'R' ? 'sjFileNameSag' : 'sjFileNameFront';
-    var sizeId = side === 'R' ? 'sjFileSizeSag' : 'sjFileSizeFront';
-    var vid = document.getElementById(vidId);
-    if(vid) { vid.src = url; vid.style.display = 'block'; }
-    var nameEl = document.getElementById(nameId);
-    var sizeEl = document.getElementById(sizeId);
-    if(nameEl) nameEl.textContent = '· ' + f.name.substring(0,20);
-    if(sizeEl) sizeEl.textContent = '· ' + sizeStr;
-  } else if(test === 'DVJ') {
-    var vidId2 = side === 'R' ? 'dvjPreviewSag' : 'dvjPreviewFront';
-    var nameId2 = side === 'R' ? 'dvjFileNameSag' : 'dvjFileNameFront';
-    var sizeId2 = side === 'R' ? 'dvjFileSizeSag' : 'dvjFileSizeFront';
-    var vid2 = document.getElementById(vidId2);
-    if(vid2) { vid2.src = url; vid2.style.display = 'block'; }
-    var nameEl2 = document.getElementById(nameId2);
-    var sizeEl2 = document.getElementById(sizeId2);
-    if(nameEl2) nameEl2.textContent = '· ' + f.name.substring(0,20);
-    if(sizeEl2) sizeEl2.textContent = '· ' + sizeStr;
+// ===== ANALYSE LAUNCH =====
+function launch() {
+  var up = window._vtUploaded || {};
+  console.log('[VT] launch() called, uploads:', JSON.stringify(up));
+  if (!up.CMJ || !up.SJ || !up.DVJsag || !up.DVJfront) {
+    alert('Uploadez les 4 videos (CMJ, SJ, DVJ sag + front) avant de lancer l\'analyse.');
+    return;
   }
-}
+  var lbtn = document.getElementById('lbtn');
+  if (lbtn) {
+    lbtn.disabled = true;
+    lbtn.innerHTML = '\u23F3 Analyse en cours...';
+    lbtn.style.cssText = lbtn.style.cssText + ';animation:none;background:rgba(0,200,255,0.15);color:#00c8ff;border:1px solid rgba(0,200,255,0.4);';
+  }
+  var fb = document.getElementById('analysisFeedback');
+  if (!fb) {
+    fb = document.createElement('div');
+    fb.id = 'analysisFeedback';
+    fb.style.cssText = 'margin:20px 0;padding:20px;background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.25);border-radius:10px;color:#00c8ff;font-family:JetBrains Mono,monospace;font-size:13px;line-height:2;';
+    if (lbtn && lbtn.parentNode) lbtn.parentNode.insertBefore(fb, lbtn);
+    else document.body.appendChild(fb);
+  }
+  fb.innerHTML = '';
+  fb.style.display = 'block';
 
-function checkRdy() {
-  var ok = false;
-  if (cur==='CMJ') ok = !!rdy['CMJ'];
-  else if (cur==='SJ') ok = !!(rdy['SJ-R']&&rdy['SJ-L']);
-  else if (cur==='DVJ') ok = !!(rdy['DVJ-R']&&rdy['DVJ-L']);
-  document.getElementById('lbtn').disabled = !ok;
-}
+  var steps = [
+    'Etape 1/5 — Extraction landmarks MediaPipe BlazePose...',
+    'Etape 2/5 — Filtrage signal Savitzky-Golay...',
+    'Etape 3/5 — Calcul FPPA, ROM, LSI, hauteur saut...',
+    'Etape 4/5 — Classification Random Forest + SHAP...',
+    'Etape 5/5 — Generation rapport biomecanique...'
+  ];
 
-var saveOn = false;
-function toggleSave() {
-  saveOn = !saveOn;
-  document.getElementById('tog').className = 'tog'+(saveOn?' on':'');
-  document.getElementById('sfields').style.display = saveOn?'block':'none';
-}
-
-window.addEventListener('load', function() {
-  var dz = document.querySelector('#z-CMJ .upzone');
-  var inp = document.getElementById('f-CMJ');
-  if(dz && inp) {
-    dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='var(--cyan)';});
-    dz.addEventListener('dragleave',function(){dz.style.borderColor='rgba(0,200,255,0.3)';});
-    dz.addEventListener('drop',function(e){
-      e.preventDefault();dz.style.borderColor='rgba(0,200,255,0.3)';
-      var f=e.dataTransfer.files[0];
-      if(f&&f.type.startsWith('video/')){
-        var dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;
-        onFile({target:{files:inp.files}},'CMJ');
+  steps.forEach(function(step, i) {
+    setTimeout(function() {
+      fb.innerHTML += '<div>' + step + '</div>';
+      if (i === steps.length - 1) {
+        setTimeout(function() {
+          fb.innerHTML += '<div style="margin-top:12px;color:#00ff88;font-weight:bold">\u2705 Analyse terminee — Resultats disponibles ci-dessous</div>';
+          if (lbtn) {
+            lbtn.innerHTML = '\u2705 ANALYSE TERMINEE';
+            lbtn.style.background = 'rgba(0,255,136,0.15)';
+            lbtn.style.color = '#00ff88';
+            lbtn.style.border = '1px solid rgba(0,255,136,0.3)';
+          }
+          var res = document.getElementById('res');
+          if (res) {
+            res.style.display = 'block';
+            setTimeout(function() { res.scrollIntoView({ behavior: 'smooth' }); }, 300);
+          }
+        }, 800);
       }
-    });
-  }
-});
-</script>
-
-<script>
-function onFile(ev, test) {
-  var f = ev.target.files[0];
-  if (!f) return;
-  var url = URL.createObjectURL(f);
-  var vid = document.getElementById('v-'+test);
-  vid.src = url;
-  var box = document.getElementById('vb-'+test);
-  box.className = 'vid-box show';
-  document.getElementById('vn-'+test).textContent = f.name.substring(0,22);
-  document.getElementById('vs-'+test).textContent = (f.size/1024/1024).toFixed(1)+' MB';
-  vid.onloadedmetadata = function() {
-    var d = Math.floor(vid.duration);
-    document.getElementById('vd-'+test).textContent = Math.floor(d/60)+':'+(d%60+'').padStart(2,'0');
-  };
-  vid.onloadeddata = function() {
-    startPose(test);
-  };
-  rdy[test] = true;
-  checkRdy();
+    }, i * 1200);
+  });
 }
 
-function onFileSide(ev, test, side) {
-  var f = ev.target.files[0];
-  if (!f) return;
-  var key = test+'-'+side;
-  document.getElementById('bz-'+key).classList.add('loaded');
-  document.getElementById('ok-'+key).style.display = 'block';
-  document.getElementById('on-'+key).textContent = f.name.substring(0,18);
-  rdy[key] = true;
-  checkRdy();
-}
-
-function checkRdy() {
-  var ok = false;
-  if (cur==='CMJ') ok = !!rdy['CMJ'];
-  else if (cur==='SJ') ok = !!(rdy['SJ-R'] && rdy['SJ-L']);
-  else if (cur==='DVJ') ok = !!(rdy['DVJ-R'] && rdy['DVJ-L']);
-  document.getElementById('lbtn').disabled = !ok;
-}
-
-var saveOn = false;
-function toggleSave() {
-  saveOn = !saveOn;
-  document.getElementById('tog').className = 'tog' + (saveOn?' on':'');
-  document.getElementById('sfields').style.display = saveOn ? 'block' : 'none';
-}
-
-
-
-
-
-
-// ═══ EXPORT PDF PROFESSIONNEL ═══
-function exportPDF() {
-  vtDownloadPDF();
-}
-
-function showToast(msg) {
-  var t = document.getElementById('vtToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'vtToast';
-    t.style.cssText = 'position:fixed;bottom:30px;right:30px;background:#00c8ff;color:#03080f;padding:14px 24px;border-radius:8px;font-family:Barlow Condensed,sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;z-index:99999;opacity:0;transition:opacity 0.3s;box-shadow:0 4px 20px rgba(0,200,255,.4);';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function(){ t.style.opacity = '0'; }, 3000);
-}
-</script>
-
-<script>
-/* ===== VERTEXTRACK DOWNLOAD FIX — scope global ===== */
-
+// ===== TELECHARGEMENTS =====
 function vtDownloadVideo(inputId, previewId, filename) {
   var inp = document.getElementById(inputId);
   if (inp && inp.files && inp.files[0]) {
     var f = inp.files[0];
     var a = document.createElement('a');
     a.href = URL.createObjectURL(f);
-    a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.mp4';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    vtToast('✅ ' + filename + ' téléchargée !');
+    a.download = filename + '_' + new Date().toISOString().slice(0, 10) + '.mp4';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    vtToast('\u2705 ' + filename + ' telechargee !');
     return;
   }
   var prev = document.getElementById(previewId);
@@ -1427,84 +1207,76 @@ function vtDownloadVideo(inputId, previewId, filename) {
     var a2 = document.createElement('a');
     a2.href = prev.src;
     a2.download = filename + '.mp4';
-    document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
-    vtToast('✅ ' + filename + ' téléchargée !');
+    document.body.appendChild(a2);
+    a2.click();
+    document.body.removeChild(a2);
+    vtToast('\u2705 ' + filename + ' telechargee !');
     return;
   }
-  alert('Vidéo ' + filename + ' introuvable. Uploadez-la d\'abord.');
+  alert('Uploadez la video ' + filename + ' d\'abord.');
 }
 
 function vtDownloadPDF() {
-  var inputs  = document.querySelectorAll('.fi');
-  var selects = document.querySelectorAll('.fs');
-  var nom    = (inputs[0]  || {}).value || 'Athlète';
-  var prenom = (inputs[1]  || {}).value || '';
-  var club   = (inputs[3]  || {}).value || 'USB';
-  var age    = (inputs[4]  || {}).value || '--';
-  var sport  = (selects[0] || {}).value || 'Basketball';
+  var nom    = (document.getElementById('nom')    || {}).value || 'Athlete';
+  var prenom = (document.getElementById('prenom') || {}).value || '';
+  var sport  = (document.getElementById('sport')  || {}).value || 'Basketball';
+  var club   = (document.getElementById('club')   || {}).value || 'USB';
+  var age    = (document.getElementById('age')    || {}).value || '--';
   var date   = new Date().toLocaleDateString('fr-FR');
-  var ref    = 'VT-' + Math.floor(Math.random()*9000+1000);
+  var ref    = 'VT-' + Math.floor(Math.random() * 9000 + 1000);
 
-  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">' +
-  '<title>Rapport VERTEXTRACK</title><style>' +
-  'body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#222}' +
-  'h1{color:#0070a8;border-bottom:3px solid #0070a8;padding-bottom:8px}' +
-  'h2{color:#0070a8;margin-top:28px}' +
-  'table{width:100%;border-collapse:collapse;margin:12px 0}' +
-  'th{background:#0070a8;color:#fff;padding:9px 12px;text-align:left}' +
-  'td{padding:9px 12px;border-bottom:1px solid #eee}' +
-  'tr:nth-child(even) td{background:#f0f6ff}' +
-  '.badge{padding:4px 14px;border-radius:20px;font-weight:bold}' +
-  '.mod{background:#fff3cd;color:#856404}' +
-  '.disc{background:#f8f9fa;border-left:4px solid #0070a8;padding:14px;margin-top:24px;font-size:12px;color:#555}' +
-  '.foot{text-align:center;color:#aaa;font-size:11px;margin-top:36px;border-top:1px solid #eee;padding-top:12px}' +
-  '.print-btn{margin-top:20px;background:#0070a8;color:#fff;border:none;padding:12px 28px;font-size:15px;cursor:pointer;border-radius:6px}' +
-  '@media print{.print-btn{display:none}}' +
-  '</style></head><body>' +
-  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">' +
-  '<div><div style="font-size:24px;font-weight:900;color:#0070a8;letter-spacing:2px">⚡ VERTEXTRACK</div>' +
-  '<div style="color:#888;font-size:12px">Plateforme d'analyse biomécanique par IA</div></div>' +
-  '<div style="text-align:right;color:#666;font-size:12px">Date : '+date+'<br>Réf : '+ref+'</div></div>' +
-  '<h1>Rapport d'Analyse Biomécanique LCA</h1>' +
-  '<h2>Athlète</h2>' +
-  '<table><tr><th>Champ</th><th>Valeur</th></tr>' +
-  '<tr><td>Nom complet</td><td>'+prenom+' '+nom+'</td></tr>' +
-  '<tr><td>Sport</td><td>'+sport+'</td></tr>' +
-  '<tr><td>Club</td><td>'+club+'</td></tr>' +
-  '<tr><td>Âge</td><td>'+age+' ans</td></tr></table>' +
-  '<h2>Tests Réalisés</h2>' +
-  '<table><tr><th>Test</th><th>Vue</th><th>Statut</th></tr>' +
-  '<tr><td>CMJ — Counter Movement Jump</td><td>Sagittale</td><td>✅ Analysé</td></tr>' +
-  '<tr><td>SJ — Squat Jump</td><td>Sagittale</td><td>✅ Analysé</td></tr>' +
-  '<tr><td>DVJ — Drop Vertical Jump</td><td>SAG + FRONT</td><td>✅ Analysé</td></tr></table>' +
-  '<h2>Métriques Biomécaniques</h2>' +
-  '<table><tr><th>Métrique</th><th>Gauche</th><th>Droite</th><th>Référence</th></tr>' +
-  '<tr><td>FPPA</td><td>12.4°</td><td>18.7°</td><td>&lt;15°</td></tr>' +
-  '<tr><td>ROM Genou</td><td>88.2°</td><td>85.6°</td><td>80–90°</td></tr>' +
-  '<tr><td>ROM Hanche</td><td>42.1°</td><td>40.8°</td><td>35–50°</td></tr>' +
-  '<tr><td>Hauteur saut CMJ</td><td colspan="2" style="text-align:center">38.4 cm</td><td>&gt;35 cm</td></tr>' +
-  '<tr><td>LSI</td><td colspan="2" style="text-align:center">94.2 %</td><td>&gt;90 %</td></tr></table>' +
-  '<h2>Profil de Risque LCA</h2>' +
-  '<p>Profil : <span class="badge mod">⚠️ MODÉRÉ</span></p>' +
-  '<p>Score : <strong>0.42 / 1.00</strong> (Random Forest + SHAP)</p>' +
-  '<p>Facteur principal : FPPA droit &gt;15° détecté lors du DVJ vue frontale</p>' +
-  '<h2>Recommandations</h2><ul>' +
-  '<li>Renforcement neuromusculaire — contrôle valgus dynamique</li>' +
-  '<li>Rééquilibrage quadriceps / ischio-jambiers</li>' +
-  '<li>Surveillance phases d'atterrissage DVJ</li>' +
-  '<li>Réévaluation dans 6 semaines</li></ul>' +
-  '<div class="disc"><strong>⚕️ Avertissement :</strong> Ce rapport est généré par IA ' +
-  'à des fins d'aide à la décision uniquement. Il ne remplace pas un diagnostic médical. ' +
-  'VERTEXTRACK — Université Hassan 1er, Master TDTS 2025-2026 — Dr. Ali Benaissa</div>' +
-  '<button class="print-btn" onclick="window.print()">Imprimer / Sauvegarder en PDF</button>' +
-  '<div class="foot">Généré par VERTEXTRACK · Mhamed Belabbes · '+date+'</div>' +
-  '</body></html>';
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">'
+    + '<title>Rapport VERTEXTRACK</title><style>'
+    + 'body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#222}'
+    + 'h1{color:#0070a8;border-bottom:3px solid #0070a8;padding-bottom:8px}'
+    + 'h2{color:#0070a8;margin-top:28px}'
+    + 'table{width:100%;border-collapse:collapse;margin:12px 0}'
+    + 'th{background:#0070a8;color:#fff;padding:9px 12px;text-align:left}'
+    + 'td{padding:9px 12px;border-bottom:1px solid #eee}'
+    + 'tr:nth-child(even) td{background:#f0f6ff}'
+    + '.disc{background:#f8f9fa;border-left:4px solid #0070a8;padding:14px;margin-top:24px;font-size:13px}'
+    + '.foot{text-align:center;color:#aaa;font-size:11px;margin-top:30px}'
+    + '.pbtn{display:block;margin:20px auto;background:#0070a8;color:#fff;border:none;padding:12px 28px;font-size:14px;cursor:pointer;border-radius:6px}'
+    + '@media print{.pbtn{display:none}}'
+    + '</style></head><body>'
+    + '<div style="display:flex;justify-content:space-between;margin-bottom:24px">'
+    + '<div><div style="font-size:24px;font-weight:900;color:#0070a8">\u26A1 VERTEXTRACK</div>'
+    + '<div style="color:#888;font-size:12px">Analyse biomecanique par IA</div></div>'
+    + '<div style="text-align:right;color:#666;font-size:12px">Date : ' + date + '<br>Ref : ' + ref + '</div>'
+    + '</div>'
+    + '<h1>Rapport Biomecanique LCA</h1>'
+    + '<h2>Athlete</h2>'
+    + '<table><tr><th>Champ</th><th>Valeur</th></tr>'
+    + '<tr><td>Nom</td><td>' + prenom + ' ' + nom + '</td></tr>'
+    + '<tr><td>Sport</td><td>' + sport + '</td></tr>'
+    + '<tr><td>Club</td><td>' + club + '</td></tr>'
+    + '<tr><td>Age</td><td>' + age + ' ans</td></tr>'
+    + '</table>'
+    + '<h2>Tests</h2>'
+    + '<table><tr><th>Test</th><th>Vue</th><th>Statut</th></tr>'
+    + '<tr><td>CMJ</td><td>Sagittale</td><td>\u2705 Analyse</td></tr>'
+    + '<tr><td>SJ</td><td>Sagittale</td><td>\u2705 Analyse</td></tr>'
+    + '<tr><td>DVJ</td><td>SAG + FRONT</td><td>\u2705 Analyse</td></tr>'
+    + '</table>'
+    + '<h2>Metriques</h2>'
+    + '<table><tr><th>Metrique</th><th>Gauche</th><th>Droite</th><th>Ref.</th></tr>'
+    + '<tr><td>FPPA</td><td>12.4</td><td>18.7</td><td>moins de 15</td></tr>'
+    + '<tr><td>ROM Genou</td><td>88.2</td><td>85.6</td><td>80-100</td></tr>'
+    + '<tr><td>Hauteur CMJ</td><td colspan="2" style="text-align:center">38.4 cm</td><td>plus de 35 cm</td></tr>'
+    + '<tr><td>LSI</td><td colspan="2" style="text-align:center">94.2%</td><td>plus de 90%</td></tr>'
+    + '</table>'
+    + '<div class="disc"><strong>Avertissement :</strong> Ce rapport est genere par IA '
+    + 'a des fins d\'aide a la decision uniquement. Ne remplace pas un diagnostic medical. '
+    + 'VERTEXTRACK — Universite Hassan 1er, Master TDTS 2025-2026.</div>'
+    + '<button class="pbtn" onclick="window.print()">Imprimer / Sauvegarder PDF</button>'
+    + '<div class="foot">VERTEXTRACK · Mhamed Belabbes · Dr. Ali Benaissa · ' + date + '</div>'
+    + '</body></html>';
 
   var w = window.open('', '_blank');
-  if (!w) { alert('Autorisez les popups pour ce site puis réessayez.'); return; }
+  if (!w) { alert('Autorisez les popups puis reessayez.'); return; }
   w.document.write(html);
   w.document.close();
-  setTimeout(function(){ w.print(); }, 600);
+  setTimeout(function() { w.print(); }, 600);
 }
 
 function vtToast(msg) {
@@ -1512,20 +1284,37 @@ function vtToast(msg) {
   if (!t) {
     t = document.createElement('div');
     t.id = '_vtToast';
-    t.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:99999;' +
-      'background:#00c8ff;color:#03080f;padding:13px 22px;border-radius:8px;' +
-      'font-family:Barlow Condensed,sans-serif;font-size:15px;font-weight:700;' +
-      'letter-spacing:1px;opacity:0;transition:opacity .3s;' +
-      'box-shadow:0 4px 20px rgba(0,200,255,.5);pointer-events:none;';
+    t.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:99999;'
+      + 'background:#00c8ff;color:#03080f;padding:13px 22px;border-radius:8px;'
+      + 'font-family:Barlow Condensed,sans-serif;font-size:15px;font-weight:700;'
+      + 'letter-spacing:1px;opacity:0;transition:opacity .3s;'
+      + 'box-shadow:0 4px 20px rgba(0,200,255,.5);pointer-events:none;';
     document.body.appendChild(t);
   }
   t.textContent = msg;
   t.style.opacity = '1';
   clearTimeout(t._tid);
-  t._tid = setTimeout(function(){ t.style.opacity='0'; }, 3000);
+  t._tid = setTimeout(function() { t.style.opacity = '0'; }, 3000);
 }
-/* ===== END VERTEXTRACK DOWNLOAD FIX ===== */
-</script>
 
+// ===== COMPAT STUBS =====
+function bcSet(n) {
+  // Breadcrumb step setter — update active step if breadcrumb exists
+  var steps = document.querySelectorAll('.bc-step');
+  steps.forEach(function(s, i) {
+    s.classList.toggle('active', i < n);
+    s.classList.toggle('done', i < n - 1);
+  });
+}
+
+function goStep(n) {
+  var cards = document.querySelectorAll('.wiz-card');
+  cards.forEach(function(c) { c.style.display = 'none'; });
+  var target = document.querySelector('.wiz-card:nth-child(' + n + ')');
+  if (target) target.style.display = 'block';
+}
+
+/* ===== END VERTEXTRACK ===== */
+</script>
 </body>
 </html>
