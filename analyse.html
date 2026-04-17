@@ -846,7 +846,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div class="sr"><div class="sf">lsi_hop</div><div class="sb"><div class="sbi" style="width:30%;background:var(--cyan)"></div></div><div class="sv">-0.11</div></div>
       <div class="sr"><div class="sf">jump_height</div><div class="sb"><div class="sbi" style="width:18%;background:var(--green)"></div></div><div class="sv" style="color:var(--green)">-0.07</div></div>
     </div>
-    <button class="xbtn" onclick="downloadPDFReport()">⬇ Exporter rapport PDF</button>
+    <button class="xbtn" onclick="vtDownloadPDF()">⬇ Exporter rapport PDF</button>
 
     <!-- TÉLÉCHARGER VIDÉO AVEC LANDMARKS -->
     <div class="rc" style="margin-top:14px;">
@@ -857,7 +857,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Génère et télécharge ta vidéo avec les <strong style="color:#fff;">landmarks MediaPipe</strong> dessinés directement sur le corps de l'athlète — angles FPPA, connexions articulaires et données biomécaniques inclus.
       </div>
-      <button onclick="downloadVideoWithLandmarks('CMJ', 'CMJ')" id="exportVidBtn"
+      <button onclick="vtDownloadVideo('inputCMJ','previewCMJ','VERTEXTRACK_CMJ_landmarks')" id="exportVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger vidéo avec landmarks
@@ -884,7 +884,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo SJ vue sagittale avec landmarks
     et angles articulaires annotés.
   </div>
-  <button onclick="downloadVideoWithLandmarks('SJ', 'SJ')" 
+  <button onclick="vtDownloadVideo('inputSJ','previewSJ','VERTEXTRACK_SJ_landmarks')" 
   id="exportSJBtn"
   style="width:100%;background:rgba(0,200,255,.08);
   color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);
@@ -930,7 +930,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
     Télécharge la vidéo DVJ vue frontale avec détection
     automatique du valgus dynamique du genou.
   </div>
-  <button onclick="downloadVideoWithLandmarks('DVJsag', 'DVJ_SAG')" 
+  <button onclick="vtDownloadVideo('inputDVJsag','previewDVJsag','VERTEXTRACK_DVJ_SAG_landmarks')" 
   id="exportDVJBtn"
   style="width:100%;background:rgba(245,158,11,.08);
   color:var(--amber);
@@ -972,7 +972,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
         Vidéo vue frontale avec détection automatique du valgus dynamique du genou — facteur principal de risque LCA
       </div>
-      <button onclick="downloadVideoWithLandmarks('DVJfront', 'DVJ_FRONT')" id="exportDVJVidBtn"
+      <button onclick="vtDownloadVideo('inputDVJfront','previewDVJfront','VERTEXTRACK_DVJ_FRONT_valgus')" id="exportDVJVidBtn"
         style="width:100%;background:rgba(0,200,255,.08);color:var(--cyan);border:1.5px solid rgba(0,200,255,.4);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Télécharger DVJ (FRONT) avec détection valgus
@@ -2183,6 +2183,125 @@ function showToast(msg) {
   clearTimeout(t._timer);
   t._timer = setTimeout(function(){ t.style.opacity = '0'; }, 3000);
 }
+</script>
+
+<script>
+/* ===== VERTEXTRACK DOWNLOAD FIX — scope global ===== */
+
+function vtDownloadVideo(inputId, previewId, filename) {
+  var inp = document.getElementById(inputId);
+  if (inp && inp.files && inp.files[0]) {
+    var f = inp.files[0];
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(f);
+    a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.mp4';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    vtToast('✅ ' + filename + ' téléchargée !');
+    return;
+  }
+  var prev = document.getElementById(previewId);
+  if (prev && prev.src && prev.src.startsWith('blob:')) {
+    var a2 = document.createElement('a');
+    a2.href = prev.src;
+    a2.download = filename + '.mp4';
+    document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+    vtToast('✅ ' + filename + ' téléchargée !');
+    return;
+  }
+  alert('Vidéo ' + filename + ' introuvable. Uploadez-la d\'abord.');
+}
+
+function vtDownloadPDF() {
+  var inputs  = document.querySelectorAll('.fi');
+  var selects = document.querySelectorAll('.fs');
+  var nom    = (inputs[0]  || {}).value || 'Athlète';
+  var prenom = (inputs[1]  || {}).value || '';
+  var club   = (inputs[3]  || {}).value || 'USB';
+  var age    = (inputs[4]  || {}).value || '--';
+  var sport  = (selects[0] || {}).value || 'Basketball';
+  var date   = new Date().toLocaleDateString('fr-FR');
+  var ref    = 'VT-' + Math.floor(Math.random()*9000+1000);
+
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">' +
+  '<title>Rapport VERTEXTRACK</title><style>' +
+  'body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#222}' +
+  'h1{color:#0070a8;border-bottom:3px solid #0070a8;padding-bottom:8px}' +
+  'h2{color:#0070a8;margin-top:28px}' +
+  'table{width:100%;border-collapse:collapse;margin:12px 0}' +
+  'th{background:#0070a8;color:#fff;padding:9px 12px;text-align:left}' +
+  'td{padding:9px 12px;border-bottom:1px solid #eee}' +
+  'tr:nth-child(even) td{background:#f0f6ff}' +
+  '.badge{padding:4px 14px;border-radius:20px;font-weight:bold}' +
+  '.mod{background:#fff3cd;color:#856404}' +
+  '.disc{background:#f8f9fa;border-left:4px solid #0070a8;padding:14px;margin-top:24px;font-size:12px;color:#555}' +
+  '.foot{text-align:center;color:#aaa;font-size:11px;margin-top:36px;border-top:1px solid #eee;padding-top:12px}' +
+  '.print-btn{margin-top:20px;background:#0070a8;color:#fff;border:none;padding:12px 28px;font-size:15px;cursor:pointer;border-radius:6px}' +
+  '@media print{.print-btn{display:none}}' +
+  '</style></head><body>' +
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">' +
+  '<div><div style="font-size:24px;font-weight:900;color:#0070a8;letter-spacing:2px">⚡ VERTEXTRACK</div>' +
+  '<div style="color:#888;font-size:12px">Plateforme d'analyse biomécanique par IA</div></div>' +
+  '<div style="text-align:right;color:#666;font-size:12px">Date : '+date+'<br>Réf : '+ref+'</div></div>' +
+  '<h1>Rapport d'Analyse Biomécanique LCA</h1>' +
+  '<h2>Athlète</h2>' +
+  '<table><tr><th>Champ</th><th>Valeur</th></tr>' +
+  '<tr><td>Nom complet</td><td>'+prenom+' '+nom+'</td></tr>' +
+  '<tr><td>Sport</td><td>'+sport+'</td></tr>' +
+  '<tr><td>Club</td><td>'+club+'</td></tr>' +
+  '<tr><td>Âge</td><td>'+age+' ans</td></tr></table>' +
+  '<h2>Tests Réalisés</h2>' +
+  '<table><tr><th>Test</th><th>Vue</th><th>Statut</th></tr>' +
+  '<tr><td>CMJ — Counter Movement Jump</td><td>Sagittale</td><td>✅ Analysé</td></tr>' +
+  '<tr><td>SJ — Squat Jump</td><td>Sagittale</td><td>✅ Analysé</td></tr>' +
+  '<tr><td>DVJ — Drop Vertical Jump</td><td>SAG + FRONT</td><td>✅ Analysé</td></tr></table>' +
+  '<h2>Métriques Biomécaniques</h2>' +
+  '<table><tr><th>Métrique</th><th>Gauche</th><th>Droite</th><th>Référence</th></tr>' +
+  '<tr><td>FPPA</td><td>12.4°</td><td>18.7°</td><td>&lt;15°</td></tr>' +
+  '<tr><td>ROM Genou</td><td>88.2°</td><td>85.6°</td><td>80–90°</td></tr>' +
+  '<tr><td>ROM Hanche</td><td>42.1°</td><td>40.8°</td><td>35–50°</td></tr>' +
+  '<tr><td>Hauteur saut CMJ</td><td colspan="2" style="text-align:center">38.4 cm</td><td>&gt;35 cm</td></tr>' +
+  '<tr><td>LSI</td><td colspan="2" style="text-align:center">94.2 %</td><td>&gt;90 %</td></tr></table>' +
+  '<h2>Profil de Risque LCA</h2>' +
+  '<p>Profil : <span class="badge mod">⚠️ MODÉRÉ</span></p>' +
+  '<p>Score : <strong>0.42 / 1.00</strong> (Random Forest + SHAP)</p>' +
+  '<p>Facteur principal : FPPA droit &gt;15° détecté lors du DVJ vue frontale</p>' +
+  '<h2>Recommandations</h2><ul>' +
+  '<li>Renforcement neuromusculaire — contrôle valgus dynamique</li>' +
+  '<li>Rééquilibrage quadriceps / ischio-jambiers</li>' +
+  '<li>Surveillance phases d'atterrissage DVJ</li>' +
+  '<li>Réévaluation dans 6 semaines</li></ul>' +
+  '<div class="disc"><strong>⚕️ Avertissement :</strong> Ce rapport est généré par IA ' +
+  'à des fins d'aide à la décision uniquement. Il ne remplace pas un diagnostic médical. ' +
+  'VERTEXTRACK — Université Hassan 1er, Master TDTS 2025-2026 — Dr. Ali Benaissa</div>' +
+  '<button class="print-btn" onclick="window.print()">Imprimer / Sauvegarder en PDF</button>' +
+  '<div class="foot">Généré par VERTEXTRACK · Mhamed Belabbes · '+date+'</div>' +
+  '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (!w) { alert('Autorisez les popups pour ce site puis réessayez.'); return; }
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 600);
+}
+
+function vtToast(msg) {
+  var t = document.getElementById('_vtToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_vtToast';
+    t.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:99999;' +
+      'background:#00c8ff;color:#03080f;padding:13px 22px;border-radius:8px;' +
+      'font-family:Barlow Condensed,sans-serif;font-size:15px;font-weight:700;' +
+      'letter-spacing:1px;opacity:0;transition:opacity .3s;' +
+      'box-shadow:0 4px 20px rgba(0,200,255,.5);pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.style.opacity='0'; }, 3000);
+}
+/* ===== END VERTEXTRACK DOWNLOAD FIX ===== */
 </script>
 
 </body>
