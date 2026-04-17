@@ -1514,9 +1514,30 @@ async function exportGeneric(inputId, previewId, filename, type) {
     if (msg) msg.textContent = '✅ Export terminé !';
     if (bar) { bar.style.width = '100%'; bar.style.background = '#00e676'; }
     setTimeout(() => { if (prog) prog.style.display = 'none'; if (bar) bar.style.background = 'var(--cyan)'; }, 3000);
+    
+    if (poseWorker) {
+      poseWorker.postMessage({ type: 'COMPLETE', filename: filename });
+      poseWorker.terminate();
+      poseWorker = null;
+    }
   };
   vid.pause(); vid.currentTime = 0;
   await new Promise(r => { vid.onseeked = r; setTimeout(r, 500); });
+  
+  // Web Worker pour feedback non-bloquant
+  var poseWorker = null;
+  try {
+    poseWorker = new Worker('/pose-worker.js');
+    poseWorker.onmessage = function(e) {
+      if (e.data.type === 'STATUS' && msg) {
+        msg.textContent = e.data.msg;
+      }
+    };
+    poseWorker.postMessage({ type: 'START' });
+  } catch(workerErr) {
+    console.warn('[VT] Web Worker not available:', workerErr);
+  }
+  
   recorder.start(100);
   var currentTime = 0; var step = 1 / fps;
   while (currentTime <= duration) {
@@ -1529,6 +1550,16 @@ async function exportGeneric(inputId, previewId, filename, type) {
     } catch(e) {}
     var pct = Math.round((currentTime / duration) * 90) + 5;
     if (bar) bar.style.width = pct + '%';
+    
+    if (poseWorker) {
+      poseWorker.postMessage({ 
+        type: 'PROGRESS', 
+        percent: pct,
+        frame: Math.round(currentTime * fps),
+        total: Math.round(duration * fps)
+      });
+    }
+    
     if (msg) msg.textContent = 'Traitement : ' + Math.round(currentTime) + 's / ' + Math.round(duration) + 's (' + pct + '%)';
     currentTime += step; await new Promise(r => setTimeout(r, 0));
   }
@@ -1823,6 +1854,20 @@ function trackExport(type) {
 }
 
 /* ===== END VERTEXTRACK ===== */
+</script>
+<script>
+/* Service Worker Registration */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(reg) {
+        console.log('[VT] Service Worker registered:', reg.scope);
+      })
+      .catch(function(err) {
+        console.warn('[VT] SW registration failed:', err);
+      });
+  });
+}
 </script>
 </body>
 </html>
