@@ -134,6 +134,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
   background: #00ff88 !important;
 }
 
+/* Breadcrumb 4 étapes — états done */
+.wiz-step.done .ws-n,
+.step-done .ws-n {
+  background: #00ff88 !important;
+  border-color: #00ff88 !important;
+  color: #03080f !important;
+  box-shadow: 0 0 12px rgba(0,255,136,0.5) !important;
+}
+
 /* Checklist Caméra - NEW */
 .camera-checklist {
   background: rgba(255,255,255,0.03);
@@ -1191,26 +1200,43 @@ function toggleCheck(labelEl, key) {
 }
 
 function markBcStep(n) {
-  var steps = document.querySelectorAll('.wiz-step');
-  if (steps.length === 0) {
-    steps = document.querySelectorAll('[class*="ws-"]');
-  }
-  steps.forEach(function(el, idx) {
-    if (idx + 1 === n) {
+  // Breadcrumb 4 étapes : UPLOAD(1) ANALYSE(2) RÉSULTATS(3) EXPORT(4)
+  var labels = ['UPLOAD', 'ANALYSE', 'RÉSULTATS', 'EXPORT'];
+  var target = labels[n-1];
+  if (!target) return;
+  
+  // Cherche l'élément qui contient ce texte dans le breadcrumb
+  var allEls = document.querySelectorAll(
+    '.bc-step, .wiz-step, [class*="step"], li, .nav-item'
+  );
+  
+  allEls.forEach(function(el) {
+    var txt = el.textContent.toUpperCase();
+    if (txt.indexOf(target) !== -1 && txt.length < 50) {
+      // Marquer done
       el.classList.add('done');
-      var num = el.querySelector('.ws-n, span, div');
-      if (num && /^[123]$/.test(num.textContent.trim())) {
-        num.style.background = '#00ff88';
-        num.style.borderColor = '#00ff88';
-        num.style.color = '#03080f';
-        num.style.boxShadow = '0 0 12px rgba(0,255,136,.5)';
-        num.textContent = '✓';
+      
+      // Trouver le cercle numéroté
+      var circle = el.querySelector(
+        '.bc-num, .ws-n, .step-num, span:first-child, div:first-child'
+      );
+      if (circle && /^[1234]$/.test(circle.textContent.trim())) {
+        circle.style.background = '#00ff88';
+        circle.style.borderColor = '#00ff88';
+        circle.style.color = '#03080f';
+        circle.style.boxShadow = '0 0 12px rgba(0,255,136,.5)';
+        circle.textContent = '✓';
       }
-      var label = el.querySelector('.ws-label, p, span:last-child');
-      if (label) label.style.color = '#00ff88';
+      
+      // Label en vert
+      var lbl = el.querySelector(
+        '.bc-label, .ws-label, span:last-child, p'
+      );
+      if (lbl && lbl !== circle) lbl.style.color = '#00ff88';
+      
+      console.log('[VT] BC marked done:', target);
     }
   });
-  console.log('[VT] markBcStep(' + n + ')');
 }
 
 function goToVideoUpload() {
@@ -1558,6 +1584,7 @@ function vtDownloadVideo(inputId, previewId, filename) {
     a.click();
     document.body.removeChild(a);
     trackExport(filename);
+    markBcStep(4);
     return;
   }
   var prev = document.getElementById(previewId);
@@ -1569,6 +1596,7 @@ function vtDownloadVideo(inputId, previewId, filename) {
     a2.click();
     document.body.removeChild(a2);
     trackExport(filename);
+    markBcStep(4);
     return;
   }
   alert('Uploadez la vidéo ' + filename + ' d\'abord.');
@@ -1630,6 +1658,7 @@ function vtDownloadPDF() {
   w.document.write(html);
   w.document.close();
   trackExport('Rapport PDF');
+  markBcStep(4);
   setTimeout(function() { w.print(); }, 600);
 }
 
