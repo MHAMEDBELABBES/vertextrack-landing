@@ -312,6 +312,21 @@ body {
   color: #fff;
 }
 /* ── END Nav User ─────────────────────────────────────────── */
+
+/* ── Badge rôle navbar ────────────────────────────────────── */
+.nav-role-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+/* ── Colonnes médicales (cachables par rôle coach) ──────── */
+.col-medical { transition: opacity 0.2s; }
+/* ── END RBAC ──────────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -388,12 +403,12 @@ body {
       <div class="kpi-value" id="kpi-analyses">142</div>
       <div class="kpi-sub">CMJ · SJ · DVJ</div>
     </div>
-    <div class="kpi-card">
+    <div class="kpi-card" data-role="admin,medical">
       <div class="kpi-label">Risque faible</div>
       <div class="kpi-value green" id="kpi-risk">18</div>
       <div class="kpi-sub">75 % des athlètes</div>
     </div>
-    <div class="kpi-card">
+    <div class="kpi-card" data-role="admin,medical">
       <div class="kpi-label">Risque élevé</div>
       <div class="kpi-value red" id="kpi-high">3</div>
       <div class="kpi-sub">Suivi renforcé requis</div>
@@ -420,7 +435,7 @@ body {
     </div>
 
     <!-- DONUT — Répartition risque -->
-    <div class="chart-box">
+    <div class="chart-box" data-role="admin,medical">
       <div class="chart-title">Répartition du risque LCA</div>
       <div class="chart-sub">Score Random Forest · ensemble des athlètes</div>
       <div class="donut-wrap">
@@ -467,65 +482,65 @@ body {
     <div class="table-row">
       <div><div class="athlete-name">Amine Benali</div><div class="athlete-club">USB Basket · #7</div></div>
       <div class="td">41 cm</div>
-      <div class="td">8°</div>
-      <div class="td">0.97</div>
-      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td col-medical">8°</div>
+      <div class="td col-medical">0.97</div>
+      <div class="col-medical"><span class="badge badge-low">Faible</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Mohamed Kabbaj</div><div class="athlete-club">RCOZ Football · #11</div></div>
       <div class="td">37 cm</div>
-      <div class="td">16°</div>
-      <div class="td">0.84</div>
-      <div><span class="badge badge-med">Modéré</span></div>
+      <div class="td col-medical">16°</div>
+      <div class="td col-medical">0.84</div>
+      <div class="col-medical"><span class="badge badge-med">Modéré</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Youssef Ouali</div><div class="athlete-club">USB Basket · #3</div></div>
       <div class="td">44 cm</div>
-      <div class="td">6°</div>
-      <div class="td">0.99</div>
-      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td col-medical">6°</div>
+      <div class="td col-medical">0.99</div>
+      <div class="col-medical"><span class="badge badge-low">Faible</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Hamza Rachidi</div><div class="athlete-club">RCOZ Football · #8</div></div>
       <div class="td">33 cm</div>
-      <div class="td">22°</div>
-      <div class="td">0.71</div>
-      <div><span class="badge badge-high">Élevé</span></div>
+      <div class="td col-medical">22°</div>
+      <div class="td col-medical">0.71</div>
+      <div class="col-medical"><span class="badge badge-high">Élevé</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Soufiane El Amrani</div><div class="athlete-club">USB Basket · #14</div></div>
       <div class="td">46 cm</div>
-      <div class="td">5°</div>
-      <div class="td">1.00</div>
-      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td col-medical">5°</div>
+      <div class="td col-medical">1.00</div>
+      <div class="col-medical"><span class="badge badge-low">Faible</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Nabil Benhaddou</div><div class="athlete-club">RCOZ Football · #22</div></div>
       <div class="td">30 cm</div>
-      <div class="td">25°</div>
-      <div class="td">0.68</div>
-      <div><span class="badge badge-high">Élevé</span></div>
+      <div class="td col-medical">25°</div>
+      <div class="td col-medical">0.68</div>
+      <div class="col-medical"><span class="badge badge-high">Élevé</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Ilyas Moumen</div><div class="athlete-club">USB Basket · #5</div></div>
       <div class="td">39 cm</div>
-      <div class="td">11°</div>
-      <div class="td">0.91</div>
-      <div><span class="badge badge-low">Faible</span></div>
+      <div class="td col-medical">11°</div>
+      <div class="td col-medical">0.91</div>
+      <div class="col-medical"><span class="badge badge-low">Faible</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
     <div class="table-row">
       <div><div class="athlete-name">Rachid Fassi</div><div class="athlete-club">RCOZ Football · #6</div></div>
       <div class="td">35 cm</div>
-      <div class="td">18°</div>
-      <div class="td">0.80</div>
-      <div><span class="badge badge-med">Modéré</span></div>
+      <div class="td col-medical">18°</div>
+      <div class="td col-medical">0.80</div>
+      <div class="col-medical"><span class="badge badge-med">Modéré</span></div>
       <div><a class="btn-sm" href="analyse.html">Analyser</a></div>
     </div>
 
@@ -694,16 +709,40 @@ document.querySelectorAll('a[href]').forEach(function(link) {
 
 </script>
 
-<!-- ── Auth Guard (module ESM) ────────────────────────────── -->
+<!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
 <script type="module">
-import { checkSession, injectNavUser } from './auth-guard.js';
+import { checkSession, getRole, injectNavUser, applyRBAC } from './auth-guard.js';
 
-// Verifie la session - redirige vers login.html si non connecte
+// 1. Vérifier la session (redirige vers login.html si absente)
 const session = await checkSession();
+if (!session) throw new Error('no session');
 
-// Injecte email + bouton deconnexion dans la navbar
-if (session) {
-  injectNavUser(session);
+// 2. Récupérer le rôle (avec cache sessionStorage)
+const role = await getRole();
+if (!role) throw new Error('no role'); // getRole() a déjà déclenché logout()
+
+// 3. Injecter avatar + email + badge rôle dans la navbar
+injectNavUser(session, role);
+
+// 4. Appliquer les restrictions RBAC
+applyRBAC(role);
+
+// 5. Bannière contextuelle pour le coach
+if (role === 'coach') {
+  const banner = document.getElementById('demo-banner');
+  if (banner) {
+    banner.style.display = 'flex';
+    banner.style.background = 'rgba(34,197,94,0.06)';
+    banner.style.borderColor = 'rgba(34,197,94,0.2)';
+    banner.innerHTML = `
+      <div style="font-size:12px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:8px;">
+        <span style="color:#22c55e;font-size:16px;">🏀</span>
+        <span>Mode <strong style="color:#22c55e;">Coach</strong> — métriques de performance · données médicales restreintes</span>
+      </div>
+      <a href="analyse.html" style="background:#22c55e;color:#03080f;padding:7px 18px;font-family:'Barlow',sans-serif;font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
+        Lancer une analyse →
+      </a>`;
+  }
 }
 </script>
 

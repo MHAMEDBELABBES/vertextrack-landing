@@ -702,6 +702,19 @@ body {
   color: #fff;
 }
 /* ── END Nav User ─────────────────────────────────────────── */
+
+/* ── Badge rôle navbar ────────────────────────────────────── */
+.nav-role-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+/* ── END Badge rôle ─────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -1294,8 +1307,8 @@ border-top:1px solid rgba(255,255,255,0.06);">
     </div>
     <!-- DISCLAIMER -->
     <div class="disc"><strong style="color:#f59e0b">⚠ Avertissement médical</strong><br>Cet outil génère un <strong style="color:rgba(255,255,255,.7)">profil de similarité biomécanique</strong> basé sur des données historiques. Il ne constitue pas un diagnostic médical et ne remplace pas l'avis d'un professionnel de santé qualifié.</div>
-    <!-- SHAP -->
-    <div class="rc">
+    <!-- SHAP — restreint : admin + médical uniquement -->
+    <div class="rc" data-role="admin,medical">
       <div class="rch"><div class="rct">Facteurs SHAP</div></div>
       <div class="sr"><div class="sf">fppa_angular_vel</div><div class="sb"><div class="sbi" style="width:88%;background:var(--red)"></div></div><div class="sv" style="color:var(--red)">+0.31</div></div>
       <div class="sr"><div class="sf">knee_rom_sls</div><div class="sb"><div class="sbi" style="width:65%;background:var(--amber)"></div></div><div class="sv" style="color:var(--amber)">+0.22</div></div>
@@ -1303,7 +1316,8 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div class="sr"><div class="sf">lsi_hop</div><div class="sb"><div class="sbi" style="width:30%;background:var(--cyan)"></div></div><div class="sv">-0.11</div></div>
       <div class="sr"><div class="sf">jump_height</div><div class="sb"><div class="sbi" style="width:18%;background:var(--green)"></div></div><div class="sv" style="color:var(--green)">-0.07</div></div>
     </div>
-    <button class="xbtn" onclick="vtDownloadPDF()">⬇ Exporter rapport PDF</button>
+    <!-- Export PDF restreint : admin + médical uniquement -->
+    <button class="xbtn" data-role="admin,medical" onclick="vtDownloadPDF()">⬇ Exporter rapport PDF</button>
 
     <!-- TÉLÉCHARGER VIDÉO AVEC LANDMARKS -->
     <div class="rc" style="margin-top:14px;">
@@ -2005,17 +2019,23 @@ function vtDownloadPDF() {
     + '<div style="text-align:center;color:#aaa;font-size:11px;margin-top:30px">'
     + 'VERTEXTRACK · Mhamed Belabbes · Dr. Ali Benaissa · ' + date + '</div>'
     + '
-<!-- ── Auth Guard (module ESM) ────────────────────────────── -->
+<!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
 <script type="module">
-import { checkSession, injectNavUser } from './auth-guard.js';
+import { checkSession, getRole, injectNavUser, applyRBAC } from './auth-guard.js';
 
-// Verifie la session - redirige vers login.html si non connecte
+// 1. Vérifier la session
 const session = await checkSession();
+if (!session) throw new Error('no session');
 
-// Injecte email + bouton deconnexion dans la navbar
-if (session) {
-  injectNavUser(session);
-}
+// 2. Récupérer le rôle (avec cache sessionStorage)
+const role = await getRole();
+if (!role) throw new Error('no role');
+
+// 3. Avatar + badge rôle dans la navbar
+injectNavUser(session, role);
+
+// 4. Appliquer les restrictions RBAC (SHAP + export PDF cachés pour coach)
+applyRBAC(role);
 </script>
 
 </body></html>';
@@ -2064,17 +2084,23 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-<!-- ── Auth Guard (module ESM) ────────────────────────────── -->
+<!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
 <script type="module">
-import { checkSession, injectNavUser } from './auth-guard.js';
+import { checkSession, getRole, injectNavUser, applyRBAC } from './auth-guard.js';
 
-// Verifie la session - redirige vers login.html si non connecte
+// 1. Vérifier la session
 const session = await checkSession();
+if (!session) throw new Error('no session');
 
-// Injecte email + bouton deconnexion dans la navbar
-if (session) {
-  injectNavUser(session);
-}
+// 2. Récupérer le rôle (avec cache sessionStorage)
+const role = await getRole();
+if (!role) throw new Error('no role');
+
+// 3. Avatar + badge rôle dans la navbar
+injectNavUser(session, role);
+
+// 4. Appliquer les restrictions RBAC (SHAP + export PDF cachés pour coach)
+applyRBAC(role);
 </script>
 
 </body>

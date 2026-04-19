@@ -422,6 +422,17 @@ if (existing) {
   window.location.replace('dashboard.html');
 }
 
+// ── Afficher le message d'erreur de déconnexion forcée (rôle absent) ──
+const loginError = sessionStorage.getItem('vt_login_error');
+if (loginError) {
+  sessionStorage.removeItem('vt_login_error');
+  const msgEl = document.getElementById('login-msg');
+  if (msgEl) {
+    msgEl.textContent = loginError;
+    msgEl.className = 'login-msg error';
+  }
+}
+
 // ── Références DOM ─────────────────────────────────────────
 const form     = document.getElementById('login-form');
 const emailEl  = document.getElementById('email');

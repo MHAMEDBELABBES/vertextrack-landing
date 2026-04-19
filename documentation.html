@@ -288,6 +288,19 @@ footer{background:#020508;padding:24px 60px;display:flex;justify-content:space-b
   color: #fff;
 }
 /* ── END Nav User ─────────────────────────────────────────── */
+
+/* ── Badge rôle navbar ────────────────────────────────────── */
+.nav-role-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+/* ── END Badge rôle ─────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -712,17 +725,19 @@ shap.summary_plot(shap_values[<span class="nm">1</span>], X_athlete, feature_nam
 </footer>
 
 
-<!-- ── Auth Guard (module ESM) ────────────────────────────── -->
+<!-- ── Auth Guard (module ESM) ──────────────────────────────── -->
 <script type="module">
-import { checkSession, injectNavUser } from './auth-guard.js';
+import { checkSession, getRole, injectNavUser } from './auth-guard.js';
 
-// Verifie la session - redirige vers login.html si non connecte
+// 1. Vérifier la session
 const session = await checkSession();
+if (!session) throw new Error('no session');
 
-// Injecte email + bouton deconnexion dans la navbar
-if (session) {
-  injectNavUser(session);
-}
+// 2. Récupérer le rôle
+const role = await getRole();
+
+// 3. Avatar + badge rôle dans la navbar (pas de restriction sur cette page)
+injectNavUser(session, role);
 </script>
 
 </body>
