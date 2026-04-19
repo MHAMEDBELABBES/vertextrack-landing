@@ -715,6 +715,61 @@ body {
   flex-shrink: 0;
 }
 /* ── END Badge rôle ─────────────────────────────────────── */
+
+/* ══ AMÉLIORATIONS MODULE 1 ══════════════════════════════════ */
+
+/* Tab system */
+.vt-tab-nav { display:flex; gap:4px; margin-bottom:14px; border-bottom:1px solid rgba(0,200,255,0.12); padding-bottom:0; }
+.vt-tab { background:transparent; border:none; border-bottom:2px solid transparent; color:rgba(200,216,232,0.45); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; padding:8px 14px; cursor:pointer; transition:all .2s; margin-bottom:-1px; }
+.vt-tab:hover { color:rgba(200,216,232,0.8); }
+.vt-tab.active { color:#00c8ff; border-bottom-color:#00c8ff; }
+.vt-tab-panel { display:block; }
+.vt-tab-panel.hidden { display:none; }
+
+/* Gauges */
+.vt-gauge-container { margin-bottom:22px; }
+.vt-gauge-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.vt-gauge-label { font-family:'Barlow',sans-serif; font-size:13px; color:#c8d8e8; }
+.vt-gauge-value { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500; }
+.vt-gauge-value.warn { color:#ffa500; }
+.vt-gauge-value.ok   { color:#00c8ff; }
+.vt-gauge-value.good { color:#21c354; }
+.vt-gauge-track-wrap { position:relative; margin-bottom:18px; }
+.vt-gauge-track { height:8px; background:rgba(200,216,232,0.08); border-radius:4px; position:relative; overflow:visible; }
+.vt-gauge-fill { height:100%; border-radius:4px; transition:width 1.2s ease; }
+.vt-threshold-marker { position:absolute; top:-5px; width:2px; height:18px; background:rgba(255,255,255,0.55); border-radius:1px; transform:translateX(-50%); z-index:2; }
+.vt-threshold-label { position:absolute; top:17px; font-size:9px; color:rgba(255,255,255,0.35); transform:translateX(-50%); white-space:nowrap; font-family:'JetBrains Mono',monospace; }
+.vt-optimal-zone { position:absolute; top:0; height:100%; background:rgba(33,195,84,0.15); border-radius:2px; z-index:1; }
+.vt-gauge-ref { font-size:11px; color:rgba(200,216,232,0.38); margin-top:2px; line-height:1.4; }
+.vt-ref-badge { display:inline-block; font-size:9px; font-weight:600; padding:1px 6px; border-radius:3px; margin-left:5px; background:rgba(0,200,255,0.12); color:rgba(0,200,255,0.7); letter-spacing:0.5px; vertical-align:middle; }
+
+/* LSI interpretation */
+.vt-lsi-interp { background:rgba(0,200,255,0.04); border:0.5px solid rgba(0,200,255,0.15); border-radius:8px; padding:12px 14px; margin-top:10px; }
+.vt-lsi-scale { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+.vt-lsi-scale-item { display:flex; align-items:center; gap:8px; font-size:11px; color:rgba(200,216,232,0.38); }
+.vt-lsi-scale-item.current { color:#ffa500; font-weight:500; }
+.vt-lsi-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.vt-lsi-action { font-size:11px; color:rgba(200,216,232,0.45); border-top:0.5px solid rgba(0,200,255,0.1); padding-top:8px; margin-top:2px; }
+
+/* Recommandations */
+.vt-recs-block { background:rgba(255,165,0,0.05); border:0.5px solid rgba(255,165,0,0.2); border-left:2px solid #ffa500; border-radius:0 8px 8px 0; padding:14px 16px; margin-top:14px; }
+.vt-recs-title { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; color:#ffa500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
+.vt-rec-item { font-size:12px; color:rgba(200,216,232,0.6); line-height:1.6; padding:4px 0; border-bottom:0.5px solid rgba(255,165,0,0.08); }
+.vt-rec-item:last-child { border-bottom:none; }
+.vt-rec-item::before { content:'\2192 '; color:#ffa500; }
+
+/* Tableau referentiels */
+.vt-ref-table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:14px; }
+.vt-ref-table th { font-size:10px; color:rgba(200,216,232,0.38); text-transform:uppercase; letter-spacing:0.8px; padding:5px 8px; border-bottom:0.5px solid rgba(0,200,255,0.1); text-align:left; }
+.vt-ref-table td { padding:7px 8px; color:#c8d8e8; border-bottom:0.5px solid rgba(0,200,255,0.06); vertical-align:middle; }
+.vt-ref-table tr:last-child td { border-bottom:none; }
+.vt-ref-val { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; }
+.vt-ref-norm { font-size:11px; color:rgba(200,216,232,0.4); }
+.vt-status-ok   { color:#21c354; font-size:14px; }
+.vt-status-warn { color:#ffa500; font-size:14px; }
+.vt-lit-caption { font-size:10px; color:rgba(200,216,232,0.22); font-style:italic; line-height:1.6; margin-top:8px; }
+
+/* ══ END MODULE 1 ═════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -1184,14 +1239,216 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div class="mr"><span class="l">Temps de vol</span><span class="r">0.558 s</span></div>
       <div class="mr"><span class="l">Vitesse décollage</span><span class="r">2.73 m/s</span></div>
     </div>
-    <!-- DIAGNOSTIC -->
+    <!-- DIAGNOSTIC ARTICULAIRE + REFERENTIELS -->
     <div class="rc">
-      <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn">ATTENTION</span></div>
-      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">FPPA gauche</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">14.2°</span></div><div class="bb"><div class="bf" style="width:28%;background:var(--amber)"></div></div></div>
-      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">FPPA droite</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">11.8°</span></div><div class="bb"><div class="bf" style="width:24%;background:var(--cyan)"></div></div></div>
-      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">Flexion genou max</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">68°</span></div><div class="bb"><div class="bf" style="width:68%;background:var(--cyan)"></div></div></div>
-      <div class="br"><div class="bi"><span style="font-size:11px;color:var(--muted)">ROM hanche</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px">42°</span></div><div class="bb"><div class="bf" style="width:55%;background:var(--green)"></div></div></div>
-      <div class="mr" style="margin-top:6px"><span class="l">LSI symétrie</span><span class="r g">0.88</span></div>
+      <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn" id="diag-badge">ATTENTION</span></div>
+
+      <!-- Nav onglets -->
+      <div class="vt-tab-nav">
+        <button class="vt-tab active" onclick="vtTab(this,'vt-art')">Articulaire</button>
+        <button class="vt-tab" onclick="vtTab(this,'vt-ref')">Référentiels</button>
+      </div>
+
+      <!-- ONGLET ARTICULAIRE -->
+      <div class="vt-tab-panel" id="vt-art">
+
+        <!-- FPPA GAUCHE -->
+        <div class="vt-gauge-container">
+          <div class="vt-gauge-header">
+            <span class="vt-gauge-label">FPPA gauche</span>
+            <span class="vt-gauge-value warn" id="val-fppa-left">14.2°</span>
+          </div>
+          <div class="vt-gauge-track-wrap">
+            <div class="vt-gauge-track">
+              <div class="vt-gauge-fill" id="fill-fppa-left"
+                style="width:47%; background:linear-gradient(90deg,#ffa500,#ff6b00);">
+              </div>
+              <div class="vt-threshold-marker" style="left:50%"></div>
+              <div class="vt-threshold-label" style="left:50%">Seuil 15°</div>
+            </div>
+          </div>
+          <div class="vt-gauge-ref">
+            Valgus dynamique · Seuil risque ≥ 15°
+            <span class="vt-ref-badge">HEWETT 2005</span>
+          </div>
+        </div>
+
+        <!-- FPPA DROITE -->
+        <div class="vt-gauge-container">
+          <div class="vt-gauge-header">
+            <span class="vt-gauge-label">FPPA droite</span>
+            <span class="vt-gauge-value ok" id="val-fppa-right">11.8°</span>
+          </div>
+          <div class="vt-gauge-track-wrap">
+            <div class="vt-gauge-track">
+              <div class="vt-gauge-fill" id="fill-fppa-right"
+                style="width:39%; background:linear-gradient(90deg,#00c8ff,#0099cc);">
+              </div>
+              <div class="vt-threshold-marker" style="left:50%"></div>
+              <div class="vt-threshold-label" style="left:50%">Seuil 15°</div>
+            </div>
+          </div>
+          <div class="vt-gauge-ref">
+            Valgus dynamique · Dans les normes
+            <span class="vt-ref-badge">HEWETT 2005</span>
+          </div>
+        </div>
+
+        <!-- FLEXION GENOU MAX -->
+        <div class="vt-gauge-container">
+          <div class="vt-gauge-header">
+            <span class="vt-gauge-label">Flexion genou max</span>
+            <span class="vt-gauge-value ok" id="val-knee">68°</span>
+          </div>
+          <div class="vt-gauge-track-wrap">
+            <div class="vt-gauge-track">
+              <div class="vt-optimal-zone" style="left:58%; width:17%;"></div>
+              <div class="vt-gauge-fill" id="fill-knee"
+                style="width:57%; background:linear-gradient(90deg,#00c8ff,#00ffaa);">
+              </div>
+              <div class="vt-threshold-marker" style="left:58%"></div>
+              <div class="vt-threshold-label" style="left:58%">70°</div>
+              <div class="vt-threshold-marker" style="left:75%"></div>
+              <div class="vt-threshold-label" style="left:75%">90°</div>
+            </div>
+          </div>
+          <div class="vt-gauge-ref">
+            Zone optimale 70–90° · Légèrement sous-optimal
+            <span class="vt-ref-badge">DINGENEN 2015</span>
+          </div>
+        </div>
+
+        <!-- ROM HANCHE -->
+        <div class="vt-gauge-container">
+          <div class="vt-gauge-header">
+            <span class="vt-gauge-label">ROM hanche</span>
+            <span class="vt-gauge-value good" id="val-hip">42°</span>
+          </div>
+          <div class="vt-gauge-track-wrap">
+            <div class="vt-gauge-track">
+              <div class="vt-gauge-fill" id="fill-hip"
+                style="width:52%; background:linear-gradient(90deg,#21c354,#00c8ff);">
+              </div>
+              <div class="vt-threshold-marker" style="left:44%"></div>
+              <div class="vt-threshold-label" style="left:44%">35°</div>
+              <div class="vt-threshold-marker" style="left:69%"></div>
+              <div class="vt-threshold-label" style="left:69%">55°</div>
+            </div>
+          </div>
+          <div class="vt-gauge-ref">
+            Amplitude nominale 35–55°
+            <span class="vt-ref-badge">ZAGO 2020</span>
+          </div>
+        </div>
+
+        <!-- LSI SYMETRIE -->
+        <div class="mr" style="margin-top:6px">
+          <span class="l">LSI symétrie</span>
+          <span class="r" style="color:#ffa500;font-family:'JetBrains Mono',monospace;" id="val-lsi">0.88</span>
+        </div>
+
+        <!-- Interpretation LSI -->
+        <div class="vt-lsi-interp">
+          <div class="vt-lsi-scale">
+            <div class="vt-lsi-scale-item">
+              <div class="vt-lsi-dot" style="background:#21c354"></div>
+              <span>≥ 0.95 — Excellente symétrie</span>
+            </div>
+            <div class="vt-lsi-scale-item">
+              <div class="vt-lsi-dot" style="background:#00c8ff"></div>
+              <span>0.90 – 0.94 — Retour sport autorisé</span>
+            </div>
+            <div class="vt-lsi-scale-item current">
+              <div class="vt-lsi-dot" style="background:#ffa500"></div>
+              <span>0.80 – 0.89 — Asymétrie modérée ◄ Athlète</span>
+            </div>
+            <div class="vt-lsi-scale-item">
+              <div class="vt-lsi-dot" style="background:#e24b4a"></div>
+              <span>&lt; 0.80 — Asymétrie sévère</span>
+            </div>
+          </div>
+          <div class="vt-lsi-action">
+            Renforcement unilatéral membre gauche conseillé avant retour sport
+            (Kyritsis et al. 2016)
+          </div>
+        </div>
+
+      </div><!-- fin #vt-art -->
+
+      <!-- ONGLET REFERENTIELS -->
+      <div class="vt-tab-panel hidden" id="vt-ref">
+
+        <table class="vt-ref-table">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Athlète</th>
+              <th>Norme / Seuil</th>
+              <th>Référence</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hauteur CMJ</td>
+              <td><span class="vt-ref-val" id="ref-cmj">37.8 cm</span></td>
+              <td><span class="vt-ref-norm">≥ 35 cm correct · ≥ 45 cm élite</span></td>
+              <td><span class="vt-ref-badge">BOSCO 1983</span></td>
+              <td class="vt-status-warn" id="ref-status-cmj">⚠</td>
+            </tr>
+            <tr>
+              <td>FPPA gauche</td>
+              <td><span class="vt-ref-val" id="ref-fppa-left">14.2°</span></td>
+              <td><span class="vt-ref-norm">&lt; 15° · &lt; 10° optimal</span></td>
+              <td><span class="vt-ref-badge">HEWETT 2005</span></td>
+              <td class="vt-status-warn" id="ref-status-fppal">⚠</td>
+            </tr>
+            <tr>
+              <td>FPPA droite</td>
+              <td><span class="vt-ref-val" id="ref-fppa-right">11.8°</span></td>
+              <td><span class="vt-ref-norm">&lt; 15° · &lt; 10° optimal</span></td>
+              <td><span class="vt-ref-badge">HEWETT 2005</span></td>
+              <td class="vt-status-ok" id="ref-status-fppar">✓</td>
+            </tr>
+            <tr>
+              <td>Flexion genou</td>
+              <td><span class="vt-ref-val" id="ref-knee">68°</span></td>
+              <td><span class="vt-ref-norm">Zone optimale 70–90°</span></td>
+              <td><span class="vt-ref-badge">DINGENEN 2015</span></td>
+              <td class="vt-status-warn" id="ref-status-knee">⚠</td>
+            </tr>
+            <tr>
+              <td>ROM hanche</td>
+              <td><span class="vt-ref-val" id="ref-hip">42°</span></td>
+              <td><span class="vt-ref-norm">Nominale 35–55°</span></td>
+              <td><span class="vt-ref-badge">ZAGO 2020</span></td>
+              <td class="vt-status-ok" id="ref-status-hip">✓</td>
+            </tr>
+            <tr>
+              <td>LSI symétrie</td>
+              <td><span class="vt-ref-val" id="ref-lsi">0.88</span></td>
+              <td><span class="vt-ref-norm">≥ 0.90 retour sport</span></td>
+              <td><span class="vt-ref-badge">KYRITSIS 2016</span></td>
+              <td class="vt-status-warn" id="ref-status-lsi">⚠</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Bloc recommandations dynamiques -->
+        <div class="vt-recs-block" id="vt-recs">
+          <div class="vt-recs-title">Recommandations cliniques</div>
+          <div class="vt-rec-item">FPPA gauche à 14.2° — réévaluation en vue frontale stricte à la prochaine session</div>
+          <div class="vt-rec-item">LSI 0.88 — renforcement musculaire asymétrique membre gauche conseillé avant retour sport</div>
+          <div class="vt-rec-item">Flexion genou 68° — travail de profondeur de squat et mobilité tibiale (valgus tibial)</div>
+        </div>
+
+        <p class="vt-lit-caption">
+          Hewett et al. (2005) Am J Sports Med · Dingenen et al. (2015) Knee ·
+          Kyritsis et al. (2016) Br J Sports Med · Zago et al. (2020) · Bosco (1983)
+        </p>
+
+      </div><!-- fin #vt-ref -->
+
     </div>
     <!-- RISQUE -->
     <div class="rc">
@@ -2082,6 +2339,116 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+</script>
+
+<!-- ── Module 1 : onglets Articulaire/Référentiels + recommandations ── -->
+<script>
+// ── Switcher d'onglets (Articulaire / Référentiels) ────────
+function vtTab(btn, panelId) {
+  var nav = btn.closest('.vt-tab-nav');
+  if (!nav) return;
+  // Désactiver tous les onglets du groupe
+  nav.querySelectorAll('.vt-tab').forEach(function(b) { b.classList.remove('active'); });
+  // Masquer tous les panneaux du même .rc parent
+  var rc = nav.closest('.rc');
+  if (!rc) return;
+  rc.querySelectorAll('.vt-tab-panel').forEach(function(p) { p.classList.add('hidden'); });
+  // Activer l'onglet et le panneau cible
+  btn.classList.add('active');
+  var panel = document.getElementById(panelId);
+  if (panel) panel.classList.remove('hidden');
+}
+
+// ── Mise à jour dynamique des jauges et recommandations ────
+function updateRecommandations(results) {
+  if (!results) return;
+
+  // Lire les valeurs (noms de propriétés flexibles selon le JS existant)
+  var fppaL = results.fppaLeft   !== undefined ? results.fppaLeft   :
+              results.fppa_left  !== undefined ? results.fppa_left  : 14.2;
+  var fppaR = results.fppaRight  !== undefined ? results.fppaRight  :
+              results.fppa_right !== undefined ? results.fppa_right : 11.8;
+  var knee  = results.kneeFlexion !== undefined ? results.kneeFlexion :
+              results.knee_flexion_max !== undefined ? results.knee_flexion_max : 68;
+  var lsi   = results.lsi !== undefined ? results.lsi :
+              results.lsi_symmetry !== undefined ? results.lsi_symmetry : 0.88;
+  var hCom  = results.jumpHeight !== undefined ? results.jumpHeight :
+              results.jump_height_com !== undefined ? results.jump_height_com : 37.8;
+
+  // Helper setText
+  var s = function(id, v) { var el=document.getElementById(id); if(el) el.textContent=v; };
+
+  // Mettre à jour les valeurs affichées (onglet Articulaire + Référentiels)
+  s('val-fppa-left',  fppaL.toFixed(1) + '°');
+  s('val-fppa-right', fppaR.toFixed(1) + '°');
+  s('val-knee',       knee.toFixed(0)  + '°');
+  s('val-lsi',        lsi.toFixed(2));
+  s('ref-fppa-left',  fppaL.toFixed(1) + '°');
+  s('ref-fppa-right', fppaR.toFixed(1) + '°');
+  s('ref-knee',       knee.toFixed(0)  + '°');
+  s('ref-lsi',        lsi.toFixed(2));
+  s('ref-cmj',        hCom.toFixed(1) + ' cm');
+
+  // Mettre à jour les jauges (fill width en %)
+  var setFill = function(id, pct, grad) {
+    var el=document.getElementById(id);
+    if(!el) return;
+    el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    if(grad) el.style.background = grad;
+  };
+  var gradFPPA = function(v) {
+    return v >= 15 ? 'linear-gradient(90deg,#ef5350,#ff1744)' :
+           v >= 12 ? 'linear-gradient(90deg,#ffa500,#ff6b00)' :
+                     'linear-gradient(90deg,#21c354,#00c8ff)';
+  };
+  setFill('fill-fppa-left',  (fppaL/30)*100, gradFPPA(fppaL));
+  setFill('fill-fppa-right', (fppaR/30)*100, gradFPPA(fppaR));
+  setFill('fill-knee', (knee/120)*100, null);
+
+  // Mettre à jour couleur valeur FPPA gauche
+  var vfL = document.getElementById('val-fppa-left');
+  if (vfL) vfL.className = 'vt-gauge-value ' + (fppaL>=15?'warn':fppaL>=12?'warn':'good');
+  var vfR = document.getElementById('val-fppa-right');
+  if (vfR) vfR.className = 'vt-gauge-value ' + (fppaR>=15?'warn':fppaR>=12?'warn':'ok');
+
+  // Mettre à jour les statuts (✓ / ⚠) dans le tableau Référentiels
+  var setStatus = function(id, ok) {
+    var el=document.getElementById(id);
+    if(!el) return;
+    el.textContent = ok ? '✓' : '⚠';
+    el.className   = ok ? 'vt-status-ok' : 'vt-status-warn';
+  };
+  setStatus('ref-status-fppal', fppaL < 15);
+  setStatus('ref-status-fppar', fppaR < 15);
+  setStatus('ref-status-knee',  knee >= 70 && knee <= 90);
+  setStatus('ref-status-lsi',   lsi >= 0.90);
+  setStatus('ref-status-cmj',   hCom >= 35);
+
+  // Mettre à jour le bloc LSI interp (indicateur courant)
+  var lsiItems = document.querySelectorAll('.vt-lsi-scale-item');
+  lsiItems.forEach(function(item) { item.classList.remove('current'); });
+  var lsiClass = lsi >= 0.95 ? 0 : lsi >= 0.90 ? 1 : lsi >= 0.80 ? 2 : 3;
+  if (lsiItems[lsiClass]) lsiItems[lsiClass].classList.add('current');
+
+  // Générer les recommandations dynamiques
+  var recsContainer = document.getElementById('vt-recs');
+  if (!recsContainer) return;
+  var recs = [];
+  if (fppaL >= 12) recs.push('FPPA gauche à ' + fppaL.toFixed(1) + '° — réévaluation en vue frontale stricte à la prochaine session');
+  if (fppaR >= 12) recs.push('FPPA droite à ' + fppaR.toFixed(1) + '° — contrôle neuromusculaire membres inférieurs recommandé');
+  if (lsi  < 0.90) recs.push('LSI ' + lsi.toFixed(2) + ' — renforcement musculaire asymétrique conseillé avant retour sport');
+  if (knee < 70)   recs.push('Flexion genou ' + knee.toFixed(0) + '° — travail de profondeur de squat et mobilité tibiale');
+  if (hCom < 35)   recs.push('Hauteur saut ' + hCom.toFixed(1) + ' cm — programme pliométrique progressif recommandé');
+
+  var titleHtml = '<div class="vt-recs-title">Recommandations cliniques</div>';
+  if (recs.length === 0) {
+    recsContainer.innerHTML = titleHtml + '<div class="vt-rec-item" style="color:rgba(33,195,84,0.8)">Aucune alerte clinique détectée — profil dans les normes</div>';
+    return;
+  }
+  recsContainer.innerHTML = titleHtml + recs.map(function(r) { return '<div class="vt-rec-item">' + r + '</div>'; }).join('');
+}
+// Appel : après la simulation ou l'analyse réelle, ajoute :
+//   updateRecommandations(tonObjetResultats);
 </script>
 
 <!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
