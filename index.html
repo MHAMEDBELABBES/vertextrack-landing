@@ -598,5 +598,20 @@ document.querySelectorAll('a[href]').forEach(function(link) {
 });
 
 </script>
+
+<!-- ── Auth : redirection si déjà connecté ────────────────── -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://kygrhqgyqqrylsxnshny.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Si une session active existe → aller directement au Dashboard
+const { data: { session } } = await supabase.auth.getSession();
+if (session) {
+  window.location.replace('dashboard.html');
+}
+</script>
 </body>
 </html>
