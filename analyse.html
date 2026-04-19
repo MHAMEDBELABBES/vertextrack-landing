@@ -2275,27 +2275,7 @@ function vtDownloadPDF() {
     + 'VERTEXTRACK — Universite Hassan 1er, Master TDTS 2025-2026.</div>'
     + '<div style="text-align:center;color:#aaa;font-size:11px;margin-top:30px">'
     + 'VERTEXTRACK · Mhamed Belabbes · Dr. Ali Benaissa · ' + date + '</div>'
-    + '
-<!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
-<script type="module">
-import { checkSession, getRole, injectNavUser, applyRBAC } from './auth-guard.js';
-
-// 1. Vérifier la session
-const session = await checkSession();
-if (!session) throw new Error('no session');
-
-// 2. Récupérer le rôle (avec cache sessionStorage)
-const role = await getRole();
-if (!role) throw new Error('no role');
-
-// 3. Avatar + badge rôle dans la navbar
-injectNavUser(session, role);
-
-// 4. Appliquer les restrictions RBAC (SHAP + export PDF cachés pour coach)
-applyRBAC(role);
-</script>
-
-</body></html>';
+    + '</body></html>';
   var w = window.open('', '_blank');
   if (!w) { alert('Autorisez les popups puis reessayez.'); return; }
   w.document.write(html);
