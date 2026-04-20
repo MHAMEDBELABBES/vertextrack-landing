@@ -5,6 +5,16 @@
 <link rel="icon" type="image/png" href="assets/images/vertextrack-icon.png">
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>VERTEXTRACK — Historique & Comparaison</title>
+<!-- ── Guard compte uniquement ─────────────────────────────── -->
+<script>
+(function() {
+  var mode = localStorage.getItem('vt_auth_mode');
+  if (mode !== 'account') {
+    sessionStorage.setItem('vt_redirect_msg', "Créez un compte pour accéder à l'historique et comparer vos séances.");
+    window.location.replace('login.html');
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>

@@ -2323,6 +2323,25 @@ if ('serviceWorker' in navigator) {
 
 <!-- ── Module 1 : onglets Articulaire/Référentiels + recommandations ── -->
 <script>
+// ── Déconnexion universelle (invité + compte) ──────────────
+async function vtLogout() {
+  // Supabase sign-out si mode compte
+  if (localStorage.getItem('vt_auth_mode') === 'account') {
+    try {
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const sb = createClient(
+        'https://kygrhqgyqqrylsxnshny.supabase.co',
+        'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf'
+      );
+      await sb.auth.signOut();
+    } catch(e) { console.warn('[VT] signOut error:', e); }
+  }
+  localStorage.removeItem('vt_auth_mode');
+  localStorage.removeItem('vt_user_email');
+  sessionStorage.removeItem('vt_user_role');
+  window.location.replace('login.html');
+}
+
 // ── Switcher d'onglets (Articulaire / Référentiels) ────────
 function vtTab(btn, panelId) {
   var nav = btn.closest('.vt-tab-nav');
@@ -2433,21 +2452,41 @@ function updateRecommandations(results) {
 
 <!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
 <script type="module">
-import { checkSession, getRole, injectNavUser, applyRBAC } from './auth-guard.js';
+// ── 0. Vérifier le mode d'authentification ─────────────────
+const vtAuthMode = localStorage.getItem('vt_auth_mode');
 
-// 1. Vérifier la session
-const session = await checkSession();
-if (!session) throw new Error('no session');
+if (!vtAuthMode) {
+  // Aucun mode défini → pas authentifié → login
+  window.location.replace('login.html');
+} else if (vtAuthMode === 'guest') {
+  // Mode invité : pas de Supabase, afficher bannière + bouton déco
+  const area = document.getElementById('nav-user-area');
+  if (area) {
+    area.innerHTML = `
+      <span style="
+        font-family:'Barlow Condensed',sans-serif;
+        font-size:12px;font-weight:700;letter-spacing:1px;
+        color:#f59e0b;background:rgba(245,158,11,0.1);
+        border:1px solid rgba(245,158,11,0.35);
+        padding:4px 10px;border-radius:3px;">
+        MODE INVITÉ
+      </span>
+      <button class="nav-btn-logout" onclick="vtLogout()">Quitter</button>
+    `;
+  }
+} else if (vtAuthMode === 'account') {
+  // Mode compte : vérifier session Supabase + RBAC
+  const { checkSession, getRole, injectNavUser, applyRBAC } = await import('./auth-guard.js');
 
-// 2. Récupérer le rôle (avec cache sessionStorage)
-const role = await getRole();
-if (!role) throw new Error('no role');
-
-// 3. Avatar + badge rôle dans la navbar
-injectNavUser(session, role);
-
-// 4. Appliquer les restrictions RBAC (SHAP + export PDF cachés pour coach)
-applyRBAC(role);
+  const session = await checkSession();
+  if (session) {
+    const role = await getRole();
+    if (role) {
+      injectNavUser(session, role);
+      applyRBAC(role);
+    }
+  }
+}
 </script>
 
 </body>

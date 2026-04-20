@@ -1,519 +1,503 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"/>
-<link rel="icon" type="image/png" href="assets/images/vertextrack-icon.png">
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>VERTEXTRACK — Connexion</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
-<style>
-/* ── Variables ───────────────────────────────────────────── */
-:root {
-  --bg:     #03080f;
-  --bg2:    #060d18;
-  --bg3:    #040a14;
-  --cyan:   #00c8ff;
-  --cyan2:  rgba(0,200,255,0.12);
-  --amber:  #f59e0b;
-  --green:  #00e676;
-  --red:    #ef5350;
-  --white:  #ffffff;
-  --muted:  rgba(255,255,255,0.45);
-  --border: rgba(0,200,255,0.18);
-  --border2:rgba(255,255,255,0.06);
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'Barlow', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ── Grille HUD de fond ──────────────────────────────────── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Logo barre top ──────────────────────────────────────── */
-.login-topbar {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 40px 0;
-}
-.login-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-.login-logo img {
-  height: 36px;
-  width: auto;
-  mix-blend-mode: lighten;
-}
-.login-logo-text {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--white);
-}
-.login-logo-text span { color: var(--cyan); }
-
-/* ── Conteneur principal ────────────────────────────────── */
-.login-wrap {
-  position: relative;
-  z-index: 10;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px 60px;
-}
-
-/* ── Carte de login ──────────────────────────────────────── */
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  padding: 44px 40px 40px;
-  position: relative;
-}
-
-/* Coins HUD */
-.login-card::before,
-.login-card::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-}
-.login-card::before {
-  top: -1px; left: -1px;
-  border-top: 2px solid var(--cyan);
-  border-left: 2px solid var(--cyan);
-}
-.login-card::after {
-  bottom: -1px; right: -1px;
-  border-bottom: 2px solid var(--cyan);
-  border-right: 2px solid var(--cyan);
-}
-
-/* ── En-tête carte ───────────────────────────────────────── */
-.login-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--cyan);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.login-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 32px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--white);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.login-subtitle {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 32px;
-  line-height: 1.5;
-}
-
-/* ── Formulaire ──────────────────────────────────────────── */
-.form-group {
-  margin-bottom: 20px;
-}
-.form-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.form-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid rgba(0,200,255,0.2);
-  color: var(--white);
-  font-family: 'Barlow', sans-serif;
-  font-size: 14px;
-  padding: 12px 16px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-input::placeholder { color: rgba(255,255,255,0.2); }
-.form-input:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 3px rgba(0,200,255,0.08);
-}
-
-/* ── Mot de passe avec toggle ─────────────────────────────  */
-.pwd-wrap {
-  position: relative;
-}
-.pwd-toggle {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 14px;
-  padding: 0;
-  transition: color 0.2s;
-}
-.pwd-toggle:hover { color: var(--cyan); }
-
-/* ── Bouton de connexion ─────────────────────────────────── */
-.btn-login {
-  width: 100%;
-  background: var(--cyan);
-  color: var(--bg);
-  border: none;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 15px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  padding: 14px;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.btn-login:hover:not(:disabled) {
-  background: #00a8d8;
-  box-shadow: 0 0 28px rgba(0,200,255,0.4);
-  transform: translateY(-1px);
-}
-.btn-login:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Spinner */
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(3,8,15,0.3);
-  border-top-color: var(--bg);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: none;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.btn-login.loading .spinner { display: block; }
-.btn-login.loading .btn-text { opacity: 0.7; }
-
-/* ── Zone de message (erreur / succès) ─────────────────────  */
-.login-msg {
-  margin-top: 16px;
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  display: none;
-  line-height: 1.5;
-}
-.login-msg.error {
-  display: block;
-  background: rgba(239,83,80,0.1);
-  border-left-color: var(--red);
-  color: #ff8a80;
-}
-.login-msg.success {
-  display: block;
-  background: rgba(0,230,118,0.1);
-  border-left-color: var(--green);
-  color: var(--green);
-}
-
-/* ── Lien retour accueil ─────────────────────────────────── */
-.login-back {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-}
-.login-back a {
-  color: var(--cyan);
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-.login-back a:hover { opacity: 0.75; }
-
-/* ── Séparateur ──────────────────────────────────────────── */
-.login-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 26px 0 20px;
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 1px;
-}
-.login-divider::before,
-.login-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border2);
-}
-
-/* ── Footer ──────────────────────────────────────────────── */
-.login-footer {
-  position: relative;
-  z-index: 10;
-  text-align: center;
-  padding: 16px 20px 24px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: rgba(255,255,255,0.2);
-  letter-spacing: 1px;
-  border-top: 1px solid var(--border2);
-}
-
-/* ── Ligne de scan (HUD) ─────────────────────────────────── */
-.scan-h {
-  position: fixed;
-  left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(0,200,255,0.25) 30%,
-    rgba(0,200,255,0.5) 50%,
-    rgba(0,200,255,0.25) 70%,
-    transparent 100%);
-  animation: scan-h 5s linear infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-@keyframes scan-h {
-  0%   { top: -2px; }
-  100% { top: 100vh; }
-}
-</style>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="assets/images/vertextrack-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERTEXTRACK — Connexion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      min-height: 100vh;
+      background: #03080f;
+      color: #c8d8e8;
+      font-family: 'Barlow', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .vt-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 14px 28px;
+      background: rgba(3,8,15,0.95);
+      border-bottom: 1px solid rgba(0,200,255,0.1);
+      display: flex; align-items: center;
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+    .vt-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 700;
+      color: #00c8ff; letter-spacing: 2px;
+    }
+    .vt-brand-sub {
+      font-size: 11px; color: rgba(0,200,255,0.4);
+      letter-spacing: 1px; margin-left: 12px;
+    }
+    .vt-card {
+      background: #060e1a;
+      border: 0.5px solid rgba(0,200,255,0.2);
+      border-radius: 14px;
+      width: 100%; max-width: 380px;
+      padding: 32px 32px 28px;
+      margin-top: 64px;
+    }
+    .vt-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 700;
+      color: #fff; letter-spacing: 1px;
+      text-align: center; margin-bottom: 6px;
+    }
+    .vt-card-sub {
+      font-size: 12px; color: rgba(200,216,232,0.4);
+      text-align: center; margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .vt-features {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 22px;
+    }
+    .vt-feat {
+      background: rgba(0,200,255,0.04);
+      border: 0.5px solid rgba(0,200,255,0.12);
+      border-radius: 7px; padding: 9px 10px;
+    }
+    .vt-feat.locked { opacity: 0.38; }
+    .vt-feat-label {
+      font-size: 11px; color: #00c8ff;
+      font-weight: 500; margin-bottom: 2px;
+    }
+    .vt-feat-desc {
+      font-size: 10px; color: rgba(200,216,232,0.45);
+      line-height: 1.4;
+    }
+    .vt-badge {
+      display: inline-block; font-size: 9px;
+      padding: 1px 5px; border-radius: 3px;
+      margin-left: 4px; vertical-align: middle;
+    }
+    .vt-badge-free {
+      background: rgba(33,195,84,0.15); color: #21c354;
+      border: 0.5px solid rgba(33,195,84,0.3);
+    }
+    .vt-badge-compte {
+      background: rgba(0,200,255,0.15); color: #00c8ff;
+      border: 0.5px solid rgba(0,200,255,0.3);
+    }
+    .vt-tabs {
+      display: flex; gap: 8px; margin-bottom: 20px;
+    }
+    .vt-tab-btn {
+      flex: 1; padding: 9px;
+      border-radius: 7px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.5px; cursor: pointer;
+      border: 0.5px solid rgba(0,200,255,0.2);
+      background: transparent;
+      color: rgba(200,216,232,0.45);
+      transition: all .15s;
+    }
+    .vt-tab-btn.active {
+      background: rgba(0,200,255,0.12);
+      color: #00c8ff;
+      border-color: rgba(0,200,255,0.45);
+    }
+    .vt-form { display: none; }
+    .vt-form.active { display: block; }
+    .vt-field { margin-bottom: 13px; }
+    .vt-label {
+      font-size: 11px; color: rgba(200,216,232,0.5);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 5px; display: block;
+    }
+    .vt-input {
+      width: 100%;
+      background: rgba(0,200,255,0.04);
+      border: 0.5px solid rgba(0,200,255,0.2);
+      border-radius: 7px;
+      padding: 10px 13px;
+      font-size: 13px; color: #c8d8e8;
+      font-family: 'Barlow', sans-serif;
+      outline: none; transition: border-color .15s;
+    }
+    .vt-input:focus { border-color: rgba(0,200,255,0.55); }
+    .vt-input::placeholder { color: rgba(200,216,232,0.22); }
+    .vt-btn-primary {
+      width: 100%; background: #00c8ff;
+      color: #03080f;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 700;
+      letter-spacing: 1px; padding: 12px;
+      border-radius: 7px; border: none;
+      cursor: pointer; margin-top: 6px;
+      transition: opacity .15s;
+    }
+    .vt-btn-primary:hover { opacity: 0.88; }
+    .vt-btn-primary:disabled {
+      opacity: 0.45; cursor: not-allowed;
+    }
+    .vt-divider {
+      display: flex; align-items: center;
+      gap: 10px; margin: 18px 0;
+    }
+    .vt-divider::before, .vt-divider::after {
+      content: ''; flex: 1; height: 0.5px;
+      background: rgba(0,200,255,0.12);
+    }
+    .vt-divider span {
+      font-size: 11px; color: rgba(200,216,232,0.28);
+    }
+    .vt-btn-guest {
+      width: 100%; background: transparent;
+      border: 0.5px solid rgba(0,200,255,0.2);
+      color: rgba(200,216,232,0.55);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 1px; padding: 10px;
+      border-radius: 7px; cursor: pointer;
+      transition: all .15s;
+    }
+    .vt-btn-guest:hover {
+      border-color: rgba(0,200,255,0.4);
+      color: #c8d8e8;
+      background: rgba(0,200,255,0.04);
+    }
+    .vt-guest-note {
+      font-size: 10px; color: rgba(200,216,232,0.25);
+      text-align: center; margin-top: 8px;
+      line-height: 1.5;
+    }
+    .vt-alert {
+      padding: 9px 12px; border-radius: 7px;
+      font-size: 12px; line-height: 1.5;
+      margin-bottom: 14px; display: none;
+    }
+    .vt-alert.error {
+      background: rgba(226,75,74,0.1);
+      border: 0.5px solid rgba(226,75,74,0.3);
+      color: #f09595;
+    }
+    .vt-alert.info {
+      background: rgba(0,200,255,0.08);
+      border: 0.5px solid rgba(0,200,255,0.3);
+      color: #7de2f5;
+    }
+    .vt-alert.success {
+      background: rgba(33,195,84,0.1);
+      border: 0.5px solid rgba(33,195,84,0.3);
+      color: #21c354;
+    }
+    .vt-loading {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(3,8,15,0.3);
+      border-top-color: #03080f;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: 6px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .vt-view { display: none; }
+    .vt-view.active { display: block; }
+  </style>
 </head>
 <body>
 
-<!-- Ligne de scan HUD -->
-<div class="scan-h"></div>
-
-<!-- Top bar logo -->
-<div class="login-topbar">
-  <a href="index.html" class="login-logo">
-    <img src="assets/images/vertextrack-logo.png" alt="VertexTrack">
-    <span class="login-logo-text">VERTEX<span>TRACK</span></span>
-  </a>
+<div class="vt-header">
+  <span class="vt-brand">VERTEXTRACK</span>
+  <span class="vt-brand-sub">Biomécanique · Prévention LCA</span>
 </div>
 
-<!-- Carte principale -->
-<div class="login-wrap">
-  <div class="login-card">
+<div class="vt-card">
 
-    <div class="login-tag">// ACCÈS PLATEFORME</div>
-    <h1 class="login-title">Connexion</h1>
-    <p class="login-subtitle">
-      Plateforme d'analyse biomécanique · Prévention LCA<br>
-      Université Hassan 1<sup>er</sup> — Settat
-    </p>
-
-    <form id="login-form" novalidate>
-      <!-- Email -->
-      <div class="form-group">
-        <label class="form-label" for="email">Adresse e-mail</label>
-        <input
-          id="email"
-          type="email"
-          class="form-input"
-          placeholder="prenom.nom@uh1.ac.ma"
-          autocomplete="email"
-          required
-        />
-      </div>
-
-      <!-- Mot de passe -->
-      <div class="form-group">
-        <label class="form-label" for="password">Mot de passe</label>
-        <div class="pwd-wrap">
-          <input
-            id="password"
-            type="password"
-            class="form-input"
-            placeholder="••••••••"
-            autocomplete="current-password"
-            required
-          />
-          <button type="button" class="pwd-toggle" id="pwd-toggle" title="Afficher/masquer">
-            👁
-          </button>
+  <!-- VUE 1 : CHOIX INITIAL -->
+  <div class="vt-view active" id="view-choice">
+    <div class="vt-card-title">Bienvenue</div>
+    <div class="vt-card-sub">
+      Analyse biomécanique CMJ · SJ · DVJ<br>
+      USB Béni Mellal · RCOZ Oued Zem
+    </div>
+    <div class="vt-features">
+      <div class="vt-feat">
+        <div class="vt-feat-label">
+          Analyse vidéo <span class="vt-badge vt-badge-free">GRATUIT</span>
         </div>
+        <div class="vt-feat-desc">CMJ, SJ, DVJ sans compte</div>
       </div>
+      <div class="vt-feat">
+        <div class="vt-feat-label">
+          Résultats <span class="vt-badge vt-badge-free">GRATUIT</span>
+        </div>
+        <div class="vt-feat-desc">FPPA, LSI, jauges cliniques</div>
+      </div>
+      <div class="vt-feat locked">
+        <div class="vt-feat-label">
+          Historique <span class="vt-badge vt-badge-compte">COMPTE</span>
+        </div>
+        <div class="vt-feat-desc">Suivi longitudinal sessions</div>
+      </div>
+      <div class="vt-feat locked">
+        <div class="vt-feat-label">
+          Comparaison <span class="vt-badge vt-badge-compte">COMPTE</span>
+        </div>
+        <div class="vt-feat-desc">Évolution entre séances</div>
+      </div>
+    </div>
+    <div id="alert-box-choice" class="vt-alert" style="margin-bottom:14px"></div>
+    <button class="vt-btn-primary" onclick="showView('auth')">
+      CRÉER UN COMPTE / SE CONNECTER
+    </button>
+    <div class="vt-divider"><span>ou</span></div>
+    <button class="vt-btn-guest" onclick="continuerSansCompte()">
+      CONTINUER SANS COMPTE
+    </button>
+    <div class="vt-guest-note">
+      Analyse et résultats disponibles · Historique non sauvegardé
+    </div>
+  </div>
 
-      <!-- Bouton connexion -->
-      <button type="submit" class="btn-login" id="btn-login">
-        <div class="spinner"></div>
-        <span class="btn-text">SE CONNECTER →</span>
-      </button>
-    </form>
-
-    <!-- Message retour -->
-    <div class="login-msg" id="login-msg"></div>
-
-    <div class="login-divider">VERTEXTRACK SECURE</div>
-
-    <div class="login-back">
-      <a href="index.html">← Retour à l'accueil</a>
+  <!-- VUE 2 : CONNEXION / INSCRIPTION -->
+  <div class="vt-view" id="view-auth">
+    <div class="vt-tabs">
+      <button class="vt-tab-btn active" id="tab-signin"
+        onclick="switchTab('signin')">CONNEXION</button>
+      <button class="vt-tab-btn" id="tab-signup"
+        onclick="switchTab('signup')">CRÉER UN COMPTE</button>
     </div>
 
+    <div id="alert-box" class="vt-alert"></div>
+
+    <!-- Formulaire connexion -->
+    <div class="vt-form active" id="form-signin">
+      <div class="vt-field">
+        <label class="vt-label">Email</label>
+        <input class="vt-input" id="signin-email"
+          type="email" placeholder="nom@club.ma" autocomplete="email">
+      </div>
+      <div class="vt-field">
+        <label class="vt-label">Mot de passe</label>
+        <input class="vt-input" id="signin-password"
+          type="password" placeholder="••••••••"
+          autocomplete="current-password">
+      </div>
+      <button class="vt-btn-primary" id="btn-signin"
+        onclick="handleSignIn()">SE CONNECTER</button>
+    </div>
+
+    <!-- Formulaire inscription -->
+    <div class="vt-form" id="form-signup">
+      <div class="vt-field">
+        <label class="vt-label">Nom complet</label>
+        <input class="vt-input" id="signup-name"
+          type="text" placeholder="Ex: Ahmed Belabbes">
+      </div>
+      <div class="vt-field">
+        <label class="vt-label">Club</label>
+        <input class="vt-input" id="signup-club"
+          type="text" placeholder="Ex: USB Béni Mellal">
+      </div>
+      <div class="vt-field">
+        <label class="vt-label">Email</label>
+        <input class="vt-input" id="signup-email"
+          type="email" placeholder="nom@club.ma" autocomplete="email">
+      </div>
+      <div class="vt-field">
+        <label class="vt-label">Mot de passe</label>
+        <input class="vt-input" id="signup-password"
+          type="password" placeholder="min. 8 caractères"
+          autocomplete="new-password">
+      </div>
+      <button class="vt-btn-primary" id="btn-signup"
+        onclick="handleSignUp()">CRÉER MON COMPTE</button>
+    </div>
+
+    <div class="vt-divider"><span>ou</span></div>
+    <button class="vt-btn-guest" onclick="continuerSansCompte()">
+      CONTINUER SANS COMPTE
+    </button>
+    <div style="text-align:center; margin-top:14px;">
+      <span style="font-size:12px; color:rgba(200,216,232,0.35);
+        cursor:pointer;" onclick="showView('choice')">← Retour</span>
+    </div>
   </div>
-</div>
 
-<!-- Footer -->
-<div class="login-footer">
-  VERTEXTRACK © 2026 · Université Hassan 1<sup>er</sup> · Master TDTS · Supervisé par Dr. Ali Benaissa
-</div>
+  <!-- VUE 3 : CONFIRMATION INSCRIPTION -->
+  <div class="vt-view" id="view-confirm">
+    <div style="text-align:center; padding:16px 0;">
+      <div style="font-size:32px; margin-bottom:14px;">✓</div>
+      <div class="vt-card-title">Compte créé !</div>
+      <div class="vt-card-sub" style="margin-bottom:20px;">
+        Vérifiez votre email pour confirmer votre compte,<br>
+        puis connectez-vous.
+      </div>
+      <button class="vt-btn-primary"
+        onclick="switchTab('signin'); showView('auth')">
+        SE CONNECTER
+      </button>
+    </div>
+  </div>
 
-<!-- ── Script d'authentification (module ESM) ──────────────── -->
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+</div><!-- fin .vt-card -->
 
-// Identifiants Supabase
-const SUPABASE_URL = 'https://kygrhqgyqqrylsxnshny.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+<!-- Supabase SDK (CDN UMD — pas de module ESM nécessaire) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  const SUPABASE_URL = 'https://kygrhqgyqqrylsxnshny.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── Rediriger si déjà connecté ─────────────────────────────
-const { data: { session: existing } } = await supabase.auth.getSession();
-if (existing) {
-  window.location.replace('dashboard.html');
-}
-
-// ── Afficher le message d'erreur de déconnexion forcée (rôle absent) ──
-const loginError = sessionStorage.getItem('vt_login_error');
-if (loginError) {
-  sessionStorage.removeItem('vt_login_error');
-  const msgEl = document.getElementById('login-msg');
-  if (msgEl) {
-    msgEl.textContent = loginError;
-    msgEl.className = 'login-msg error';
-  }
-}
-
-// ── Références DOM ─────────────────────────────────────────
-const form     = document.getElementById('login-form');
-const emailEl  = document.getElementById('email');
-const pwdEl    = document.getElementById('password');
-const pwdToggle= document.getElementById('pwd-toggle');
-const btnLogin = document.getElementById('btn-login');
-const msgEl    = document.getElementById('login-msg');
-
-// ── Toggle affichage mot de passe ──────────────────────────
-pwdToggle.addEventListener('click', () => {
-  const isText = pwdEl.type === 'text';
-  pwdEl.type   = isText ? 'password' : 'text';
-  pwdToggle.textContent = isText ? '👁' : '🙈';
-});
-
-// ── Afficher un message (erreur ou succès) ─────────────────
-function showMsg(text, type = 'error') {
-  msgEl.textContent = text;
-  msgEl.className   = `login-msg ${type}`;
-}
-function hideMsg() {
-  msgEl.className   = 'login-msg';
-}
-
-// ── État chargement ────────────────────────────────────────
-function setLoading(on) {
-  btnLogin.disabled = on;
-  btnLogin.classList.toggle('loading', on);
-}
-
-// ── Soumission du formulaire ───────────────────────────────
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  hideMsg();
-
-  const email    = emailEl.value.trim();
-  const password = pwdEl.value;
-
-  // Validation basique
-  if (!email) {
-    showMsg('Veuillez saisir votre adresse e-mail.');
-    emailEl.focus();
-    return;
-  }
-  if (!password) {
-    showMsg('Veuillez saisir votre mot de passe.');
-    pwdEl.focus();
-    return;
-  }
-
-  setLoading(true);
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  setLoading(false);
-
-  if (error) {
-    // Messages d'erreur en français
-    let msg = 'Erreur de connexion. Veuillez réessayer.';
-    if (error.message.includes('Invalid login credentials')) {
-      msg = 'Identifiants incorrects. Vérifiez votre e-mail et mot de passe.';
-    } else if (error.message.includes('Email not confirmed')) {
-      msg = 'Adresse e-mail non confirmée. Consultez votre boîte mail.';
-    } else if (error.message.includes('Too many requests')) {
-      msg = 'Trop de tentatives. Veuillez patienter quelques minutes.';
-    } else if (error.message.includes('User not found')) {
-      msg = 'Aucun compte trouvé pour cet e-mail.';
+  // Afficher le message de redirection forcée (depuis getRole() ou guard de page)
+  (function () {
+    const errMsg = sessionStorage.getItem('vt_login_error');
+    if (errMsg) {
+      sessionStorage.removeItem('vt_login_error');
+      showAlert(errMsg, 'error');
+      showView('auth');
+      return;
     }
-    showMsg(msg, 'error');
-    return;
+    const redirectMsg = sessionStorage.getItem('vt_redirect_msg');
+    if (redirectMsg) {
+      sessionStorage.removeItem('vt_redirect_msg');
+      showAlertChoice(redirectMsg, 'info');
+    }
+  })();
+
+  // Si déjà connecté via Supabase → aller directement à analyse
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      localStorage.setItem('vt_auth_mode', 'account');
+      localStorage.setItem('vt_user_email', session.user.email);
+      window.location.href = 'analyse.html';
+    }
+  })();
+
+  /* ── Navigation entre vues ─────────────────────────────── */
+  function showView(v) {
+    document.querySelectorAll('.vt-view').forEach(el =>
+      el.classList.remove('active'));
+    const target = document.getElementById('view-' + v);
+    if (target) target.classList.add('active');
+    hideAlert();
   }
 
-  // Connexion réussie
-  showMsg('Connexion réussie ! Redirection…', 'success');
-  setTimeout(() => {
-    window.location.replace('dashboard.html');
-  }, 800);
-});
+  function switchTab(tab) {
+    document.querySelectorAll('.vt-tab-btn').forEach(b =>
+      b.classList.remove('active'));
+    document.querySelectorAll('.vt-form').forEach(f =>
+      f.classList.remove('active'));
+    const btn  = document.getElementById('tab-' + tab);
+    const form = document.getElementById('form-' + tab);
+    if (btn)  btn.classList.add('active');
+    if (form) form.classList.add('active');
+    hideAlert();
+  }
+
+  /* ── Alertes ────────────────────────────────────────────── */
+  function showAlert(msg, type) {
+    const box = document.getElementById('alert-box');
+    if (!box) return;
+    box.textContent = msg;
+    box.className   = 'vt-alert ' + type;
+    box.style.display = 'block';
+  }
+  function showAlertChoice(msg, type) {
+    const box = document.getElementById('alert-box-choice');
+    if (!box) return;
+    box.textContent = msg;
+    box.className   = 'vt-alert ' + type;
+    box.style.display = 'block';
+  }
+
+  function hideAlert() {
+    const box = document.getElementById('alert-box');
+    if (box) box.style.display = 'none';
+  }
+
+  /* ── État bouton ────────────────────────────────────────── */
+  function setLoading(btnId, loading, label) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled  = loading;
+    btn.innerHTML = loading
+      ? '<span class="vt-loading"></span> Chargement...'
+      : label;
+  }
+
+  /* ── Connexion ──────────────────────────────────────────── */
+  async function handleSignIn() {
+    const email    = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    if (!email || !password) {
+      showAlert('Veuillez remplir tous les champs.', 'error');
+      return;
+    }
+    setLoading('btn-signin', true, 'SE CONNECTER');
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    setLoading('btn-signin', false, 'SE CONNECTER');
+    if (error) {
+      const msg = error.message.includes('Invalid login credentials')
+        ? 'Email ou mot de passe incorrect.'
+        : error.message.includes('Email not confirmed')
+        ? 'Email non confirmé — vérifiez votre boîte mail.'
+        : 'Erreur de connexion. Réessayez.';
+      showAlert(msg, 'error');
+      return;
+    }
+    localStorage.setItem('vt_auth_mode', 'account');
+    localStorage.setItem('vt_user_email', data.user.email);
+    // Vider le cache de rôle (sessionStorage) pour forcer une relecture
+    sessionStorage.removeItem('vt_user_role');
+    window.location.href = 'analyse.html';
+  }
+
+  /* ── Inscription ────────────────────────────────────────── */
+  async function handleSignUp() {
+    const name     = document.getElementById('signup-name').value.trim();
+    const club     = document.getElementById('signup-club').value.trim();
+    const email    = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!name || !email || !password) {
+      showAlert('Veuillez remplir tous les champs obligatoires.', 'error');
+      return;
+    }
+    if (password.length < 8) {
+      showAlert('Le mot de passe doit contenir au moins 8 caractères.', 'error');
+      return;
+    }
+    setLoading('btn-signup', true, 'CRÉER MON COMPTE');
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { data: { full_name: name, club: club } }
+    });
+    setLoading('btn-signup', false, 'CRÉER MON COMPTE');
+    if (error) {
+      showAlert('Erreur : ' + error.message, 'error');
+      return;
+    }
+    showView('confirm');
+  }
+
+  /* ── Mode invité ────────────────────────────────────────── */
+  function continuerSansCompte() {
+    localStorage.setItem('vt_auth_mode', 'guest');
+    localStorage.removeItem('vt_user_email');
+    sessionStorage.removeItem('vt_user_role');
+    window.location.href = 'analyse.html';
+  }
+
+  /* ── Écoute changements d'état auth Supabase ────────────── */
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      localStorage.setItem('vt_auth_mode', 'account');
+      localStorage.setItem('vt_user_email', session.user.email);
+      window.location.href = 'analyse.html';
+    }
+  });
 </script>
 
 </body>
