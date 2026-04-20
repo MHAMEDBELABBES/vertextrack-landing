@@ -2577,62 +2577,46 @@ function getRecommandationsByRole(results) {
 }
 </script>
 
-<!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->
-<script type="module">
-// ── 0. Vérifier le mode d'authentification ─────────────────
-// Guard async : si vt_auth_mode absent, on attend 500ms avant de rediriger
-// (cas d'une redirection depuis login.html où localStorage s'écrit juste avant)
-
-async function applyAuthMode(vtAuthMode) {
-  if (vtAuthMode === 'guest') {
-    // Mode invité : afficher bannière + bouton déco dans la nav
-    const area = document.getElementById('nav-user-area');
-    if (area) {
-      area.innerHTML = `
-        <span style="
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:12px;font-weight:700;letter-spacing:1px;
-          color:#f59e0b;background:rgba(245,158,11,0.1);
-          border:1px solid rgba(245,158,11,0.35);
-          padding:4px 10px;border-radius:3px;">
-          MODE INVITÉ
-        </span>
-        <button class="nav-btn-logout" onclick="vtLogout()">Quitter</button>
-      `;
-    }
-  } else if (vtAuthMode === 'account') {
-    // Mode compte : vérifier session Supabase + RBAC
-    const { checkSession, getRole, injectNavUser, applyRBAC } = await import('./auth-guard.js');
-
-    const session = await checkSession();
-    if (session) {
-      const role = await getRole();
-      if (role) {
-        injectNavUser(session, role);
-        applyRBAC(role);
-      }
-    }
-  }
-}
-
-let vtAuthMode = localStorage.getItem('vt_auth_mode');
-
-if (vtAuthMode) {
-  // Mode déjà défini → appliquer immédiatement
-  await applyAuthMode(vtAuthMode);
-} else {
-  // Mode absent → peut-être une redirection depuis login.html
-  // (localStorage écrit juste avant window.location.replace)
-  // Attendre 500ms puis re-vérifier avant de rediriger
-  await new Promise(function(r) { setTimeout(r, 500); });
-  vtAuthMode = localStorage.getItem('vt_auth_mode');
-  if (!vtAuthMode) {
-    // Toujours absent → vraiment non authentifié
+<!-- ── Auth Guard ──────────────────────────────────────────── -->
+<script>
+(function() {
+  var mode = localStorage.getItem('vt_auth_mode');
+  if (!mode) {
     window.location.replace('login.html');
-  } else {
-    await applyAuthMode(vtAuthMode);
   }
-}
+})();
+</script>
+
+<!-- ── UI post-auth (nav badge + bannière invité) ──────────── -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var mode  = localStorage.getItem('vt_auth_mode');
+  var email = localStorage.getItem('vt_user_email') || '';
+
+  if (mode === 'guest') {
+    var b = document.createElement('div');
+    b.style.cssText = 'position:fixed;bottom:16px;right:16px;' +
+      'background:rgba(255,165,0,0.1);border:0.5px solid ' +
+      'rgba(255,165,0,0.3);border-radius:8px;padding:10px 14px;' +
+      'font-size:11px;color:rgba(200,216,232,0.6);z-index:9999;' +
+      'max-width:260px;line-height:1.5;font-family:Barlow,sans-serif;';
+    b.innerHTML = 'Mode invité · Résultats non sauvegardés<br>' +
+      '<a href="login.html" style="color:#00c8ff;text-decoration:' +
+      'none;font-weight:500;">Créer un compte gratuit →</a>';
+    document.body.appendChild(b);
+  }
+
+  if (mode === 'account' && email) {
+    var nav = document.querySelector('nav,.vt-nav,header,.navbar');
+    if (nav) {
+      var chip = document.createElement('span');
+      chip.style.cssText = 'font-size:11px;color:rgba(0,200,255,0.6);' +
+        'font-family:JetBrains Mono,monospace;margin-left:12px;';
+      chip.textContent = email;
+      nav.appendChild(chip);
+    }
+  }
+});
 </script>
 
 </body>
