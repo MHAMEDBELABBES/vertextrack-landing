@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="assets/images/vertextrack-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERTEXTRACK — Dashboard Coach</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#03080f;color:#c8d8e8;font-family:'Barlow',sans-serif;min-height:100vh}
+    .vt-nav{
+      background:#060e1a;
+      border-bottom:1px solid rgba(0,200,255,0.12);
+      padding:0 24px;
+      display:flex;align-items:center;gap:14px;
+      height:60px;position:sticky;top:0;z-index:100;
+    }
+    .vt-brand{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:18px;font-weight:700;
+      color:#00c8ff;letter-spacing:2px;
+      text-decoration:none;
+    }
+    .vt-nav-badge{
+      font-size:10px;padding:2px 8px;border-radius:3px;
+      letter-spacing:0.8px;font-weight:700;
+      font-family:'Barlow Condensed',sans-serif;
+    }
+    .badge-coach{
+      background:rgba(255,165,0,0.15);color:#ffa500;
+      border:0.5px solid rgba(255,165,0,0.35);
+    }
+    .badge-medecin{
+      background:rgba(226,75,74,0.15);color:#e24b4a;
+      border:0.5px solid rgba(226,75,74,0.35);
+    }
+    .vt-nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .vt-nav-user{
+      font-size:11px;color:rgba(200,216,232,0.45);
+      font-family:'JetBrains Mono',monospace;
+      max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .vt-btn-sm{
+      font-size:11px;padding:5px 12px;border-radius:5px;
+      border:0.5px solid rgba(0,200,255,0.2);
+      background:transparent;color:rgba(200,216,232,0.55);
+      cursor:pointer;font-family:'Barlow Condensed',sans-serif;
+      letter-spacing:0.5px;transition:all .15s;white-space:nowrap;
+    }
+    .vt-btn-sm:hover{border-color:rgba(0,200,255,0.45);color:#c8d8e8}
+    .vt-btn-sm:disabled{opacity:0.3;cursor:not-allowed}
+    .vt-btn-cyan{
+      background:rgba(0,200,255,0.1);color:#00c8ff;
+      border-color:rgba(0,200,255,0.4);
+    }
+    .vt-btn-cyan:hover{background:rgba(0,200,255,0.18)}
+    .vt-main{max-width:1100px;margin:0 auto;padding:28px 24px}
+    .vt-page-title{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:24px;font-weight:700;color:#fff;
+      letter-spacing:1px;margin-bottom:4px;
+    }
+    .vt-page-sub{
+      font-size:12px;color:rgba(200,216,232,0.35);
+      margin-bottom:24px;
+    }
+    .vt-stats-row{
+      display:grid;grid-template-columns:repeat(4,1fr);
+      gap:10px;margin-bottom:20px;
+    }
+    .vt-stat-card{
+      background:#060e1a;
+      border:0.5px solid rgba(0,200,255,0.1);
+      border-radius:10px;padding:14px 16px;
+    }
+    .vt-stat-label{
+      font-size:10px;color:rgba(200,216,232,0.4);
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;
+    }
+    .vt-stat-val{
+      font-family:'JetBrains Mono',monospace;
+      font-size:22px;font-weight:500;color:#00c8ff;
+    }
+    .vt-stat-sub{font-size:10px;color:rgba(200,216,232,0.28);margin-top:2px}
+    .vt-card{
+      background:#060e1a;
+      border:0.5px solid rgba(0,200,255,0.1);
+      border-radius:12px;padding:18px;margin-bottom:16px;
+    }
+    .vt-card-title{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:14px;font-weight:700;color:#fff;
+      letter-spacing:1px;margin-bottom:14px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .vt-table{width:100%;border-collapse:collapse;font-size:12px}
+    .vt-table th{
+      font-size:10px;color:rgba(200,216,232,0.35);
+      text-transform:uppercase;letter-spacing:0.8px;
+      padding:6px 10px;
+      border-bottom:0.5px solid rgba(0,200,255,0.1);
+      text-align:left;cursor:pointer;white-space:nowrap;
+      user-select:none;
+    }
+    .vt-table th:hover{color:rgba(200,216,232,0.65)}
+    .vt-table td{
+      padding:10px;
+      border-bottom:0.5px solid rgba(0,200,255,0.06);
+      color:#c8d8e8;vertical-align:middle;
+    }
+    .vt-table tr:last-child td{border-bottom:none}
+    .vt-table tr:hover td{background:rgba(0,200,255,0.025)}
+    .vt-chip{
+      display:inline-block;font-size:9px;font-weight:700;
+      padding:2px 7px;border-radius:3px;letter-spacing:0.6px;
+    }
+    .chip-ok{background:rgba(33,195,84,0.15);color:#21c354;border:0.5px solid rgba(33,195,84,0.3)}
+    .chip-warn{background:rgba(255,165,0,0.15);color:#ffa500;border:0.5px solid rgba(255,165,0,0.3)}
+    .chip-alert{background:rgba(226,75,74,0.15);color:#e24b4a;border:0.5px solid rgba(226,75,74,0.3)}
+    .vt-avatar{
+      width:28px;height:28px;border-radius:50%;
+      background:rgba(0,200,255,0.12);
+      border:1px solid rgba(0,200,255,0.25);
+      display:inline-flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:700;color:#00c8ff;
+      margin-right:8px;flex-shrink:0;
+      font-family:'Barlow Condensed',sans-serif;
+    }
+    .vt-progress-mini{
+      height:4px;background:rgba(200,216,232,0.07);
+      border-radius:2px;overflow:hidden;margin-top:4px;
+      max-width:80px;
+    }
+    .vt-progress-mini-fill{height:100%;border-radius:2px}
+    .vt-input{
+      background:rgba(0,200,255,0.04);
+      border:0.5px solid rgba(0,200,255,0.2);
+      border-radius:7px;padding:8px 12px;
+      font-size:12px;color:#c8d8e8;
+      font-family:'Barlow',sans-serif;
+      outline:none;transition:border-color .15s;
+    }
+    .vt-input:focus{border-color:rgba(0,200,255,0.5)}
+    .vt-input::placeholder{color:rgba(200,216,232,0.2)}
+    .vt-btn-primary{
+      background:#00c8ff;color:#03080f;
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:12px;font-weight:700;letter-spacing:0.8px;
+      padding:8px 16px;border-radius:7px;border:none;
+      cursor:pointer;white-space:nowrap;transition:opacity .15s;
+    }
+    .vt-btn-primary:hover{opacity:0.88}
+    .vt-btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+    .vt-empty{
+      text-align:center;padding:32px;
+      color:rgba(200,216,232,0.28);font-size:13px;line-height:1.7;
+    }
+    .vt-compare-btn{
+      font-size:10px;padding:3px 8px;border-radius:4px;
+      border:0.5px solid rgba(0,200,255,0.2);
+      background:transparent;color:rgba(0,200,255,0.5);
+      cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;
+    }
+    .vt-compare-btn:hover,.vt-compare-btn.selected{
+      background:rgba(0,200,255,0.1);
+      border-color:rgba(0,200,255,0.5);color:#00c8ff;
+    }
+    /* Modal */
+    .vt-modal-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,0.72);z-index:200;
+      align-items:center;justify-content:center;
+    }
+    .vt-modal-overlay.open{display:flex}
+    .vt-modal{
+      background:#060e1a;
+      border:0.5px solid rgba(0,200,255,0.22);
+      border-radius:14px;padding:24px;
+      width:90%;max-width:560px;
+      max-height:82vh;overflow-y:auto;
+    }
+    .vt-modal-title{
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:16px;font-weight:700;color:#fff;
+      letter-spacing:1px;margin-bottom:16px;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    .vt-close{
+      font-size:20px;cursor:pointer;
+      color:rgba(200,216,232,0.35);
+      background:none;border:none;line-height:1;
+      transition:color .15s;
+    }
+    .vt-close:hover{color:#c8d8e8}
+    .vt-alert-msg{
+      padding:8px 12px;border-radius:7px;
+      font-size:12px;margin-bottom:10px;display:none;
+    }
+    .vt-alert-msg.success{
+      background:rgba(33,195,84,0.1);
+      border:0.5px solid rgba(33,195,84,0.3);color:#21c354;
+    }
+    .vt-alert-msg.error{
+      background:rgba(226,75,74,0.1);
+      border:0.5px solid rgba(226,75,74,0.3);color:#f09595;
+    }
+    .vt-field{margin-bottom:12px}
+    .vt-label{
+      font-size:11px;color:rgba(200,216,232,0.45);
+      text-transform:uppercase;letter-spacing:0.8px;
+      margin-bottom:5px;display:block;
+    }
+    /* Section médecin */
+    .medecin-alert-row{
+      padding:10px 0;
+      border-bottom:0.5px solid rgba(0,200,255,0.06);
+      font-size:12px;display:flex;align-items:center;gap:8px;
+      flex-wrap:wrap;
+    }
+    .medecin-alert-row:last-child{border-bottom:none}
+    /* Responsive */
+    @media(max-width:700px){
+      .vt-stats-row{grid-template-columns:1fr 1fr}
+      .vt-table th:nth-child(4),
+      .vt-table td:nth-child(4),
+      .vt-table th:nth-child(5),
+      .vt-table td:nth-child(5){display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Guard auth ──────────────────────────────────────────── -->
+<script>
+(function(){
+  var mode = localStorage.getItem('vt_auth_mode');
+  var role = localStorage.getItem('vt_user_role');
+  if (mode !== 'account') {
+    sessionStorage.setItem('vt_redirect_msg',
+      'Accès réservé aux coachs et médecins connectés.');
+    window.location.replace('login.html');
+    return;
+  }
+  if (role === 'athlete') {
+    window.location.replace('analyse.html');
+  }
+})();
+</script>
+
+<!-- ── Navbar ─────────────────────────────────────────────── -->
+<nav class="vt-nav">
+  <a href="index.html" class="vt-brand">VERTEXTRACK</a>
+  <span class="vt-nav-badge badge-coach" id="nav-role-badge">COACH</span>
+  <div class="vt-nav-right">
+    <span class="vt-nav-user" id="nav-user-email"></span>
+    <button class="vt-btn-sm vt-btn-cyan"
+      onclick="window.location.href='analyse.html'">
+      + Nouvelle analyse
+    </button>
+    <button class="vt-btn-sm"
+      onclick="window.location.href='historique.html'">
+      Historique
+    </button>
+    <button class="vt-btn-sm" style="color:#ff8a80;border-color:rgba(239,83,80,0.4)"
+      onclick="vtLogout()">Déconnexion</button>
+  </div>
+</nav>
+
+<!-- ── Contenu principal ──────────────────────────────────── -->
+<div class="vt-main">
+  <div class="vt-page-title" id="page-title">Dashboard équipe</div>
+  <div class="vt-page-sub" id="page-sub">Chargement...</div>
+
+  <!-- Stats rapides -->
+  <div class="vt-stats-row">
+    <div class="vt-stat-card">
+      <div class="vt-stat-label">Joueurs</div>
+      <div class="vt-stat-val" id="stat-players">—</div>
+      <div class="vt-stat-sub">sur 15 max</div>
+    </div>
+    <div class="vt-stat-card">
+      <div class="vt-stat-label">Alertes FPPA</div>
+      <div class="vt-stat-val" id="stat-alerts" style="color:#ffa500">—</div>
+      <div class="vt-stat-sub">FPPA ≥ 15°</div>
+    </div>
+    <div class="vt-stat-card">
+      <div class="vt-stat-label">LSI &lt; 0.90</div>
+      <div class="vt-stat-val" id="stat-lsi" style="color:#ffa500">—</div>
+      <div class="vt-stat-sub">Asymétrie modérée</div>
+    </div>
+    <div class="vt-stat-card">
+      <div class="vt-stat-label">Hauteur moy.</div>
+      <div class="vt-stat-val" id="stat-height">—</div>
+      <div class="vt-stat-sub">cm · équipe</div>
+    </div>
+  </div>
+
+  <!-- Tableau équipe -->
+  <div class="vt-card">
+    <div class="vt-card-title">
+      <span>Joueurs de l'équipe</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="vt-btn-sm" id="btn-compare"
+          onclick="openCompareModal()" disabled>
+          Comparer sélection
+        </button>
+        <button class="vt-btn-sm vt-btn-cyan"
+          onclick="openInviteModal()">
+          + Inviter joueur
+        </button>
+      </div>
+    </div>
+
+    <div id="alert-team" class="vt-alert-msg"></div>
+
+    <div style="overflow-x:auto;">
+      <table class="vt-table">
+        <thead>
+          <tr>
+            <th>Athlète</th>
+            <th onclick="sortTable('height')">CMJ ↕</th>
+            <th onclick="sortTable('fppa_left')">FPPA G ↕</th>
+            <th onclick="sortTable('lsi')">LSI ↕</th>
+            <th onclick="sortTable('knee')">Flexion ↕</th>
+            <th>Statut</th>
+            <th>Comparer</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="team-table-body">
+          <tr><td colspan="8" class="vt-empty">
+            Chargement des joueurs...
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section alertes cliniques (médecin uniquement) -->
+  <div class="vt-card" id="section-medecin" style="display:none;">
+    <div class="vt-card-title">
+      <span>Alertes cliniques équipe</span>
+      <span style="font-size:11px;font-family:'JetBrains Mono',monospace;
+        color:rgba(200,216,232,0.3);font-weight:400;" id="clinical-count"></span>
+    </div>
+    <div id="clinical-alerts-body">
+      <div class="vt-empty">Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal invitation ────────────────────────────────────── -->
+<div class="vt-modal-overlay" id="modal-invite">
+  <div class="vt-modal">
+    <div class="vt-modal-title">
+      Inviter un joueur
+      <button class="vt-close"
+        onclick="closeModal('modal-invite')">×</button>
+    </div>
+    <div id="invite-alert" class="vt-alert-msg"></div>
+    <p style="font-size:12px;color:rgba(200,216,232,0.45);
+      margin-bottom:16px;line-height:1.7;">
+      Le joueur doit s'inscrire sur VERTEXTRACK avec l'email
+      ci-dessous pour être rattaché à votre équipe automatiquement.
+    </p>
+    <div class="vt-field">
+      <label class="vt-label">Nom du joueur</label>
+      <input class="vt-input" id="invite-name"
+        type="text" placeholder="Ex: Youssef Alami" style="width:100%">
+    </div>
+    <div class="vt-field" style="margin-bottom:16px;">
+      <label class="vt-label">Email</label>
+      <input class="vt-input" id="invite-email"
+        type="email" placeholder="joueur@club.ma" style="width:100%">
+    </div>
+    <button class="vt-btn-primary" style="width:100%"
+      id="btn-send-invite" onclick="sendInvite()">
+      ENVOYER L'INVITATION
+    </button>
+  </div>
+</div>
+
+<!-- ── Modal comparaison ───────────────────────────────────── -->
+<div class="vt-modal-overlay" id="modal-compare">
+  <div class="vt-modal">
+    <div class="vt-modal-title">
+      Comparaison joueurs
+      <button class="vt-close"
+        onclick="closeModal('modal-compare')">×</button>
+    </div>
+    <div id="compare-content">
+      <div class="vt-empty">Sélectionnez 2 ou 3 joueurs dans le tableau</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://kygrhqgyqqrylsxnshny.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let teamPlayers = [];
+let selectedForCompare = [];
+let sortDir = {};
+
+// ── Initialisation ─────────────────────────────────────────
+(async function init() {
+  const email  = localStorage.getItem('vt_user_email') || '';
+  const role   = localStorage.getItem('vt_user_role')  || 'coach';
+  let   teamId = localStorage.getItem('vt_team_id');
+
+  // Affiche email + badge rôle
+  document.getElementById('nav-user-email').textContent = email;
+  const badge = document.getElementById('nav-role-badge');
+  if (role === 'medecin') {
+    badge.textContent = 'MÉDECIN';
+    badge.className   = 'vt-nav-badge badge-medecin';
+    document.getElementById('section-medecin').style.display = 'block';
+  }
+
+  // Si pas de team_id en cache → récupérer depuis Supabase
+  if (!teamId) {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) {
+      showTeamAlert('Session expirée. Reconnectez-vous.', 'error');
+      return;
+    }
+    const { data: profile } = await sb
+      .from('user_profiles')
+      .select('team_id, full_name, club, role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.team_id) {
+      localStorage.setItem('vt_team_id', profile.team_id);
+      teamId = profile.team_id;
+    } else {
+      document.getElementById('page-sub').textContent =
+        'Aucune équipe trouvée — créez une équipe lors de l\'inscription.';
+      document.getElementById('stat-players').textContent = '0';
+      document.getElementById('team-table-body').innerHTML =
+        '<tr><td colspan="8" class="vt-empty">' +
+        'Aucune équipe rattachée à votre compte.<br>' +
+        'Recréez votre compte en choisissant "Coach / Kiné" et en nommant votre équipe.' +
+        '</td></tr>';
+      return;
+    }
+  }
+
+  await loadTeam(teamId);
+})();
+
+// ── Chargement équipe ──────────────────────────────────────
+async function loadTeam(teamId) {
+  // Infos équipe
+  const { data: team, error: teamErr } = await sb
+    .from('teams')
+    .select('name, club, max_players')
+    .eq('id', teamId)
+    .single();
+
+  if (!teamErr && team) {
+    document.getElementById('page-title').textContent =
+      team.name || 'Dashboard équipe';
+    document.getElementById('page-sub').textContent =
+      (team.club ? team.club + ' · ' : '') +
+      'Tableau de bord ' +
+      (localStorage.getItem('vt_user_role') === 'medecin' ? 'médecin' : 'coach');
+  }
+
+  // Membres actifs
+  const { data: members, error: membErr } = await sb
+    .from('team_members')
+    .select('athlete_id, status, user_profiles(full_name)')
+    .eq('team_id', teamId)
+    .eq('status', 'active');
+
+  if (membErr || !members || members.length === 0) {
+    document.getElementById('stat-players').textContent = '0';
+    document.getElementById('team-table-body').innerHTML =
+      '<tr><td colspan="8" class="vt-empty">' +
+      'Aucun joueur dans l\'équipe.<br>Utilisez <strong style="color:#00c8ff">' +
+      '+ Inviter joueur</strong> pour ajouter vos athlètes.' +
+      '</td></tr>';
+    updateStats([]);
+    return;
+  }
+
+  document.getElementById('stat-players').textContent = members.length;
+
+  // Dernières analyses de chaque joueur
+  const athleteIds = members.map(m => m.athlete_id);
+  const { data: analyses } = await sb
+    .from('analyses')
+    .select('athlete_id, jump_height_com, fppa_left, fppa_right, lsi_symmetry, knee_flexion_max, hip_rom, created_at')
+    .in('athlete_id', athleteIds)
+    .order('created_at', { ascending: false });
+
+  // Garde seulement la dernière par joueur
+  const lastAnalysis = {};
+  (analyses || []).forEach(a => {
+    if (!lastAnalysis[a.athlete_id]) lastAnalysis[a.athlete_id] = a;
+  });
+
+  teamPlayers = members.map(m => {
+    const a    = lastAnalysis[m.athlete_id] || {};
+    const name = m.user_profiles?.full_name || 'Joueur sans nom';
+    const words = name.trim().split(/\s+/);
+    const initials = words.length >= 2
+      ? (words[0][0] + words[words.length-1][0]).toUpperCase()
+      : name.substring(0,2).toUpperCase();
+    return {
+      id:         m.athlete_id,
+      name:       name,
+      initials:   initials,
+      height:     a.jump_height_com  ?? null,
+      fppa_left:  a.fppa_left        ?? null,
+      fppa_right: a.fppa_right       ?? null,
+      lsi:        a.lsi_symmetry     ?? null,
+      knee:       a.knee_flexion_max ?? null,
+      hip:        a.hip_rom          ?? null,
+      last_at:    a.created_at       ?? null
+    };
+  });
+
+  updateStats(teamPlayers);
+  renderTable();
+}
+
+// ── Stats rapides ──────────────────────────────────────────
+function updateStats(players) {
+  const withH   = players.filter(p => p.height  !== null);
+  const alerts  = players.filter(p =>
+    (p.fppa_left  !== null && p.fppa_left  >= 15) ||
+    (p.fppa_right !== null && p.fppa_right >= 15)).length;
+  const lsiLow  = players.filter(p => p.lsi !== null && p.lsi < 0.90).length;
+  const avgH    = withH.length
+    ? (withH.reduce((s,p) => s + p.height, 0) / withH.length).toFixed(1)
+    : '—';
+
+  document.getElementById('stat-alerts').textContent = alerts;
+  document.getElementById('stat-lsi').textContent    = lsiLow;
+  document.getElementById('stat-height').textContent = avgH;
+
+  // Section clinique médecin
+  const clinicalBody = document.getElementById('clinical-alerts-body');
+  if (!clinicalBody) return;
+
+  const alertPlayers = players.filter(p =>
+    (p.fppa_left  !== null && p.fppa_left  >= 12) ||
+    (p.fppa_right !== null && p.fppa_right >= 12) ||
+    (p.lsi !== null && p.lsi < 0.90));
+
+  const countEl = document.getElementById('clinical-count');
+  if (countEl) countEl.textContent = alertPlayers.length + ' alerte(s)';
+
+  if (alertPlayers.length === 0) {
+    clinicalBody.innerHTML =
+      '<div style="padding:12px;font-size:12px;color:rgba(33,195,84,0.8);">' +
+      'Aucune alerte clinique — profil équipe dans les normes.</div>';
+    return;
+  }
+
+  clinicalBody.innerHTML = alertPlayers.map(p => {
+    const tags = [];
+    if (p.fppa_left  !== null && p.fppa_left  >= 12)
+      tags.push(`<span class="vt-chip chip-warn">FPPA G : ${p.fppa_left.toFixed(1)}°</span>`);
+    if (p.fppa_right !== null && p.fppa_right >= 12)
+      tags.push(`<span class="vt-chip chip-warn">FPPA D : ${p.fppa_right.toFixed(1)}°</span>`);
+    if (p.lsi !== null && p.lsi < 0.80)
+      tags.push(`<span class="vt-chip chip-alert">LSI : ${p.lsi.toFixed(2)}</span>`);
+    else if (p.lsi !== null && p.lsi < 0.90)
+      tags.push(`<span class="vt-chip chip-warn">LSI : ${p.lsi.toFixed(2)}</span>`);
+    return `
+      <div class="medecin-alert-row">
+        <span style="font-weight:500;color:#fff;min-width:120px;">${p.name}</span>
+        ${tags.join('')}
+      </div>`;
+  }).join('');
+}
+
+// ── Statut risque ──────────────────────────────────────────
+function getStatus(p) {
+  if (p.fppa_left === null && p.lsi === null)
+    return { label: '—', cls: '' };
+  if ((p.fppa_left !== null && p.fppa_left >= 15) ||
+      (p.lsi !== null && p.lsi < 0.80))
+    return { label: 'ALERTE', cls: 'chip-alert' };
+  if ((p.fppa_left !== null && p.fppa_left >= 12) ||
+      (p.lsi !== null && p.lsi < 0.90))
+    return { label: 'ATTENTION', cls: 'chip-warn' };
+  return { label: 'OK', cls: 'chip-ok' };
+}
+
+// ── Rendu tableau ──────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('team-table-body');
+  if (!teamPlayers.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="vt-empty">Aucun joueur.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = teamPlayers.map(p => {
+    const st = getStatus(p);
+    const isSel = selectedForCompare.includes(p.id);
+
+    const fppaVal   = p.fppa_left !== null ? p.fppa_left.toFixed(1) + '°' : '—';
+    const fppaColor = p.fppa_left === null ? '#c8d8e8' :
+      p.fppa_left >= 15 ? '#ffa500' :
+      p.fppa_left >= 12 ? '#ffc800' : '#21c354';
+
+    const lsiVal   = p.lsi !== null ? p.lsi.toFixed(2) : '—';
+    const lsiColor = p.lsi === null ? '#c8d8e8' :
+      p.lsi < 0.80 ? '#e24b4a' :
+      p.lsi < 0.90 ? '#ffa500' : '#21c354';
+
+    const heightVal = p.height !== null ? p.height.toFixed(1) + ' cm' : '—';
+    const heightPct = p.height !== null
+      ? Math.min(p.height / 60 * 100, 100).toFixed(0) : 0;
+
+    const kneeVal = p.knee !== null ? p.knee.toFixed(0) + '°' : '—';
+
+    return `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;">
+          <span class="vt-avatar">${p.initials}</span>
+          <span>${p.name}</span>
+        </div>
+      </td>
+      <td>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;">
+          ${heightVal}
+        </span>
+        ${p.height ? `<div class="vt-progress-mini">
+          <div class="vt-progress-mini-fill"
+            style="width:${heightPct}%;background:#00c8ff;"></div>
+        </div>` : ''}
+      </td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;
+        color:${fppaColor};">${fppaVal}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;
+        color:${lsiColor};">${lsiVal}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">
+        ${kneeVal}
+      </td>
+      <td>
+        ${st.cls
+          ? `<span class="vt-chip ${st.cls}">${st.label}</span>`
+          : '<span style="color:rgba(200,216,232,0.25);font-size:11px;">—</span>'}
+      </td>
+      <td>
+        <button class="vt-compare-btn ${isSel ? 'selected' : ''}"
+          onclick="toggleCompare('${p.id}', this)">
+          ${isSel ? '✓ Sélect.' : 'Sélect.'}
+        </button>
+      </td>
+      <td>
+        <button class="vt-btn-sm"
+          onclick="window.location.href='analyse.html?athlete=${p.id}'">
+          Analyser
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Tri tableau ────────────────────────────────────────────
+function sortTable(field) {
+  sortDir[field] = !sortDir[field];
+  teamPlayers.sort((a, b) => {
+    const va = a[field] ?? (sortDir[field] ? -Infinity : Infinity);
+    const vb = b[field] ?? (sortDir[field] ? -Infinity : Infinity);
+    return sortDir[field] ? vb - va : va - vb;
+  });
+  renderTable();
+}
+
+// ── Sélection comparaison ──────────────────────────────────
+function toggleCompare(id, btn) {
+  const idx = selectedForCompare.indexOf(id);
+  if (idx >= 0) {
+    selectedForCompare.splice(idx, 1);
+    btn.classList.remove('selected');
+    btn.textContent = 'Sélect.';
+  } else {
+    if (selectedForCompare.length >= 3) {
+      showTeamAlert('Maximum 3 joueurs à comparer.', 'error');
+      return;
+    }
+    selectedForCompare.push(id);
+    btn.classList.add('selected');
+    btn.textContent = '✓ Sélect.';
+  }
+  const btnCompare = document.getElementById('btn-compare');
+  if (btnCompare) btnCompare.disabled = selectedForCompare.length < 2;
+}
+
+// ── Modal comparaison ──────────────────────────────────────
+function openCompareModal() {
+  const players = teamPlayers.filter(p => selectedForCompare.includes(p.id));
+  const fields = [
+    { key:'height',    label:'Hauteur CMJ (cm)',    max:60,  invert:false },
+    { key:'fppa_left', label:'FPPA gauche (°)',      max:30,  invert:true  },
+    { key:'lsi',       label:'LSI symétrie',          max:1,   invert:false },
+    { key:'knee',      label:'Flexion genou (°)',     max:120, invert:false },
+    { key:'hip',       label:'ROM hanche (°)',        max:80,  invert:false }
+  ];
+  const colors = ['#00c8ff', '#ffa500', '#21c354'];
+
+  const html = fields.map(f => {
+    const rows = players.map((p, i) => {
+      const val = p[f.key];
+      if (val === null) return '';
+      const pct = f.invert
+        ? Math.max(0, 100 - (val / f.max * 100))
+        : Math.min(val / f.max * 100, 100);
+      const display = f.key === 'lsi' ? val.toFixed(2) : val.toFixed(1);
+      return `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+          <span style="width:80px;font-size:11px;color:${colors[i]};
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            ${p.name.split(' ')[0]}
+          </span>
+          <div style="flex:1;height:7px;background:rgba(200,216,232,0.07);
+            border-radius:4px;overflow:hidden;">
+            <div style="width:${pct.toFixed(0)}%;height:100%;
+              background:${colors[i]};border-radius:4px;"></div>
+          </div>
+          <span style="font-size:11px;font-family:'JetBrains Mono',monospace;
+            color:#c8d8e8;min-width:40px;text-align:right;">${display}</span>
+        </div>`;
+    }).join('');
+    if (!rows.trim()) return '';
+    return `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;color:rgba(200,216,232,0.45);
+          margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px;">
+          ${f.label}
+        </div>
+        ${rows}
+      </div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('compare-content').innerHTML =
+    html || '<div class="vt-empty">Pas assez de données pour comparer.</div>';
+  document.getElementById('modal-compare').classList.add('open');
+}
+
+// ── Modal invitation ───────────────────────────────────────
+function openInviteModal() {
+  document.getElementById('modal-invite').classList.add('open');
+  const alertEl = document.getElementById('invite-alert');
+  if (alertEl) alertEl.style.display = 'none';
+  document.getElementById('invite-name').value  = '';
+  document.getElementById('invite-email').value = '';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+async function sendInvite() {
+  const name   = document.getElementById('invite-name').value.trim();
+  const email  = document.getElementById('invite-email').value.trim();
+  const teamId = localStorage.getItem('vt_team_id');
+  const alertEl = document.getElementById('invite-alert');
+
+  if (!email) {
+    alertEl.textContent = 'L\'email du joueur est requis.';
+    alertEl.className = 'vt-alert-msg error';
+    alertEl.style.display = 'block';
+    return;
+  }
+  if (!teamId) {
+    alertEl.textContent = 'Aucune équipe rattachée à votre compte.';
+    alertEl.className = 'vt-alert-msg error';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  // Vérifie si l'équipe est pleine
+  const { data: members } = await sb
+    .from('team_members')
+    .select('id', { count: 'exact' })
+    .eq('team_id', teamId)
+    .eq('status', 'active');
+
+  if (members && members.length >= 15) {
+    alertEl.textContent = 'Équipe complète (15 joueurs maximum).';
+    alertEl.className = 'vt-alert-msg error';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  // Stocke l'invitation (table invitations optionnelle)
+  try {
+    await sb.from('invitations').insert({
+      team_id: teamId,
+      email:   email,
+      name:    name || null,
+      status:  'pending'
+    });
+  } catch(e) { /* table optionnelle */ }
+
+  alertEl.textContent =
+    `Invitation enregistrée pour ${email}. ` +
+    `Le joueur doit s'inscrire avec cet email pour rejoindre l'équipe.`;
+  alertEl.className = 'vt-alert-msg success';
+  alertEl.style.display = 'block';
+
+  const btn = document.getElementById('btn-send-invite');
+  if (btn) btn.disabled = true;
+  setTimeout(() => { if(btn) btn.disabled = false; }, 3000);
+}
+
+// ── Alertes tableau ────────────────────────────────────────
+function showTeamAlert(msg, type) {
+  const el = document.getElementById('alert-team');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'vt-alert-msg ' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+// ── Déconnexion ────────────────────────────────────────────
+async function vtLogout() {
+  await sb.auth.signOut();
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.replace('login.html');
+}
+</script>
+</body>
+</html>

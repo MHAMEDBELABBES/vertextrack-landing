@@ -192,6 +192,21 @@
       border: 0.5px solid rgba(33,195,84,0.3);
       color: #21c354;
     }
+    .vt-role-btn {
+      background: rgba(0,200,255,0.03);
+      border: 0.5px solid rgba(0,200,255,0.15);
+      border-radius: 8px; padding: 10px 8px;
+      cursor: pointer; text-align: center;
+      transition: all .15s; user-select: none;
+    }
+    .vt-role-btn:hover {
+      background: rgba(0,200,255,0.07);
+      border-color: rgba(0,200,255,0.35);
+    }
+    .vt-role-btn.active {
+      background: rgba(0,200,255,0.1);
+      border-color: rgba(0,200,255,0.5);
+    }
     .vt-loading {
       display: inline-block; width: 14px; height: 14px;
       border: 2px solid rgba(3,8,15,0.3);
@@ -316,6 +331,38 @@
         <label class="vt-label">Club</label>
         <input class="vt-input" id="signup-club"
           type="text" placeholder="Ex: USB Béni Mellal">
+      </div>
+      <div class="vt-field">
+        <label class="vt-label">Je suis</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div class="vt-role-btn active" data-role="athlete"
+            onclick="selectRole(this,'athlete')">
+            <div style="font-size:11px;font-weight:600;
+              color:#00c8ff;margin-bottom:2px;">ATHLÈTE</div>
+            <div style="font-size:10px;color:rgba(200,216,232,0.5);
+              line-height:1.3;">Analyse personnelle</div>
+          </div>
+          <div class="vt-role-btn" data-role="coach"
+            onclick="selectRole(this,'coach')">
+            <div style="font-size:11px;font-weight:600;
+              color:#ffa500;margin-bottom:2px;">COACH / KINÉ</div>
+            <div style="font-size:10px;color:rgba(200,216,232,0.5);
+              line-height:1.3;">Gérer une équipe</div>
+          </div>
+          <div class="vt-role-btn" data-role="medecin"
+            onclick="selectRole(this,'medecin')">
+            <div style="font-size:11px;font-weight:600;
+              color:#e24b4a;margin-bottom:2px;">MÉDECIN</div>
+            <div style="font-size:10px;color:rgba(200,216,232,0.5);
+              line-height:1.3;">Suivi clinique</div>
+          </div>
+        </div>
+        <input type="hidden" id="selected-role" value="athlete">
+      </div>
+      <div class="vt-field" id="field-team-name" style="display:none;">
+        <label class="vt-label">Nom de l'équipe</label>
+        <input class="vt-input" id="signup-team-name"
+          type="text" placeholder="Ex: USB Béni Mellal U21">
       </div>
       <div class="vt-field">
         <label class="vt-label">Email</label>
@@ -465,6 +512,19 @@
       : label;
   }
 
+  /* ── Sélecteur de rôle ──────────────────────────────────── */
+  function selectRole(el, role) {
+    document.querySelectorAll('.vt-role-btn')
+      .forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('selected-role').value = role;
+    const teamField = document.getElementById('field-team-name');
+    if (teamField) {
+      teamField.style.display =
+        (role === 'coach' || role === 'medecin') ? 'block' : 'none';
+    }
+  }
+
   /* ── Connexion ──────────────────────────────────────────── */
   async function handleSignIn() {
     const email    = document.getElementById('signin-email').value.trim();
@@ -495,7 +555,28 @@
     localStorage.setItem('vt_auth_mode', 'account');
     localStorage.setItem('vt_user_email', data.user.email);
     sessionStorage.removeItem('vt_user_role');
-    window.location.replace('analyse.html');
+
+    // Charge le rôle depuis Supabase pour redirection correcte
+    const { data: profile } = await sb
+      .from('user_profiles')
+      .select('role, team_id, full_name')
+      .eq('id', data.user.id)
+      .single();
+
+    if (profile) {
+      localStorage.setItem('vt_user_role', profile.role || 'athlete');
+      localStorage.setItem('vt_user_name', profile.full_name || '');
+      if (profile.team_id) {
+        localStorage.setItem('vt_team_id', profile.team_id);
+      }
+      if (profile.role === 'coach' || profile.role === 'medecin') {
+        window.location.replace('dashboard-coach.html');
+      } else {
+        window.location.replace('analyse.html');
+      }
+    } else {
+      window.location.replace('analyse.html');
+    }
   }
 
   /* ── Inscription ────────────────────────────────────────── */
@@ -532,12 +613,49 @@
       return;
     }
 
+    // Récupère le rôle choisi
+    const role = document.getElementById('selected-role').value || 'athlete';
+    const teamName = document.getElementById('signup-team-name')?.value?.trim();
+
+    // Crée le profil utilisateur avec rôle (si l'user a été créé)
+    if (data.user) {
+      await sb.from('user_profiles').upsert({
+        id: data.user.id,
+        full_name: name,
+        club: club,
+        role: role
+      });
+
+      // Si coach ou médecin → crée l'équipe
+      if ((role === 'coach' || role === 'medecin') && teamName) {
+        const { data: teamData } = await sb
+          .from('teams')
+          .insert({ coach_id: data.user.id, name: teamName, club: club })
+          .select()
+          .single();
+
+        if (teamData) {
+          await sb.from('user_profiles')
+            .update({ team_id: teamData.id })
+            .eq('id', data.user.id);
+          localStorage.setItem('vt_team_id', teamData.id);
+        }
+      }
+    }
+
+    localStorage.setItem('vt_user_role', role);
+
     // Si session immédiate (confirm email désactivé dans Supabase) → connexion directe
     if (data.session) {
       localStorage.setItem('vt_auth_mode', 'account');
       localStorage.setItem('vt_user_email', email);
+      localStorage.setItem('vt_user_name', name);
       sessionStorage.removeItem('vt_user_role');
-      window.location.replace('analyse.html');
+      if (role === 'coach' || role === 'medecin') {
+        window.location.replace('dashboard-coach.html');
+      } else {
+        window.location.replace('analyse.html');
+      }
       return;
     }
 

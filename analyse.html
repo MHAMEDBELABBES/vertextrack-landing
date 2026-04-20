@@ -2323,6 +2323,14 @@ if ('serviceWorker' in navigator) {
 
 <!-- ── Module 1 : onglets Articulaire/Référentiels + recommandations ── -->
 <script>
+// ── Helper : team_id courant (pour saves Supabase) ─────────
+// Utilisation dans insert analyses :
+//   const teamId = getTeamId();
+//   await sb.from('analyses').insert({ ..., team_id: teamId })
+function getTeamId() {
+  return localStorage.getItem('vt_team_id') || null;
+}
+
 // ── Déconnexion universelle (invité + compte) ──────────────
 async function vtLogout() {
   // Supabase sign-out si mode compte
