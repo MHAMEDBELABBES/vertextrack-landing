@@ -456,7 +456,14 @@
     }
   });
 
-  // 4. Marque de nettoyage (pour diagnostic)
+  // 4. Purge clés VertexTrack (vt_*) pour forcer une nouvelle saisie
+  localStorage.removeItem('vt_auth_mode');
+  localStorage.removeItem('vt_user_email');
+  localStorage.removeItem('vt_user_role');
+  localStorage.removeItem('vt_user_name');
+  localStorage.removeItem('vt_team_id');
+
+  // 5. Marque de nettoyage (pour diagnostic)
   sessionStorage.setItem('vt_session_cleared', '1');
 })();
 </script>
@@ -491,54 +498,12 @@
     window.history.replaceState({}, '', window.location.pathname);
   }
 
-  // Vérification session après nettoyage — on attend 100ms
-  // pour que le SDK Supabase soit pleinement initialisé
+  // Déconnexion locale silencieuse au chargement de la page.
+  // login.html ne redirige JAMAIS automatiquement — toujours saisir ses identifiants.
   (async () => {
-    await new Promise(function(resolve) { setTimeout(resolve, 100); });
-
-    const { data: { session } } = await sb.auth.getSession();
-
-    if (!session) return; // normal : nettoyage a fonctionné
-
-    // Une session persiste malgré le nettoyage
-    // (token serveur encore valide côté Supabase Auth)
-    const mode = localStorage.getItem('vt_auth_mode');
-
-    if (mode === 'account') {
-      // Connexion intentionnelle précédente → charger le rôle et rediriger
-      const { data: profile } = await sb
-        .from('user_profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-
-      const role = profile?.role || 'athlete';
-      if (role === 'coach' || role === 'medecin') {
-        window.location.replace('dashboard-coach.html');
-      } else {
-        window.location.replace('analyse.html');
-      }
-    } else {
-      // Session résiduelle non intentionnelle → déconnexion + second nettoyage
-      await sb.auth.signOut();
-
-      // Second passage de nettoyage pour être sûr
-      for (var i = localStorage.length - 1; i >= 0; i--) {
-        var k = localStorage.key(i);
-        if (k && (k.includes('kygrhqgyqqrylsxnshny') ||
-                  k.includes('supabase') || k.includes('sb-'))) {
-          localStorage.removeItem(k);
-        }
-      }
-
-      // Affiche la bannière si l'email est récupérable
-      const banner   = document.getElementById('active-session-banner');
-      const emailSpan = document.getElementById('active-email');
-      if (banner && emailSpan && session.user?.email) {
-        emailSpan.textContent = session.user.email;
-        banner.style.display  = 'block';
-      }
-    }
+    try {
+      await sb.auth.signOut({ scope: 'local' });
+    } catch(e) {}
   })();
 
   /* ── Navigation entre vues ─────────────────────────────── */
@@ -618,10 +583,6 @@
 
     setLoading('btn-signin', true, 'SE CONNECTER');
 
-    // Force déconnexion globale (localStorage + cookies + serveur Supabase)
-    try { await sb.auth.signOut({ scope: 'global' }); } catch(e) {}
-    await new Promise(function(resolve) { setTimeout(resolve, 300); });
-
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
     setLoading('btn-signin', false, 'SE CONNECTER');
@@ -678,10 +639,6 @@
     }
 
     setLoading('btn-signup', true, 'CRÉER MON COMPTE');
-
-    // Force déconnexion globale (localStorage + cookies + serveur Supabase)
-    try { await sb.auth.signOut({ scope: 'global' }); } catch(e) {}
-    await new Promise(function(resolve) { setTimeout(resolve, 300); });
 
     const { data, error } = await sb.auth.signUp({
       email,
