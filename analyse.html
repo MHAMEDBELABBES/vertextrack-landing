@@ -839,10 +839,38 @@ body {
   <div class="nav-actions">
     <div id="nav-user-area"></div>
     <div class="nav-sep"></div>
+    <span id="nav-role-links"></span>
     <a href="dashboard.html" class="nav-btn-outline">Dashboard</a>
     <a href="https://vertextrack.streamlit.app" target="_blank" class="nav-btn-primary">APP IA →</a>
   </div>
 </nav>
+<script>
+(function() {
+  var role = localStorage.getItem('vt_user_role');
+  var container = document.getElementById('nav-role-links');
+  if (!role || !container) return;
+
+  function makeLink(href, text, color) {
+    var a = document.createElement('a');
+    a.href = href;
+    a.textContent = text;
+    a.style.cssText = 'font-size:11px;color:' + color + ';' +
+      'text-decoration:none;margin-right:8px;opacity:0.8;' +
+      'font-family:"Barlow",sans-serif;font-weight:600;' +
+      'letter-spacing:0.5px;white-space:nowrap;';
+    return a;
+  }
+
+  if (role === 'athlete') {
+    container.appendChild(makeLink('profil-athlete.html', 'Mon profil', '#00c8ff'));
+  } else if (role === 'coach') {
+    container.appendChild(makeLink('dashboard-coach.html', 'Tableau équipe', '#ffa500'));
+  } else if (role === 'medecin') {
+    container.appendChild(makeLink('dashboard-coach.html', 'Équipe', '#00c8ff'));
+    container.appendChild(makeLink('profil-medecin.html', 'Suivi clinique', '#e24b4a'));
+  }
+})();
+</script>
 
 <div id="breadcrumb" style="background:#040a14;
 border-bottom:1px solid rgba(0,200,255,0.1);
@@ -2437,25 +2465,116 @@ function updateRecommandations(results) {
   var lsiClass = lsi >= 0.95 ? 0 : lsi >= 0.90 ? 1 : lsi >= 0.80 ? 2 : 3;
   if (lsiItems[lsiClass]) lsiItems[lsiClass].classList.add('current');
 
-  // Générer les recommandations dynamiques
+  // Générer les recommandations selon le rôle
   var recsContainer = document.getElementById('vt-recs');
   if (!recsContainer) return;
-  var recs = [];
-  if (fppaL >= 12) recs.push('FPPA gauche à ' + fppaL.toFixed(1) + '° — réévaluation en vue frontale stricte à la prochaine session');
-  if (fppaR >= 12) recs.push('FPPA droite à ' + fppaR.toFixed(1) + '° — contrôle neuromusculaire membres inférieurs recommandé');
-  if (lsi  < 0.90) recs.push('LSI ' + lsi.toFixed(2) + ' — renforcement musculaire asymétrique conseillé avant retour sport');
-  if (knee < 70)   recs.push('Flexion genou ' + knee.toFixed(0) + '° — travail de profondeur de squat et mobilité tibiale');
-  if (hCom < 35)   recs.push('Hauteur saut ' + hCom.toFixed(1) + ' cm — programme pliométrique progressif recommandé');
 
-  var titleHtml = '<div class="vt-recs-title">Recommandations cliniques</div>';
-  if (recs.length === 0) {
-    recsContainer.innerHTML = titleHtml + '<div class="vt-rec-item" style="color:rgba(33,195,84,0.8)">Aucune alerte clinique détectée — profil dans les normes</div>';
-    return;
-  }
-  recsContainer.innerHTML = titleHtml + recs.map(function(r) { return '<div class="vt-rec-item">' + r + '</div>'; }).join('');
+  var results = {
+    fppaLeft: fppaL, fppaRight: fppaR,
+    lsi: lsi, kneeFlexion: knee, jumpHeight: hCom
+  };
+  var recs = getRecommandationsByRole(results);
+
+  var role = localStorage.getItem('vt_user_role') || 'athlete';
+  var roleLabels = {
+    'athlete': 'Conseils personnalisés',
+    'coach':   'Recommandations entraînement',
+    'medecin': 'Recommandations cliniques'
+  };
+  var titleHtml = '<div class="vt-recs-title">' +
+    (roleLabels[role] || 'Recommandations') + '</div>';
+
+  recsContainer.innerHTML = titleHtml +
+    recs.map(function(r) {
+      return '<div class="vt-rec-item">' + r + '</div>';
+    }).join('');
 }
-// Appel : après la simulation ou l'analyse réelle, ajoute :
-//   updateRecommandations(tonObjetResultats);
+
+// ── Recommandations différenciées par rôle ─────────────────
+function getRecommandationsByRole(results) {
+  var role  = localStorage.getItem('vt_user_role') || 'athlete';
+  var fppa  = results.fppaLeft  || results.fppa_left  || 0;
+  var lsi   = results.lsi       || results.lsi_symmetry || 1;
+  var knee  = results.kneeFlexion || results.knee_flexion_max || 80;
+  var h     = results.jumpHeight  || results.jump_height_com || 0;
+  var recs  = [];
+
+  if (role === 'athlete') {
+    // Langage simple, sans jargon médical
+    if (fppa >= 12)
+      recs.push('Ton genou gauche rentre vers l\'intérieur lors du saut. Parles-en à ton coach.');
+    if (lsi < 0.90)
+      recs.push('Tes deux jambes ne sont pas tout à fait équilibrées (' +
+        (lsi * 100).toFixed(0) + '%). Travaille une jambe à la fois.');
+    if (knee < 70)
+      recs.push('Ton genou ne se plie pas assez (' + knee.toFixed(0) +
+        '°). Améliore ta mobilité avec des squats progressifs.');
+    if (h > 0 && h < 30)
+      recs.push('Ta détente est en dessous de la moyenne. Un programme de renforcement peut l\'améliorer.');
+    if (recs.length === 0)
+      recs.push('Tout est dans les normes ! Continue ton programme d\'entraînement.');
+
+  } else if (role === 'coach') {
+    // Orienté entraînement, statut retour sport
+    if (fppa >= 15)
+      recs.push('FPPA ' + fppa.toFixed(1) + '° ≥ seuil 15° — Exercices contrôle valgus : ' +
+        'squat unilatéral, lateral band walk. Surveillance lors des sauts.');
+    else if (fppa >= 12)
+      recs.push('FPPA ' + fppa.toFixed(1) + '° proche seuil — Renforcement VMO conseillé. ' +
+        'Surveiller l\'alignement genou lors des appuis.');
+    if (lsi < 0.90)
+      recs.push('LSI ' + lsi.toFixed(2) + ' — Retour sport avec précaution. ' +
+        'Travail unilatéral prioritaire avant charge symétrique.');
+    if (lsi < 0.80)
+      recs.push('⚠ LSI ' + lsi.toFixed(2) + ' < 0.80 — Asymétrie importante. ' +
+        'Retour sport non recommandé avant rééducation spécifique.');
+    if (knee < 70)
+      recs.push('Flexion genou ' + knee.toFixed(0) + '° — Mobilité tibiale et ' +
+        'profondeur de squat à travailler (objectif ≥ 70°).');
+    if (h > 0 && h < 35)
+      recs.push('CMJ ' + h.toFixed(1) + ' cm — Programme pliométrique progressif : ' +
+        'box jumps, drop jumps. 2–3 séances/semaine.');
+    // Statut retour sport binaire
+    var rtsOk = lsi >= 0.90 && fppa < 15;
+    recs.push('Statut retour sport : ' +
+      (rtsOk ? '✓ PEUT REPRENDRE — critères biomécaniques atteints' :
+       lsi >= 0.85 && fppa < 15 ? '⚠ SURVEILLANCE — proche des critères, décision clinique requise' :
+       '✗ NON RECOMMANDÉ — critères biomécaniques non atteints'));
+
+  } else if (role === 'medecin') {
+    // Clinique complet avec références
+    if (fppa >= 15)
+      recs.push('FPPA G ' + fppa.toFixed(1) + '° ≥ seuil 15° (Hewett 2005) — ' +
+        'Dysfonction neuromusculaire valgus dynamique. ' +
+        'Protocole VMO + abducteurs hanche. Contrôle vidéo frontal recommandé.');
+    else if (fppa >= 12)
+      recs.push('FPPA G ' + fppa.toFixed(1) + '° — Zone de vigilance (12–15°). ' +
+        'Réévaluation en vue frontale stricte. Renforcement préventif conseillé.');
+    if (lsi < 0.80)
+      recs.push('⚠ LSI ' + lsi.toFixed(2) + ' < 0.80 — Asymétrie sévère. ' +
+        'Critère RTS non atteint (Kyritsis 2016). ' +
+        'Consultation kinésithérapique urgente recommandée.');
+    else if (lsi < 0.90)
+      recs.push('LSI ' + lsi.toFixed(2) + ' < 0.90 (Kyritsis 2016) — ' +
+        'Critère retour sport non atteint. Rééducation unilatérale progressive requise.');
+    if (knee < 70)
+      recs.push('Flexion genou ' + knee.toFixed(0) + '° < 70° (Dingenen 2015) — ' +
+        'Déficit de mobilité. Mobilisation tibio-fémorale + étirements ischio-jambiers. ' +
+        'Objectif 70–90° avant reprise sportive.');
+    if (h > 0 && h < 35)
+      recs.push('CMJ ' + h.toFixed(1) + ' cm — Insuffisance de puissance explosive. ' +
+        'Évaluation force isocinétique Q/IQ recommandée avant protocole pliométrique.');
+    if (recs.length === 0)
+      recs.push('Aucune alerte clinique. Profil conforme aux référentiels ' +
+        '(Hewett 2005, Dingenen 2015, Kyritsis 2016). ' +
+        'Contrôle biomécanique de suivi dans 6–8 semaines.');
+  }
+
+  if (recs.length === 0)
+    recs.push('Profil biomécanique dans les normes.');
+
+  return recs;
+}
 </script>
 
 <!-- ── Auth Guard + RBAC (module ESM) ──────────────────────── -->

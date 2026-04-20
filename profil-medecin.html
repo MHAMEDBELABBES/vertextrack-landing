@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="assets/images/vertextrack-icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERTEXTRACK — Suivi Clinique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#03080f;color:#c8d8e8;font-family:'Barlow',sans-serif;min-height:100vh}
+    .vt-nav{background:#060e1a;border-bottom:1px solid rgba(226,75,74,0.15);padding:0 24px;display:flex;align-items:center;gap:12px;height:60px;position:sticky;top:0;z-index:100}
+    .vt-brand{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#00c8ff;letter-spacing:2px;text-decoration:none}
+    .vt-nav-badge{font-size:10px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,0.15);color:#e24b4a;border:0.5px solid rgba(226,75,74,0.35);letter-spacing:0.8px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
+    .vt-nav-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+    .vt-nav-email{font-size:11px;color:rgba(200,216,232,0.4);font-family:'JetBrains Mono',monospace;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .vt-btn-sm{font-size:11px;padding:5px 12px;border-radius:5px;border:0.5px solid rgba(0,200,255,0.2);background:transparent;color:rgba(200,216,232,0.5);cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px;transition:all .15s;white-space:nowrap}
+    .vt-btn-sm:hover{border-color:rgba(0,200,255,0.4);color:#c8d8e8}
+    .vt-btn-red{border-color:rgba(226,75,74,0.3);color:rgba(226,75,74,0.7)}
+    .vt-btn-red:hover{border-color:#e24b4a;color:#e24b4a;background:rgba(226,75,74,0.08)}
+    .vt-main{max-width:1000px;margin:0 auto;padding:24px}
+    .vt-page-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:4px}
+    .vt-page-sub{font-size:12px;color:rgba(200,216,232,0.4);margin-bottom:20px}
+    /* Sélecteur athlète */
+    .vt-athlete-list{display:flex;flex-wrap:wrap;gap:8px}
+    .vt-athlete-chip{display:flex;align-items:center;gap:8px;background:#060e1a;border:0.5px solid rgba(0,200,255,0.15);border-radius:8px;padding:8px 12px;cursor:pointer;transition:all .15s;font-size:12px;color:#c8d8e8}
+    .vt-athlete-chip:hover,.vt-athlete-chip.active{border-color:rgba(0,200,255,0.5);background:rgba(0,200,255,0.08);color:#00c8ff}
+    .vt-avatar-sm{width:24px;height:24px;border-radius:50%;background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.25);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#00c8ff;font-family:'Barlow Condensed',sans-serif;flex-shrink:0}
+    /* Cards */
+    .vt-card{background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:12px;padding:18px;margin-bottom:14px}
+    .vt-card-red{border-color:rgba(226,75,74,0.2)}
+    .vt-card-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+    /* Grid métriques */
+    .vt-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .vt-metric-block{background:#03080f;border:0.5px solid rgba(0,200,255,0.08);border-radius:8px;padding:12px}
+    .vt-metric-label{font-size:10px;color:rgba(200,216,232,0.4);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px}
+    .vt-metric-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;color:#c8d8e8}
+    .vt-metric-ref{font-size:10px;color:rgba(200,216,232,0.28);margin-top:2px}
+    /* Jauges */
+    .vt-gauge{margin-bottom:14px}
+    .vt-gauge:last-child{margin-bottom:0}
+    .vt-gauge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+    .vt-gauge-name{font-size:12px;color:#c8d8e8}
+    .vt-gauge-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500}
+    .vt-gauge-val.warn{color:#ffa500}
+    .vt-gauge-val.ok{color:#00c8ff}
+    .vt-gauge-val.good{color:#21c354}
+    .vt-gauge-val.danger{color:#e24b4a}
+    .vt-track{height:7px;background:rgba(200,216,232,0.08);border-radius:4px;overflow:visible;position:relative}
+    .vt-fill{height:100%;border-radius:4px;transition:width 0.8s ease}
+    .vt-threshold{position:absolute;top:-4px;width:2px;height:15px;background:rgba(255,255,255,0.45);border-radius:1px;transform:translateX(-50%)}
+    .vt-gauge-ref{font-size:10px;color:rgba(200,216,232,0.28);margin-top:3px}
+    .vt-ref-badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(0,200,255,0.12);color:rgba(0,200,255,0.65);margin-left:4px}
+    /* SHAP */
+    .vt-shap-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+    .vt-shap-label{width:120px;color:rgba(200,216,232,0.6);flex-shrink:0}
+    .vt-shap-track{flex:1;height:8px;background:rgba(200,216,232,0.08);border-radius:4px;overflow:hidden}
+    .vt-shap-fill{height:100%;border-radius:4px}
+    .vt-shap-val{width:40px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8d8e8}
+    /* Critères retour sport */
+    .vt-return-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid rgba(0,200,255,0.06);font-size:12px}
+    .vt-return-row:last-child{border-bottom:none}
+    .vt-return-label{color:rgba(200,216,232,0.7)}
+    .vt-return-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px}
+    .vt-status-pass{background:rgba(33,195,84,0.15);color:#21c354}
+    .vt-status-fail{background:rgba(226,75,74,0.15);color:#e24b4a}
+    .vt-status-warn{background:rgba(255,165,0,0.15);color:#ffa500}
+    /* Protocole */
+    .vt-protocol-step{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(226,75,74,0.08)}
+    .vt-protocol-step:last-child{border-bottom:none}
+    .vt-step-num{width:22px;height:22px;border-radius:50%;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#e24b4a;flex-shrink:0}
+    .vt-step-title{font-size:11px;font-weight:500;color:#c8d8e8;margin-bottom:2px}
+    .vt-step-text{font-size:12px;color:rgba(200,216,232,0.65);line-height:1.5}
+    /* Notes */
+    .vt-note-area{width:100%;background:rgba(0,200,255,0.04);border:0.5px solid rgba(0,200,255,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#c8d8e8;font-family:'Barlow',sans-serif;resize:vertical;min-height:80px;outline:none;transition:border-color .15s}
+    .vt-note-area:focus{border-color:rgba(0,200,255,0.5)}
+    .vt-btn-save{background:rgba(0,200,255,0.12);color:#00c8ff;border:0.5px solid rgba(0,200,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+    .vt-btn-save:hover{background:rgba(0,200,255,0.22)}
+    /* Empty */
+    .vt-empty{text-align:center;padding:24px;color:rgba(200,216,232,0.3);font-size:12px;line-height:1.7}
+    @media(max-width:640px){.vt-grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- Guard : médecin uniquement -->
+<script>
+(function(){
+  var mode = localStorage.getItem('vt_auth_mode');
+  var role = localStorage.getItem('vt_user_role');
+  if (mode !== 'account') {
+    window.location.replace('login.html'); return;
+  }
+  if (role !== 'medecin') {
+    window.location.replace(role === 'coach'
+      ? 'dashboard-coach.html' : 'analyse.html');
+  }
+})();
+</script>
+
+<nav class="vt-nav">
+  <a href="index.html" class="vt-brand">VERTEXTRACK</a>
+  <span class="vt-nav-badge">MÉD / KINÉ</span>
+  <div class="vt-nav-right">
+    <span class="vt-nav-email" id="nav-email"></span>
+    <button class="vt-btn-sm"
+      onclick="window.location.href='dashboard-coach.html'">
+      Tableau équipe
+    </button>
+    <button class="vt-btn-sm"
+      onclick="window.location.href='analyse.html'">
+      Analyse
+    </button>
+    <button class="vt-btn-sm vt-btn-red" onclick="vtLogout()">
+      Déconnexion
+    </button>
+  </div>
+</nav>
+
+<div class="vt-main">
+  <div class="vt-page-title">Suivi clinique</div>
+  <div class="vt-page-sub">
+    Sélectionnez un joueur pour accéder à son bilan complet
+  </div>
+
+  <!-- Sélecteur joueur -->
+  <div class="vt-card">
+    <div class="vt-card-title">Joueurs de l'équipe</div>
+    <div class="vt-athlete-list" id="athlete-list">
+      <div class="vt-empty">Chargement...</div>
+    </div>
+  </div>
+
+  <!-- Bilan clinique (affiché après sélection joueur) -->
+  <div id="bilan-section" style="display:none;">
+
+    <!-- En-tête bilan -->
+    <div class="vt-card">
+      <div class="vt-card-title">
+        <span>Bilan biomécanique — <strong id="bilan-name"></strong></span>
+        <span style="font-size:10px;color:rgba(200,216,232,0.3);font-weight:400;"
+          id="bilan-date"></span>
+      </div>
+
+      <!-- 4 métriques clés -->
+      <div class="vt-grid-2">
+        <div class="vt-metric-block">
+          <div class="vt-metric-label">Hauteur CMJ (COM)</div>
+          <div class="vt-metric-val" id="m-height">—</div>
+          <div class="vt-metric-ref">Bosco 1983 · Seuil élite ≥ 45 cm</div>
+        </div>
+        <div class="vt-metric-block">
+          <div class="vt-metric-label">Temps de vol</div>
+          <div class="vt-metric-val" id="m-flight">—</div>
+          <div class="vt-metric-ref">h = g·t²/8</div>
+        </div>
+        <div class="vt-metric-block">
+          <div class="vt-metric-label">Vitesse décollage</div>
+          <div class="vt-metric-val" id="m-velocity">—</div>
+          <div class="vt-metric-ref">v₀ = g·t/2</div>
+        </div>
+        <div class="vt-metric-block">
+          <div class="vt-metric-label">LSI symétrie</div>
+          <div class="vt-metric-val" id="m-lsi">—</div>
+          <div class="vt-metric-ref">Retour sport ≥ 0.90 · Kyritsis 2016</div>
+        </div>
+      </div>
+
+      <!-- Jauges FPPA + Flexion -->
+      <div class="vt-gauge">
+        <div class="vt-gauge-row">
+          <span class="vt-gauge-name">FPPA gauche (valgus dynamique)</span>
+          <span class="vt-gauge-val warn" id="gv-fppa-l">—</span>
+        </div>
+        <div class="vt-track">
+          <div class="vt-fill" id="gf-fppa-l" style="width:0%;background:#ffa500;"></div>
+          <div class="vt-threshold" style="left:40%;"></div><!-- 12° / 30° -->
+          <div class="vt-threshold" style="left:50%;"></div><!-- 15° / 30° -->
+        </div>
+        <div class="vt-gauge-ref">Risque modéré ≥ 12° · Risque élevé ≥ 15°
+          <span class="vt-ref-badge">HEWETT 2005</span>
+        </div>
+      </div>
+
+      <div class="vt-gauge">
+        <div class="vt-gauge-row">
+          <span class="vt-gauge-name">FPPA droite</span>
+          <span class="vt-gauge-val ok" id="gv-fppa-r">—</span>
+        </div>
+        <div class="vt-track">
+          <div class="vt-fill" id="gf-fppa-r" style="width:0%;background:#00c8ff;"></div>
+          <div class="vt-threshold" style="left:40%;"></div>
+          <div class="vt-threshold" style="left:50%;"></div>
+        </div>
+        <div class="vt-gauge-ref">Risque modéré ≥ 12° · Risque élevé ≥ 15°
+          <span class="vt-ref-badge">HEWETT 2005</span>
+        </div>
+      </div>
+
+      <div class="vt-gauge">
+        <div class="vt-gauge-row">
+          <span class="vt-gauge-name">Flexion genou maximale</span>
+          <span class="vt-gauge-val ok" id="gv-knee">—</span>
+        </div>
+        <div class="vt-track">
+          <div class="vt-fill" id="gf-knee" style="width:0%;background:#21c354;"></div>
+          <div class="vt-threshold" style="left:58%;"></div><!-- 70° / 120° -->
+          <div class="vt-threshold" style="left:75%;"></div><!-- 90° / 120° -->
+        </div>
+        <div class="vt-gauge-ref">Zone optimale 70–90°
+          <span class="vt-ref-badge">DINGENEN 2015</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profil de risque ML + SHAP -->
+    <div class="vt-card vt-card-red">
+      <div class="vt-card-title">Profil de risque biomécanique (ML)</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+        <div style="position:relative;width:70px;height:70px;flex-shrink:0;">
+          <svg viewBox="0 0 70 70" width="70" height="70">
+            <circle cx="35" cy="35" r="28"
+              fill="none" stroke="rgba(226,75,74,0.15)" stroke-width="6"/>
+            <circle cx="35" cy="35" r="28"
+              fill="none" id="risk-arc"
+              stroke="#e24b4a" stroke-width="6"
+              stroke-dasharray="175.9" stroke-dashoffset="175.9"
+              stroke-linecap="round"
+              transform="rotate(-90 35 35)"
+              style="transition:stroke-dashoffset 0.8s ease,stroke 0.4s ease"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;
+            flex-direction:column;align-items:center;justify-content:center;">
+            <span style="font-family:'JetBrains Mono',monospace;
+              font-size:14px;font-weight:500;color:#fff;" id="risk-pct">—</span>
+            <span style="font-size:8px;color:rgba(200,216,232,0.4);">risque</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:3px;"
+            id="risk-label">—</div>
+          <div style="font-size:11px;color:rgba(200,216,232,0.45);line-height:1.5;">
+            Profil de similarité avec les cas historiques.<br>
+            Basé sur Random Forest + SHAP (Lundberg 2017).
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:rgba(200,216,232,0.4);
+        text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">
+        Variables contributives (valeurs SHAP normalisées)
+      </div>
+      <div id="shap-bars"></div>
+      <div style="font-size:10px;color:rgba(200,216,232,0.22);
+        margin-top:8px;font-style:italic;">
+        Note : valeurs SHAP calculées à partir des données de la session.
+        Connecter ml_pipeline.py pour valeurs issues du modèle entraîné.
+      </div>
+    </div>
+
+    <!-- Critères retour sport -->
+    <div class="vt-card">
+      <div class="vt-card-title">Critères retour sport (RTS)</div>
+      <div id="return-criteria"></div>
+      <div style="font-size:10px;color:rgba(200,216,232,0.22);
+        margin-top:10px;font-style:italic;">
+        Réf : Kyritsis et al. 2016 BJSM · Grindem et al. 2016 BJSM
+      </div>
+    </div>
+
+    <!-- Protocole rééducation -->
+    <div class="vt-card vt-card-red">
+      <div class="vt-card-title">Protocole de rééducation suggéré</div>
+      <div id="protocol-body"></div>
+    </div>
+
+    <!-- Notes cliniques -->
+    <div class="vt-card">
+      <div class="vt-card-title">
+        Notes cliniques
+        <button class="vt-btn-save" id="btn-save-note" onclick="saveNote()">
+          Sauvegarder
+        </button>
+      </div>
+      <div style="font-size:11px;color:rgba(200,216,232,0.35);margin-bottom:8px;line-height:1.5;">
+        Notes persistées dans Supabase · Visibles uniquement par le médecin / kiné de l'équipe
+      </div>
+      <textarea class="vt-note-area" id="note-input"
+        placeholder="Antécédents, observations cliniques, remarques de séance..."></textarea>
+      <div style="font-size:11px;color:rgba(200,216,232,0.3);margin-top:6px;"
+        id="note-status"></div>
+    </div>
+
+    <!-- Exports -->
+    <div class="vt-card">
+      <div class="vt-card-title">Exports</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="vt-btn-sm" onclick="exportPDFClinique()">
+          PDF rapport clinique complet
+        </button>
+        <button class="vt-btn-sm" onclick="exportCSVEquipe()">
+          CSV données équipe
+        </button>
+      </div>
+    </div>
+
+  </div><!-- #bilan-section -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const sb = supabase.createClient(
+  'https://kygrhqgyqqrylsxnshny.supabase.co',
+  'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf'
+);
+
+let selectedAthleteId = null;
+let selectedAnalysis  = null;
+
+document.getElementById('nav-email').textContent =
+  localStorage.getItem('vt_user_email') || '';
+
+// ── Init : charge la liste des joueurs ─────────────────────
+(async function init() {
+  const teamId = localStorage.getItem('vt_team_id');
+  if (!teamId) {
+    // Essaie de récupérer depuis Supabase
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) { window.location.replace('login.html'); return; }
+    const { data: profile } = await sb
+      .from('user_profiles')
+      .select('team_id')
+      .eq('id', user.id)
+      .single();
+    if (profile?.team_id) {
+      localStorage.setItem('vt_team_id', profile.team_id);
+      await loadAthletes(profile.team_id);
+    } else {
+      document.getElementById('athlete-list').innerHTML =
+        '<div class="vt-empty">Aucune équipe associée à votre compte.<br>' +
+        'Rattachez-vous à une équipe depuis votre profil.</div>';
+    }
+    return;
+  }
+  await loadAthletes(teamId);
+})();
+
+async function loadAthletes(teamId) {
+  const { data: members } = await sb
+    .from('team_members')
+    .select('athlete_id, user_profiles(full_name)')
+    .eq('team_id', teamId)
+    .eq('status', 'active');
+
+  if (!members || members.length === 0) {
+    document.getElementById('athlete-list').innerHTML =
+      '<div class="vt-empty">Aucun joueur dans l\'équipe.</div>';
+    return;
+  }
+
+  document.getElementById('athlete-list').innerHTML =
+    members.map(m => {
+      const name = m.user_profiles?.full_name || 'Joueur';
+      const words = name.trim().split(/\s+/);
+      const ini = words.length >= 2
+        ? (words[0][0] + words[words.length-1][0]).toUpperCase()
+        : name.substring(0,2).toUpperCase();
+      return `
+      <div class="vt-athlete-chip" id="chip-${m.athlete_id}"
+        onclick="selectAthlete('${m.athlete_id}','${name.replace(/'/g,"\\'")}')">
+        <div class="vt-avatar-sm">${ini}</div>
+        ${name}
+      </div>`;
+    }).join('');
+}
+
+// ── Sélection d'un athlète ─────────────────────────────────
+async function selectAthlete(id, name) {
+  selectedAthleteId = id;
+  document.querySelectorAll('.vt-athlete-chip')
+    .forEach(c => c.classList.remove('active'));
+  const chip = document.getElementById('chip-' + id);
+  if (chip) chip.classList.add('active');
+
+  const { data: analyses } = await sb
+    .from('analyses')
+    .select('*')
+    .eq('athlete_id', id)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  document.getElementById('bilan-section').style.display = 'block';
+  document.getElementById('bilan-name').textContent = name;
+
+  if (!analyses || analyses.length === 0) {
+    document.getElementById('bilan-date').textContent = 'Aucune analyse disponible';
+    ['m-height','m-flight','m-velocity','m-lsi',
+     'gv-fppa-l','gv-fppa-r','gv-knee'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
+    document.getElementById('return-criteria').innerHTML =
+      '<div class="vt-empty">Aucune analyse pour ce joueur.</div>';
+    document.getElementById('protocol-body').innerHTML =
+      '<div class="vt-empty">Protocole disponible après analyse.</div>';
+    document.getElementById('risk-pct').textContent = '—';
+    document.getElementById('risk-label').textContent = 'Données insuffisantes';
+    document.getElementById('shap-bars').innerHTML = '';
+    await loadNote(id);
+    return;
+  }
+
+  selectedAnalysis = analyses[0];
+  document.getElementById('bilan-date').textContent =
+    new Date(selectedAnalysis.created_at).toLocaleDateString('fr-FR');
+
+  renderBilan(selectedAnalysis);
+  renderRiskML(selectedAnalysis);
+  renderReturnCriteria(selectedAnalysis);
+  renderProtocol(selectedAnalysis);
+  await loadNote(id);
+}
+
+// ── Rendu bilan clinique ───────────────────────────────────
+function renderBilan(a) {
+  const fmt = (val, decimals, unit) =>
+    val != null ? val.toFixed(decimals) + (unit ? ' ' + unit : '') : '—';
+
+  document.getElementById('m-height').textContent   = fmt(a.jump_height_com, 1, 'cm');
+  document.getElementById('m-flight').textContent   = fmt(a.flight_time, 3, 's');
+  document.getElementById('m-velocity').textContent = fmt(a.takeoff_velocity, 2, 'm/s');
+  document.getElementById('m-lsi').textContent      = fmt(a.lsi_symmetry, 3, '');
+
+  const setGauge = (valId, fillId, val, max, colorFn) => {
+    const vEl = document.getElementById(valId);
+    const fEl = document.getElementById(fillId);
+    if (!vEl || !fEl || val == null) return;
+    fEl.style.width      = Math.min(val / max * 100, 100).toFixed(1) + '%';
+    fEl.style.background = colorFn(val);
+    vEl.textContent      = val.toFixed(1) + '°';
+    const colorMap = {'#e24b4a':'danger','#ffa500':'warn','#21c354':'good','#00c8ff':'ok'};
+    vEl.className = 'vt-gauge-val ' + (colorMap[colorFn(val)] || 'ok');
+  };
+
+  setGauge('gv-fppa-l','gf-fppa-l', a.fppa_left,  30,
+    v => v >= 15 ? '#e24b4a' : v >= 12 ? '#ffa500' : '#21c354');
+  setGauge('gv-fppa-r','gf-fppa-r', a.fppa_right, 30,
+    v => v >= 15 ? '#e24b4a' : v >= 12 ? '#ffa500' : '#00c8ff');
+  setGauge('gv-knee','gf-knee', a.knee_flexion_max, 120,
+    v => (v >= 70 && v <= 90) ? '#21c354' : v >= 60 ? '#ffa500' : '#e24b4a');
+}
+
+// ── Profil de risque ML (heuristique + SHAP illustratif) ───
+function renderRiskML(a) {
+  let risk = 0;
+  const contrib = [];
+
+  if (a.fppa_left != null) {
+    const c = a.fppa_left >= 15 ? 35 : a.fppa_left >= 12 ? 20 : 0;
+    if (c > 0) contrib.push({ label:'FPPA gauche', val:c, color:'#e24b4a' });
+    risk += c;
+  }
+  if (a.lsi_symmetry != null) {
+    const c = a.lsi_symmetry < 0.80 ? 35 : a.lsi_symmetry < 0.90 ? 20 : 0;
+    if (c > 0) contrib.push({ label:'LSI symétrie', val:c, color:'#ffa500' });
+    risk += c;
+  }
+  if (a.fppa_right != null) {
+    const c = a.fppa_right >= 15 ? 15 : a.fppa_right >= 12 ? 8 : 0;
+    if (c > 0) contrib.push({ label:'FPPA droite', val:c, color:'#e24b4a' });
+    risk += c;
+  }
+  if (a.knee_flexion_max != null && a.knee_flexion_max < 70) {
+    contrib.push({ label:'Flexion genou', val:10, color:'#ffa500' });
+    risk += 10;
+  }
+  if (contrib.length === 0) {
+    contrib.push({ label:'Aucune alerte', val:5, color:'#21c354' });
+  }
+  risk = Math.min(risk, 95);
+
+  document.getElementById('risk-pct').textContent = risk + '%';
+  const arc = document.getElementById('risk-arc');
+  arc.style.strokeDashoffset = (175.9 - risk / 100 * 175.9).toFixed(1);
+  arc.style.stroke = risk >= 50 ? '#e24b4a' : risk >= 25 ? '#ffa500' : '#21c354';
+
+  document.getElementById('risk-label').textContent =
+    risk >= 50 ? 'Profil à risque élevé — suivi rapproché recommandé' :
+    risk >= 25 ? 'Profil à risque modéré — surveillance conseillée' :
+                 'Profil à faible risque — normes respectées';
+
+  const maxContrib = Math.max(...contrib.map(c => c.val));
+  document.getElementById('shap-bars').innerHTML =
+    contrib.map(c => {
+      const pct = (c.val / maxContrib * 100).toFixed(0);
+      const sign = c.color === '#21c354' ? '-' : '+';
+      const shap = (c.val / 100).toFixed(2);
+      return `
+      <div class="vt-shap-bar">
+        <span class="vt-shap-label">${c.label}</span>
+        <div class="vt-shap-track">
+          <div class="vt-shap-fill" style="width:${pct}%;background:${c.color};"></div>
+        </div>
+        <span class="vt-shap-val">${sign}${shap}</span>
+      </div>`;
+    }).join('');
+}
+
+// ── Critères retour sport ──────────────────────────────────
+function renderReturnCriteria(a) {
+  const lsi  = a.lsi_symmetry;
+  const fppa = a.fppa_left;
+  const knee = a.knee_flexion_max;
+  const h    = a.jump_height_com;
+
+  const crit = [
+    { label:'LSI symétrie ≥ 0.90 (Kyritsis 2016)',
+      pass: lsi != null ? lsi >= 0.90 : null,
+      val:  lsi != null ? lsi.toFixed(3) : '—' },
+    { label:'FPPA < 15° (Hewett 2005)',
+      pass: fppa != null ? fppa < 15 : null,
+      val:  fppa != null ? fppa.toFixed(1) + '°' : '—' },
+    { label:'Flexion genou 70–90° (Dingenen 2015)',
+      pass: knee != null ? (knee >= 70 && knee <= 90) : null,
+      val:  knee != null ? knee.toFixed(0) + '°' : '—' },
+    { label:'Hauteur CMJ ≥ 80% valeur pré-blessure',
+      pass: null,
+      val:  h != null ? h.toFixed(1) + ' cm' : '—' },
+    { label:'Absence de douleur à l\'effort',
+      pass: null, val: 'À évaluer' },
+    { label:'Délai post-blessure ≥ 9 mois (LCA)',
+      pass: null, val: 'À vérifier' },
+    { label:'Force musculaire : ratio IQ/Q ≥ 0.60',
+      pass: null, val: 'Isocinétisme requis' }
+  ];
+
+  document.getElementById('return-criteria').innerHTML =
+    crit.map(c => `
+    <div class="vt-return-row">
+      <span class="vt-return-label">${c.label}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'JetBrains Mono',monospace;
+          font-size:11px;color:rgba(200,216,232,0.45);">${c.val}</span>
+        <span class="vt-return-status ${
+          c.pass === true  ? 'vt-status-pass' :
+          c.pass === false ? 'vt-status-fail' :
+                             'vt-status-warn'}">
+          ${c.pass === true ? '✓ OK' : c.pass === false ? '✗ NON' : '? À évaluer'}
+        </span>
+      </div>
+    </div>`).join('');
+}
+
+// ── Protocole de rééducation ───────────────────────────────
+function renderProtocol(a) {
+  const steps = [];
+  const fppa  = a.fppa_left;
+  const lsi   = a.lsi_symmetry;
+  const knee  = a.knee_flexion_max;
+
+  if (fppa != null && fppa >= 12) {
+    steps.push({
+      title: 'Contrôle neuromusculaire du valgus dynamique',
+      text:  'Renforcement vaste médial (VMO) : leg press unilatéral, terminal knee extension. ' +
+             '3×15 répétitions, 3×/semaine. Feedback miroir ou vidéo recommandé pour contrôle visuel.'
+    });
+    steps.push({
+      title: 'Renforcement des abducteurs de hanche',
+      text:  'Side-lying hip abduction, clamshell, lateral band walk. ' +
+             'Objectif : réduire le valgus dynamique en activant le moyen fessier. ' +
+             'Progression sur 4 semaines.'
+    });
+  }
+  if (lsi != null && lsi < 0.90) {
+    steps.push({
+      title: 'Rééquilibration bilatérale → unilatérale',
+      text:  'Progression : squat bilatéral → step-up unilatéral → pistol squat assisté. ' +
+             'Réévaluer le LSI toutes les 3 semaines. ' +
+             'Objectif ≥ 0.90 avant reprise sportive (Kyritsis 2016).'
+    });
+  }
+  if (knee != null && knee < 70) {
+    steps.push({
+      title: 'Restauration de la mobilité articulaire du genou',
+      text:  'Mobilisation passive tibio-fémorale, étirements ischio-jambiers, ' +
+             'travail de mobilité de la cheville (restriction souvent contributive). ' +
+             'Objectif : 70° minimum avant reprise. Contrôle à 4 semaines.'
+    });
+  }
+  if (steps.length === 0) {
+    steps.push({
+      title: 'Entretien et prévention des récidives',
+      text:  'Profil dans les normes. Programme préventif : gainage lombo-pelvien, ' +
+             'proprioception sur plan instable, pliométrie progressive. ' +
+             'Contrôle biomécanique recommandé tous les 2 mois.'
+    });
+  }
+
+  document.getElementById('protocol-body').innerHTML =
+    steps.map((s, i) => `
+    <div class="vt-protocol-step">
+      <div class="vt-step-num">${i + 1}</div>
+      <div>
+        <div class="vt-step-title">${s.title}</div>
+        <div class="vt-step-text">${s.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Notes cliniques Supabase ───────────────────────────────
+async function loadNote(athleteId) {
+  const { data } = await sb
+    .from('notes_cliniques')
+    .select('contenu, updated_at')
+    .eq('athlete_id', athleteId)
+    .order('updated_at', { ascending: false })
+    .limit(1);
+
+  if (data && data.length > 0) {
+    document.getElementById('note-input').value = data[0].contenu;
+    document.getElementById('note-status').textContent =
+      'Dernière sauvegarde : ' +
+      new Date(data[0].updated_at).toLocaleString('fr-FR');
+  } else {
+    document.getElementById('note-input').value = '';
+    document.getElementById('note-status').textContent = '';
+  }
+}
+
+async function saveNote() {
+  if (!selectedAthleteId) return;
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  const contenu = document.getElementById('note-input').value.trim();
+  const teamId  = localStorage.getItem('vt_team_id');
+  const btn     = document.getElementById('btn-save-note');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sauvegarde...'; }
+
+  const { error } = await sb.from('notes_cliniques').upsert({
+    athlete_id: selectedAthleteId,
+    medecin_id: user.id,
+    team_id:    teamId,
+    contenu:    contenu,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'athlete_id,medecin_id' });
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Sauvegarder'; }
+  document.getElementById('note-status').textContent = error
+    ? '⚠ Erreur lors de la sauvegarde : ' + error.message
+    : '✓ Sauvegardé · ' + new Date().toLocaleString('fr-FR');
+}
+
+// ── Exports ────────────────────────────────────────────────
+function exportPDFClinique() {
+  if (!selectedAnalysis) { alert('Sélectionnez un joueur d\'abord.'); return; }
+  window.alert(
+    'Export PDF clinique — à connecter avec ReportLab/PDFKit.\n' +
+    'Utilisez window.print() pour une sortie rapide.'
+  );
+}
+
+function exportCSVEquipe() {
+  alert('Export CSV — à implémenter avec les données Supabase.');
+}
+
+// ── Déconnexion ────────────────────────────────────────────
+async function vtLogout() {
+  await sb.auth.signOut();
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.replace('login.html');
+}
+</script>
+</body>
+</html>

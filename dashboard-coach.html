@@ -416,8 +416,19 @@ let sortDir = {};
   document.getElementById('nav-user-email').textContent = email;
   const badge = document.getElementById('nav-role-badge');
   if (role === 'medecin') {
-    badge.textContent = 'MÉDECIN';
+    badge.textContent = 'MÉD / KINÉ';
     badge.className   = 'vt-nav-badge badge-medecin';
+    // Ajoute bouton "Suivi clinique" dans la navbar
+    const navRight = document.querySelector('.vt-nav-right');
+    if (navRight) {
+      const btn = document.createElement('button');
+      btn.className = 'vt-btn-sm';
+      btn.style.cssText = 'border-color:rgba(226,75,74,0.4);color:rgba(226,75,74,0.75);';
+      btn.textContent = 'Suivi clinique →';
+      btn.onclick = () => window.location.href = 'profil-medecin.html';
+      navRight.insertBefore(btn, navRight.firstChild);
+    }
+    // Affiche aussi la section alertes cliniques dans le dashboard
     document.getElementById('section-medecin').style.display = 'block';
   }
 
