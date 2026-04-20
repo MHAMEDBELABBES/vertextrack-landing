@@ -258,6 +258,23 @@
     <div class="vt-guest-note">
       Analyse et résultats disponibles · Historique non sauvegardé
     </div>
+    <div id="active-session-banner" style="display:none;
+      margin-top:14px; padding:10px 12px;
+      background:rgba(0,200,255,0.06);
+      border:0.5px solid rgba(0,200,255,0.2);
+      border-radius:7px; font-size:11px;
+      color:rgba(200,216,232,0.55); text-align:center;
+      line-height:1.6;">
+      Session active détectée<br>
+      <span id="active-email"
+        style="color:#00c8ff; font-family:'JetBrains Mono',monospace;
+        font-size:11px;"></span><br>
+      <span onclick="switchAccount()"
+        style="color:#f59e0b; cursor:pointer; font-size:11px;
+        text-decoration:underline;">
+        Changer de compte →
+      </span>
+    </div>
   </div>
 
   <!-- VUE 2 : CONNEXION / INSCRIPTION -->
@@ -366,13 +383,33 @@
     }
   })();
 
-  // Si déjà connecté via Supabase → aller directement à analyse
+  // Nettoie localStorage si URL contient ?reset=1 (utile pour tests)
+  if (window.location.search.includes('reset=1')) {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  // Si session Supabase active → rediriger seulement si connexion volontaire
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
-      localStorage.setItem('vt_auth_mode', 'account');
-      localStorage.setItem('vt_user_email', session.user.email);
-      window.location.href = 'analyse.html';
+      const mode = localStorage.getItem('vt_auth_mode');
+      if (mode === 'account') {
+        // L'utilisateur s'est déjà connecté volontairement → on le laisse passer
+        window.location.replace('analyse.html');
+      } else {
+        // Session résiduelle (ex: admin) → afficher bannière informative
+        // L'utilisateur peut choisir de continuer avec ce compte ou en créer un autre
+        const banner = document.getElementById('active-session-banner');
+        const emailSpan = document.getElementById('active-email');
+        if (banner && emailSpan) {
+          emailSpan.textContent = session.user.email;
+          banner.style.display = 'block';
+        }
+        // Déconnecte silencieusement pour éviter la redirection automatique
+        await sb.auth.signOut();
+      }
     }
   })();
 
@@ -432,27 +469,33 @@
   async function handleSignIn() {
     const email    = document.getElementById('signin-email').value.trim();
     const password = document.getElementById('signin-password').value;
+
     if (!email || !password) {
       showAlert('Veuillez remplir tous les champs.', 'error');
       return;
     }
+
     setLoading('btn-signin', true, 'SE CONNECTER');
+
+    // Déconnecte proprement avant de connecter le nouvel utilisateur
+    await sb.auth.signOut();
+
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
     setLoading('btn-signin', false, 'SE CONNECTER');
+
     if (error) {
-      const msg = error.message.includes('Invalid login credentials')
-        ? 'Email ou mot de passe incorrect.'
-        : error.message.includes('Email not confirmed')
-        ? 'Email non confirmé — vérifiez votre boîte mail.'
-        : 'Erreur de connexion. Réessayez.';
+      const msg = error.message.includes('Email not confirmed')
+        ? 'Vérifiez votre email pour confirmer votre compte avant de vous connecter.'
+        : 'Email ou mot de passe incorrect.';
       showAlert(msg, 'error');
       return;
     }
+
     localStorage.setItem('vt_auth_mode', 'account');
     localStorage.setItem('vt_user_email', data.user.email);
-    // Vider le cache de rôle (sessionStorage) pour forcer une relecture
     sessionStorage.removeItem('vt_user_role');
-    window.location.href = 'analyse.html';
+    window.location.replace('analyse.html');
   }
 
   /* ── Inscription ────────────────────────────────────────── */
@@ -461,6 +504,7 @@
     const club     = document.getElementById('signup-club').value.trim();
     const email    = document.getElementById('signup-email').value.trim();
     const password = document.getElementById('signup-password').value;
+
     if (!name || !email || !password) {
       showAlert('Veuillez remplir tous les champs obligatoires.', 'error');
       return;
@@ -469,17 +513,47 @@
       showAlert('Le mot de passe doit contenir au moins 8 caractères.', 'error');
       return;
     }
+
     setLoading('btn-signup', true, 'CRÉER MON COMPTE');
-    const { error } = await sb.auth.signUp({
-      email, password,
+
+    // Déconnecte toute session résiduelle avant de créer un nouveau compte
+    await sb.auth.signOut();
+
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
       options: { data: { full_name: name, club: club } }
     });
+
     setLoading('btn-signup', false, 'CRÉER MON COMPTE');
+
     if (error) {
       showAlert('Erreur : ' + error.message, 'error');
       return;
     }
+
+    // Si session immédiate (confirm email désactivé dans Supabase) → connexion directe
+    if (data.session) {
+      localStorage.setItem('vt_auth_mode', 'account');
+      localStorage.setItem('vt_user_email', email);
+      sessionStorage.removeItem('vt_user_role');
+      window.location.replace('analyse.html');
+      return;
+    }
+
+    // Sinon → affiche la vue de confirmation email
     showView('confirm');
+  }
+
+  /* ── Changer de compte ──────────────────────────────────── */
+  async function switchAccount() {
+    await sb.auth.signOut();
+    localStorage.removeItem('vt_auth_mode');
+    localStorage.removeItem('vt_user_email');
+    sessionStorage.removeItem('vt_user_role');
+    document.getElementById('active-session-banner').style.display = 'none';
+    showView('auth');
+    switchTab('signup');
   }
 
   /* ── Mode invité ────────────────────────────────────────── */
@@ -490,14 +564,9 @@
     window.location.href = 'analyse.html';
   }
 
-  /* ── Écoute changements d'état auth Supabase ────────────── */
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      localStorage.setItem('vt_auth_mode', 'account');
-      localStorage.setItem('vt_user_email', session.user.email);
-      window.location.href = 'analyse.html';
-    }
-  });
+  // onAuthStateChange désactivé sur login.html
+  // La redirection est gérée manuellement dans handleSignIn() / handleSignUp()
+  // pour éviter les redirections automatiques sur session résiduelle.
 </script>
 
 </body>
