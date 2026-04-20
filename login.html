@@ -407,6 +407,46 @@
 
 </div><!-- fin .vt-card -->
 
+<!-- ── Nettoyage session Supabase résiduelle ──────────────────
+     DOIT s'exécuter AVANT le chargement du SDK Supabase
+     pour éviter toute restauration automatique de session.  -->
+<script>
+(function clearSupabaseSession() {
+  var PROJECT = 'kygrhqgyqqrylsxnshny';
+
+  // 1. Purge localStorage : clés Supabase uniquement
+  var lsRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k && (k.includes(PROJECT) || k.includes('supabase') ||
+              k.includes('sb-')   || k.startsWith('sb.'))) {
+      lsRemove.push(k);
+    }
+  }
+  lsRemove.forEach(function(k) { localStorage.removeItem(k); });
+
+  // 2. Purge sessionStorage : clés Supabase uniquement
+  var ssRemove = [];
+  for (var j = 0; j < sessionStorage.length; j++) {
+    var sk = sessionStorage.key(j);
+    if (sk && (sk.includes(PROJECT) || sk.includes('supabase') ||
+               sk.includes('sb-'))) {
+      ssRemove.push(sk);
+    }
+  }
+  ssRemove.forEach(function(k) { sessionStorage.removeItem(k); });
+
+  // 3. Purge cookies Supabase (au cas où le SDK utilise des cookies)
+  document.cookie.split(';').forEach(function(c) {
+    var key = c.trim().split('=')[0];
+    if (key && (key.includes('supabase') || key.includes('sb-') ||
+                key.includes(PROJECT))) {
+      document.cookie = key + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    }
+  });
+})();
+</script>
+
 <!-- Supabase SDK (CDN UMD — pas de module ESM nécessaire) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -437,25 +477,52 @@
     window.history.replaceState({}, '', window.location.pathname);
   }
 
-  // Si session Supabase active → rediriger seulement si connexion volontaire
+  // Vérification session après nettoyage — on attend 100ms
+  // pour que le SDK Supabase soit pleinement initialisé
   (async () => {
+    await new Promise(function(resolve) { setTimeout(resolve, 100); });
+
     const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      const mode = localStorage.getItem('vt_auth_mode');
-      if (mode === 'account') {
-        // L'utilisateur s'est déjà connecté volontairement → on le laisse passer
-        window.location.replace('analyse.html');
+
+    if (!session) return; // normal : nettoyage a fonctionné
+
+    // Une session persiste malgré le nettoyage
+    // (token serveur encore valide côté Supabase Auth)
+    const mode = localStorage.getItem('vt_auth_mode');
+
+    if (mode === 'account') {
+      // Connexion intentionnelle précédente → charger le rôle et rediriger
+      const { data: profile } = await sb
+        .from('user_profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      const role = profile?.role || 'athlete';
+      if (role === 'coach' || role === 'medecin') {
+        window.location.replace('dashboard-coach.html');
       } else {
-        // Session résiduelle (ex: admin) → afficher bannière informative
-        // L'utilisateur peut choisir de continuer avec ce compte ou en créer un autre
-        const banner = document.getElementById('active-session-banner');
-        const emailSpan = document.getElementById('active-email');
-        if (banner && emailSpan) {
-          emailSpan.textContent = session.user.email;
-          banner.style.display = 'block';
+        window.location.replace('analyse.html');
+      }
+    } else {
+      // Session résiduelle non intentionnelle → déconnexion + second nettoyage
+      await sb.auth.signOut();
+
+      // Second passage de nettoyage pour être sûr
+      for (var i = localStorage.length - 1; i >= 0; i--) {
+        var k = localStorage.key(i);
+        if (k && (k.includes('kygrhqgyqqrylsxnshny') ||
+                  k.includes('supabase') || k.includes('sb-'))) {
+          localStorage.removeItem(k);
         }
-        // Déconnecte silencieusement pour éviter la redirection automatique
-        await sb.auth.signOut();
+      }
+
+      // Affiche la bannière si l'email est récupérable
+      const banner   = document.getElementById('active-session-banner');
+      const emailSpan = document.getElementById('active-email');
+      if (banner && emailSpan && session.user?.email) {
+        emailSpan.textContent = session.user.email;
+        banner.style.display  = 'block';
       }
     }
   })();
