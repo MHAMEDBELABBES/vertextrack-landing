@@ -273,6 +273,14 @@
     <div class="vt-guest-note">
       Analyse et résultats disponibles · Historique non sauvegardé
     </div>
+    <div style="text-align:center;margin-top:20px;">
+      <span onclick="forceSignOut()"
+        style="font-size:11px;color:rgba(200,216,232,0.22);
+        cursor:pointer;text-decoration:underline;
+        font-family:'Barlow',sans-serif;">
+        Problème de connexion ? Réinitialiser la session
+      </span>
+    </div>
     <div id="active-session-banner" style="display:none;
       margin-top:14px; padding:10px 12px;
       background:rgba(0,200,255,0.06);
@@ -436,14 +444,20 @@
   }
   ssRemove.forEach(function(k) { sessionStorage.removeItem(k); });
 
-  // 3. Purge cookies Supabase (au cas où le SDK utilise des cookies)
+  // 3. Purge cookies Supabase sur tous les domaines possibles
   document.cookie.split(';').forEach(function(c) {
     var key = c.trim().split('=')[0];
     if (key && (key.includes('supabase') || key.includes('sb-') ||
                 key.includes(PROJECT))) {
-      document.cookie = key + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      var exp = '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      document.cookie = key + exp;
+      document.cookie = key + exp + ';domain=.vercel.app';
+      document.cookie = key + exp + ';domain=.supabase.co';
     }
   });
+
+  // 4. Marque de nettoyage (pour diagnostic)
+  sessionStorage.setItem('vt_session_cleared', '1');
 })();
 </script>
 
@@ -604,8 +618,9 @@
 
     setLoading('btn-signin', true, 'SE CONNECTER');
 
-    // Déconnecte proprement avant de connecter le nouvel utilisateur
-    await sb.auth.signOut();
+    // Force déconnexion globale (localStorage + cookies + serveur Supabase)
+    try { await sb.auth.signOut({ scope: 'global' }); } catch(e) {}
+    await new Promise(function(resolve) { setTimeout(resolve, 300); });
 
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
@@ -664,8 +679,9 @@
 
     setLoading('btn-signup', true, 'CRÉER MON COMPTE');
 
-    // Déconnecte toute session résiduelle avant de créer un nouveau compte
-    await sb.auth.signOut();
+    // Force déconnexion globale (localStorage + cookies + serveur Supabase)
+    try { await sb.auth.signOut({ scope: 'global' }); } catch(e) {}
+    await new Promise(function(resolve) { setTimeout(resolve, 300); });
 
     const { data, error } = await sb.auth.signUp({
       email,
@@ -728,6 +744,29 @@
 
     // Sinon → affiche la vue de confirmation email
     showView('confirm');
+  }
+
+  /* ── Réinitialisation complète de session ───────────────── */
+  async function forceSignOut() {
+    // Révocation serveur (invalide le refresh token côté Supabase)
+    try { await sb.auth.signOut({ scope: 'global' }); } catch(e) {}
+
+    // Purge totale localStorage + sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Expire tous les cookies sur tous les domaines
+    document.cookie.split(';').forEach(function(c) {
+      var key = c.trim().split('=')[0];
+      if (!key) return;
+      var exp = '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      document.cookie = key + exp;
+      document.cookie = key + exp + ';domain=.vercel.app';
+      document.cookie = key + exp + ';domain=.supabase.co';
+    });
+
+    // Recharge sur login.html?reset=1 pour déclencher le nettoyage localStorage
+    window.location.replace('login.html?reset=1');
   }
 
   /* ── Changer de compte ──────────────────────────────────── */
