@@ -456,14 +456,7 @@
     }
   });
 
-  // 4. Purge clés VertexTrack (vt_*) pour forcer une nouvelle saisie
-  localStorage.removeItem('vt_auth_mode');
-  localStorage.removeItem('vt_user_email');
-  localStorage.removeItem('vt_user_role');
-  localStorage.removeItem('vt_user_name');
-  localStorage.removeItem('vt_team_id');
-
-  // 5. Marque de nettoyage (pour diagnostic)
+  // 4. Marque de nettoyage (pour diagnostic)
   sessionStorage.setItem('vt_session_cleared', '1');
 })();
 </script>
@@ -595,10 +588,6 @@
       return;
     }
 
-    localStorage.setItem('vt_auth_mode', 'account');
-    localStorage.setItem('vt_user_email', data.user.email);
-    sessionStorage.removeItem('vt_user_role');
-
     // Charge le rôle depuis Supabase pour redirection correcte
     const { data: profile } = await sb
       .from('user_profiles')
@@ -606,20 +595,27 @@
       .eq('id', data.user.id)
       .single();
 
-    if (profile) {
-      localStorage.setItem('vt_user_role', profile.role || 'athlete');
-      localStorage.setItem('vt_user_name', profile.full_name || '');
-      if (profile.team_id) {
-        localStorage.setItem('vt_team_id', profile.team_id);
-      }
-      if (profile.role === 'coach' || profile.role === 'medecin') {
-        window.location.replace('dashboard-coach.html');
-      } else {
-        window.location.replace('analyse.html');
-      }
-    } else {
-      window.location.replace('analyse.html');
+    const role = profile?.role || 'athlete';
+
+    // Écriture localStorage SYNCHRONE — tout avant la redirection
+    localStorage.setItem('vt_auth_mode', 'account');
+    localStorage.setItem('vt_user_email', data.user.email);
+    localStorage.setItem('vt_user_role', role);
+    if (profile?.full_name) localStorage.setItem('vt_user_name', profile.full_name);
+    if (profile?.team_id)   localStorage.setItem('vt_team_id', profile.team_id);
+    sessionStorage.removeItem('vt_user_role');
+
+    // Vérification que localStorage a bien été persisté
+    const written = localStorage.getItem('vt_auth_mode');
+    if (!written) {
+      showAlert('Erreur de session. Réessayez.', 'error');
+      return;
     }
+
+    const dest = (role === 'coach' || role === 'medecin')
+      ? 'dashboard-coach.html'
+      : 'analyse.html';
+    window.location.replace(dest);
   }
 
   /* ── Inscription ────────────────────────────────────────── */
@@ -683,19 +679,26 @@
       }
     }
 
-    localStorage.setItem('vt_user_role', role);
-
     // Si session immédiate (confirm email désactivé dans Supabase) → connexion directe
     if (data.session) {
+      // Écriture localStorage SYNCHRONE — tout avant la redirection
       localStorage.setItem('vt_auth_mode', 'account');
       localStorage.setItem('vt_user_email', email);
       localStorage.setItem('vt_user_name', name);
+      localStorage.setItem('vt_user_role', role);
       sessionStorage.removeItem('vt_user_role');
-      if (role === 'coach' || role === 'medecin') {
-        window.location.replace('dashboard-coach.html');
-      } else {
-        window.location.replace('analyse.html');
+
+      // Vérification que localStorage a bien été persisté
+      const written = localStorage.getItem('vt_auth_mode');
+      if (!written) {
+        showAlert('Erreur de session. Réessayez.', 'error');
+        return;
       }
+
+      const dest2 = (role === 'coach' || role === 'medecin')
+        ? 'dashboard-coach.html'
+        : 'analyse.html';
+      window.location.replace(dest2);
       return;
     }
 
