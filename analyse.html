@@ -393,15 +393,20 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
 /* WIZARD */
 .wiz-stepper{
   display:flex;align-items:center;gap:12px;
-  margin-bottom:20px;
-  /* BUG 2 FIX — sticky sous navbar (64px) + breadcrumb (48px) */
-  position:sticky;
+  /* FIX 1 — fixed sous navbar (64px) + breadcrumb (48px) */
+  position:fixed;
   top:112px;
+  left:0;
+  right:0;
+  width:100%;
   z-index:85;
   background:#03080f;
-  padding:10px 0;
+  padding:10px 60px;
   border-bottom:0.5px solid rgba(0,200,255,0.08);
+  /* margin-bottom retiré car hors du flux normal */
 }
+/* Compenser la hauteur du stepper fixe (~46px) sur le 1er card */
+#wc-1{ margin-top:50px; }
 .wiz-step{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;position:relative;}
 .wiz-step::after{content:'';position:absolute;right:-18px;top:50%;width:12px;height:1px;background:rgba(255,255,255,0.1);}
 .wiz-step:last-child::after{display:none;}
@@ -1334,19 +1339,56 @@ border-top:1px solid rgba(255,255,255,0.06);">
     </div>
     <!-- FIN GUIDE PROTOCOLE FILMAGE -->
 
-    <div class="drop-zone" id="zoneCMJ">
-      <div class="drop-inner">
-        <p style="margin:0 0 4px;font-size:16px;letter-spacing:1px;">GLISSEZ VOTRE VIDÉO ICI</p>
-        <p style="color:#888;font-size:13px;margin:0 0 4px;">ou utilisez le bouton ci-dessous · Vue sagittale · 60fps</p>
-        <button class="btn-upload" onclick="document.getElementById('inputCMJ').click()">
-          CHOISIR UN FICHIER VIDÉO
-        </button>
-        <input type="file" id="inputCMJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
-        <div class="format-tags"><span>MP4</span><span>MOV</span><span>AVI</span><span>200MB max</span></div>
+    <!-- Double upload CMJ : SAG + FRONT -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+
+      <!-- Zone SAG (existante) -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#00c8ff;flex-shrink:0;"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#00c8ff;letter-spacing:1px;">VUE SAGITTALE</span>
+          <span style="font-size:10px;color:rgba(200,216,232,0.4);">Caméra de côté</span>
+        </div>
+        <div class="drop-zone" id="zoneCMJ" style="padding:16px;">
+          <div class="drop-inner">
+            <div style="font-size:11px;color:rgba(200,216,232,0.55);margin-bottom:8px;">Hauteur saut · Temps de vol · COM</div>
+            <button class="btn-upload" onclick="document.getElementById('inputCMJ').click()">CHOISIR VIDÉO SAG</button>
+            <input type="file" id="inputCMJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
+            <div class="format-tags" style="margin-top:8px;"><span>MP4</span><span>MOV</span></div>
+          </div>
+        </div>
+        <video id="previewCMJ" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:140px;object-fit:cover;" controls></video>
+        <div class="file-info" id="infoCMJ" style="display:none"></div>
+        <div style="font-size:10px;color:rgba(0,200,255,0.45);margin-top:4px;font-family:'JetBrains Mono',monospace;">t_vol · h_COM · Vitesse décollage</div>
       </div>
+
+      <!-- Zone FRONT (nouvelle) -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ffa500;flex-shrink:0;"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#ffa500;letter-spacing:1px;">VUE FRONTALE</span>
+          <span style="font-size:10px;color:rgba(200,216,232,0.4);">Caméra de face</span>
+        </div>
+        <div style="border:1.5px dashed rgba(255,165,0,0.3);border-radius:10px;padding:16px;text-align:center;background:rgba(255,165,0,0.02);">
+          <div style="font-size:11px;color:rgba(200,216,232,0.55);margin-bottom:8px;">Valgus dynamique · Symétrie</div>
+          <input type="file" id="input-cmj-front" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none;" onchange="handleCMJFrontalUpload(this)">
+          <button type="button" onclick="document.getElementById('input-cmj-front').click()"
+            style="background:#ffa500;color:#03080f;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:9px 16px;border-radius:6px;border:none;cursor:pointer;margin-bottom:8px;">
+            CHOISIR VIDÉO FRONTALE
+          </button>
+          <div class="format-tags" style="margin-top:2px;"><span>MP4</span><span>MOV</span></div>
+        </div>
+        <video id="vid-cmj-front" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:140px;object-fit:cover;" controls></video>
+        <canvas id="canvas-cmj-front" style="display:none;width:100%;border-radius:8px;margin-top:4px;max-height:140px;"></canvas>
+        <div style="font-size:10px;color:rgba(255,165,0,0.45);margin-top:4px;font-family:'JetBrains Mono',monospace;">FPPA gauche/droite · LSI symétrie</div>
+      </div>
+
     </div>
-    <video id="previewCMJ" style="display:none;width:100%;border-radius:8px;margin-top:12px;max-height:200px;" controls></video>
-    <div class="file-info" id="infoCMJ" style="display:none"></div>
+
+    <!-- Statut upload CMJ -->
+    <div id="cmj-upload-status" style="font-size:11px;color:rgba(200,216,232,0.4);margin-bottom:10px;padding:6px 10px;background:rgba(255,255,255,0.02);border-radius:6px;border:0.5px solid rgba(255,255,255,0.05);">
+      Uploadez au moins une vidéo pour continuer
+    </div>
     <div class="step-unlock-msg" id="msgCMJ">↑ Uploadez la vidéo CMJ pour continuer vers SJ →</div>
   </div>
 
@@ -1359,19 +1401,51 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <span class="step-check" id="checkSJ" style="display:none">✅</span>
       <span class="lock-icon" id="lockSJ">🔒</span>
     </div>
-    <div class="drop-zone" id="zoneSJ">
-      <div class="drop-inner">
-        <p style="margin:0 0 4px;font-size:16px;letter-spacing:1px;">GLISSEZ VOTRE VIDÉO ICI</p>
-        <p style="color:#888;font-size:13px;margin:0 0 4px;">Vue sagittale · 60fps</p>
-        <button class="btn-upload" onclick="document.getElementById('inputSJ').click()">
-          CHOISIR UN FICHIER VIDÉO
-        </button>
-        <input type="file" id="inputSJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
-        <div class="format-tags"><span>MP4</span><span>MOV</span><span>AVI</span><span>200MB max</span></div>
+    <!-- Double upload SJ : SAG + FRONT -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+
+      <!-- Zone SAG (existante) -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#00c8ff;flex-shrink:0;"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#00c8ff;letter-spacing:1px;">VUE SAGITTALE</span>
+          <span style="font-size:10px;color:rgba(200,216,232,0.4);">Caméra de côté</span>
+        </div>
+        <div class="drop-zone" id="zoneSJ" style="padding:16px;">
+          <div class="drop-inner">
+            <div style="font-size:11px;color:rgba(200,216,232,0.55);margin-bottom:8px;">Hauteur saut · Temps de vol</div>
+            <button class="btn-upload" onclick="document.getElementById('inputSJ').click()">CHOISIR VIDÉO SAG</button>
+            <input type="file" id="inputSJ" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none">
+            <div class="format-tags" style="margin-top:8px;"><span>MP4</span><span>MOV</span></div>
+          </div>
+        </div>
+        <video id="previewSJ" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:140px;object-fit:cover;" controls></video>
+        <div class="file-info" id="infoSJ" style="display:none"></div>
+        <div style="font-size:10px;color:rgba(0,200,255,0.45);margin-top:4px;font-family:'JetBrains Mono',monospace;">t_vol · h_COM</div>
       </div>
+
+      <!-- Zone FRONT (nouvelle) -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#ffa500;flex-shrink:0;"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#ffa500;letter-spacing:1px;">VUE FRONTALE</span>
+          <span style="font-size:10px;color:rgba(200,216,232,0.4);">Caméra de face</span>
+        </div>
+        <div style="border:1.5px dashed rgba(255,165,0,0.3);border-radius:10px;padding:16px;text-align:center;background:rgba(255,165,0,0.02);">
+          <div style="font-size:11px;color:rgba(200,216,232,0.55);margin-bottom:8px;">Valgus dynamique · Symétrie</div>
+          <input type="file" id="input-sj-front" accept="video/mp4,video/quicktime,video/avi,video/*" style="display:none;" onchange="handleSJFrontalUpload(this)">
+          <button type="button" onclick="document.getElementById('input-sj-front').click()"
+            style="background:#ffa500;color:#03080f;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:9px 16px;border-radius:6px;border:none;cursor:pointer;margin-bottom:8px;">
+            CHOISIR VIDÉO FRONTALE
+          </button>
+          <div class="format-tags" style="margin-top:2px;"><span>MP4</span><span>MOV</span></div>
+        </div>
+        <video id="vid-sj-front" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:140px;object-fit:cover;" controls></video>
+        <canvas id="canvas-sj-front" style="display:none;width:100%;border-radius:8px;margin-top:4px;max-height:140px;"></canvas>
+        <div style="font-size:10px;color:rgba(255,165,0,0.45);margin-top:4px;font-family:'JetBrains Mono',monospace;">FPPA gauche/droite · LSI symétrie</div>
+      </div>
+
     </div>
-    <video id="previewSJ" style="display:none;width:100%;border-radius:8px;margin-top:12px;max-height:200px;" controls></video>
-    <div class="file-info" id="infoSJ" style="display:none"></div>
     <!-- EXPORT RAPIDE SJ — visible après upload -->
     <div id="wizExportSJ" style="display:none;">
       <button type="button" id="wizExportSJBtn" class="vt-btn-export" onclick="startVideoExport('SJ')">
@@ -1488,7 +1562,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
     <div class="rc">
       <div class="rch"><div class="rct">Performance CMJ</div><span class="badge ok">BON</span></div>
       <div class="bign"><div class="v">--</div><div class="u">Centimètres</div></div>
-      <div class="mr"><span class="l">Méthode temps de vol</span><span class="r c">-- cm</span></div>
+      <div class="mr"><span class="l">Méthode temps de vol</span><span class="r c" id="val-flight-time">-- cm</span></div>
+      <div id="note-flight-time" style="font-size:10px;color:rgba(0,200,255,0.45);margin-top:-4px;margin-bottom:6px;font-style:italic;padding-left:2px;display:block;">
+        Vue sagittale requise pour calculer le temps de vol. Uploadez la vidéo de côté (passage 1).
+      </div>
       <div class="mr"><span class="l">Méthode déplacement COM</span><span class="r">37.8 cm</span></div>
       <div class="mr"><span class="l">Temps de vol</span><span class="r">0.558 s</span></div>
       <div class="mr"><span class="l">Vitesse décollage</span><span class="r">2.73 m/s</span></div>
@@ -2403,6 +2480,15 @@ function exportAnnotatedVideo(type) {
       var wizExport = document.getElementById('wizExport' + key);
       if (wizExport) wizExport.style.display = 'block';
 
+      // Mettre à jour le statut CMJ si vidéo sagittale uploadée
+      if (key === 'CMJ') {
+        var st = document.getElementById('cmj-upload-status');
+        if (st) {
+          st.textContent = 'Vidéo sagittale chargée \u00b7 Uploadez aussi la vue frontale pour FPPA/LSI complet';
+          st.style.color = '#00c8ff';
+        }
+      }
+
       up[key] = true;
       window._vtUploaded = up;
       updateWizard();
@@ -2550,6 +2636,41 @@ function launch() {
       }
     }, i * 1200);
   });
+}
+
+// ===== HANDLERS VIDÉO FRONTALE CMJ / SJ =====
+function handleCMJFrontalUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var url = URL.createObjectURL(file);
+
+  var vid = document.getElementById('vid-cmj-front');
+  if (vid) { vid.src = url; vid.style.display = 'block'; }
+
+  var status = document.getElementById('cmj-upload-status');
+  if (status) {
+    status.textContent = 'Vidéo frontale chargée : ' + file.name + ' \u00b7 Prête pour analyse FPPA/LSI';
+    status.style.color = '#ffa500';
+  }
+
+  // Masquer la note "vue sagittale requise" si vidéo frontale présente
+  // (elle sera réactivée si flight_time = null après analyse)
+  window._cmjFrontalFile = file;
+  window._cmjFrontalURL  = url;
+  console.log('[VT] Vidéo frontale CMJ chargée:', file.name);
+}
+
+function handleSJFrontalUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var url = URL.createObjectURL(file);
+
+  var vid = document.getElementById('vid-sj-front');
+  if (vid) { vid.src = url; vid.style.display = 'block'; }
+
+  window._sjFrontalFile = file;
+  window._sjFrontalURL  = url;
+  console.log('[VT] Vidéo frontale SJ chargée:', file.name);
 }
 
 // ===== DEMO =====
