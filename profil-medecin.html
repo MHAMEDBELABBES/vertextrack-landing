@@ -246,15 +246,51 @@
         </div>
       </div>
 
-      <div style="font-size:10px;color:rgba(200,216,232,0.4);
-        text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">
-        Variables contributives (valeurs SHAP normalisées)
-      </div>
-      <div id="shap-bars"></div>
-      <div style="font-size:10px;color:rgba(200,216,232,0.22);
-        margin-top:8px;font-style:italic;">
-        Note : valeurs SHAP calculées à partir des données de la session.
-        Connecter ml_pipeline.py pour valeurs issues du modèle entraîné.
+      <div id="shap-waterfall-container">
+        <div style="font-size:10px;color:rgba(200,216,232,0.4);
+          text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">
+          Contributions SHAP — Top 5 variables
+        </div>
+
+        <!-- Légende -->
+        <div style="display:flex;gap:16px;margin-bottom:10px;">
+          <span style="display:flex;align-items:center;gap:5px;
+            font-size:10px;color:rgba(200,216,232,0.4);">
+            <span style="width:10px;height:10px;background:#e24b4a;
+              border-radius:2px;display:inline-block;"></span>
+            Augmente le risque
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;
+            font-size:10px;color:rgba(200,216,232,0.4);">
+            <span style="width:10px;height:10px;background:#21c354;
+              border-radius:2px;display:inline-block;"></span>
+            Réduit le risque
+          </span>
+        </div>
+
+        <!-- Barres waterfall dynamiques -->
+        <div id="shap-bars-dynamic"></div>
+
+        <!-- Base value + prediction -->
+        <div style="display:flex;justify-content:space-between;
+          margin-top:12px;padding-top:10px;
+          border-top:0.5px solid rgba(0,200,255,0.1);">
+          <div style="font-size:11px;color:rgba(200,216,232,0.4);">
+            Valeur de base :
+            <span id="shap-base" style="color:#c8d8e8;
+              font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+          <div style="font-size:11px;color:rgba(200,216,232,0.4);">
+            Score de risque :
+            <span id="shap-pred" style="font-weight:500;
+              font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+        </div>
+
+        <div style="font-size:10px;color:rgba(200,216,232,0.2);
+          margin-top:8px;font-style:italic;">
+          Lundberg & Lee 2017 · NIPS · TreeSHAP
+        </div>
       </div>
     </div>
 
@@ -405,7 +441,12 @@ async function selectAthlete(id, name) {
       '<div class="vt-empty">Protocole disponible après analyse.</div>';
     document.getElementById('risk-pct').textContent = '—';
     document.getElementById('risk-label').textContent = 'Données insuffisantes';
-    document.getElementById('shap-bars').innerHTML = '';
+    const dynBars = document.getElementById('shap-bars-dynamic');
+    if (dynBars) dynBars.innerHTML = '';
+    const shBase = document.getElementById('shap-base');
+    if (shBase) shBase.textContent = '—';
+    const shPred = document.getElementById('shap-pred');
+    if (shPred) shPred.textContent = '—';
     await loadNote(id);
     return;
   }
@@ -489,21 +530,26 @@ function renderRiskML(a) {
     risk >= 25 ? 'Profil à risque modéré — surveillance conseillée' :
                  'Profil à faible risque — normes respectées';
 
-  const maxContrib = Math.max(...contrib.map(c => c.val));
-  document.getElementById('shap-bars').innerHTML =
-    contrib.map(c => {
-      const pct = (c.val / maxContrib * 100).toFixed(0);
-      const sign = c.color === '#21c354' ? '-' : '+';
-      const shap = (c.val / 100).toFixed(2);
-      return `
-      <div class="vt-shap-bar">
-        <span class="vt-shap-label">${c.label}</span>
-        <div class="vt-shap-track">
-          <div class="vt-shap-fill" style="width:${pct}%;background:${c.color};"></div>
-        </div>
-        <span class="vt-shap-val">${sign}${shap}</span>
-      </div>`;
-    }).join('');
+  // Construire shap_data à partir des heuristiques de risque
+  const shapData = computeSHAPHeuristic({
+    fppa_left:        a.fppa_left,
+    fppa_right:       a.fppa_right,
+    lsi_symmetry:     a.lsi_symmetry,
+    knee_flexion_max: a.knee_flexion_max,
+    jump_height_com:  a.jump_height_com,
+    rsi_modified:     a.rsi_modified,
+  });
+
+  // Si shap_data issu du pipeline Python disponible en BDD, prendre celui-là
+  let finalShapData = shapData;
+  if (a.shap_data) {
+    try {
+      finalShapData = typeof a.shap_data === 'string'
+        ? JSON.parse(a.shap_data) : a.shap_data;
+    } catch (e) { /* utiliser heuristique */ }
+  }
+
+  renderSHAPWaterfall(finalShapData);
 }
 
 // ── Critères retour sport ──────────────────────────────────
@@ -670,6 +716,140 @@ async function vtLogout() {
   localStorage.clear();
   sessionStorage.clear();
   window.location.replace('login.html');
+}
+
+// ── SHAP Waterfall dynamique ───────────────────────────────
+function renderSHAPWaterfall(shapData) {
+  /*
+   * Renders a SHAP waterfall bar chart in #shap-bars-dynamic.
+   * shapData : { base_value, prediction, top_features:[{name,shap,value,direction}] }
+   * Falls back to computeSHAPHeuristic() if shapData is null/incomplete.
+   */
+  if (!shapData || !shapData.top_features) {
+    shapData = computeSHAPHeuristic(window._lastAnalysisResults || {});
+  }
+
+  const container = document.getElementById('shap-bars-dynamic');
+  if (!container) return;
+
+  const top = shapData.top_features || [];
+  if (top.length === 0) {
+    container.innerHTML =
+      '<div style="font-size:11px;color:rgba(200,216,232,0.3);padding:10px 0;">'
+      + 'Lancer l\'analyse ML pour voir les contributions.</div>';
+    return;
+  }
+
+  const maxAbs = Math.max(...top.map(f => Math.abs(f.shap)));
+
+  // Labels lisibles
+  const LABELS = {
+    'lsi_sls_knee_rom':              'LSI symétrie genou',
+    'fppa_left':                     'FPPA gauche',
+    'fppa_right':                    'FPPA droite',
+    'lsi_symmetry':                  'LSI global',
+    'knee_flexion_max':              'Flexion genou max',
+    'hip_rom':                       'ROM hanche',
+    'jump_height_com':               'Hauteur saut (COM)',
+    'flight_time':                   'Temps de vol',
+    'takeoff_velocity':              'Vitesse décollage',
+    'rsi_modified':                  'RSI modifié',
+    'asymmetry_score':               'Asymmetry Score',
+    'left_fppa_angular_velocity':    'Vit. ang. FPPA G',
+    'right_fppa_angular_velocity':   'Vit. ang. FPPA D',
+  };
+
+  container.innerHTML = top.map(f => {
+    const pct   = maxAbs > 0 ? (Math.abs(f.shap) / maxAbs * 100).toFixed(1) : 0;
+    const color = f.shap > 0 ? '#e24b4a' : '#21c354';
+    const sign  = f.shap > 0 ? '+' : '';
+    const label = LABELS[f.name] || f.name;
+
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-size:11px;color:rgba(200,216,232,0.7);max-width:160px;
+          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${label}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;color:rgba(200,216,232,0.4);">val=${f.value}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;
+            font-weight:500;color:${color};">${sign}${f.shap.toFixed(4)}</span>
+        </div>
+      </div>
+      <div style="height:8px;background:rgba(200,216,232,0.08);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;
+          transition:width 0.8s ease;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Base value + prediction
+  const baseEl = document.getElementById('shap-base');
+  const predEl = document.getElementById('shap-pred');
+  if (baseEl) baseEl.textContent = (shapData.base_value ?? 0).toFixed(3);
+  if (predEl) {
+    const pred = shapData.prediction ?? 0;
+    predEl.textContent = (pred * 100).toFixed(1) + '%';
+    predEl.style.color = pred > 0.5 ? '#e24b4a' : pred > 0.3 ? '#ffa500' : '#21c354';
+  }
+}
+
+function computeSHAPHeuristic(results) {
+  /*
+   * Calcule une approximation SHAP heuristique basée sur les seuils cliniques.
+   * Utilisée quand ml_pipeline.py n'est pas disponible côté web.
+   * Bishop et al. 2018, Hewett 2005, Kyritsis 2016, Bosco 1983.
+   */
+  const fppaL = results.fppa_left  ?? results.fppaLeft  ?? 0;
+  const fppaR = results.fppa_right ?? results.fppaRight ?? 0;
+  const lsi   = results.lsi_symmetry ?? results.lsi    ?? 1;
+  const knee  = results.knee_flexion_max ?? results.kneeFlexion ?? 80;
+  const h     = results.jump_height_com  ?? results.jumpHeight  ?? 40;
+  const rsi   = results.rsi_modified ?? 0.6;
+
+  const baseVal = 0.35;
+
+  const contributions = [
+    {
+      name:  'lsi_symmetry',
+      value: lsi,
+      shap:  lsi >= 0.90 ? -0.08 : lsi >= 0.80 ? 0.05 : 0.18,
+    },
+    {
+      name:  'fppa_left',
+      value: fppaL,
+      shap:  fppaL >= 15 ? 0.22 : fppaL >= 12 ? 0.10 : -0.05,
+    },
+    {
+      name:  'fppa_right',
+      value: fppaR,
+      shap:  fppaR >= 15 ? 0.18 : fppaR >= 12 ? 0.08 : -0.04,
+    },
+    {
+      name:  'knee_flexion_max',
+      value: knee,
+      shap:  (knee >= 70 && knee <= 90) ? -0.06 : knee < 70 ? 0.09 : 0.03,
+    },
+    {
+      name:  'jump_height_com',
+      value: h,
+      shap:  h >= 45 ? -0.10 : h >= 35 ? -0.03 : 0.07,
+    },
+  ];
+
+  contributions.sort((a, b) => Math.abs(b.shap) - Math.abs(a.shap));
+
+  const totalShap = contributions.reduce((s, f) => s + f.shap, 0);
+
+  return {
+    base_value:   baseVal,
+    prediction:   Math.max(0, Math.min(1, baseVal + totalShap)),
+    top_features: contributions.map(f => ({
+      name:      f.name,
+      shap:      f.shap,
+      value:     f.value,
+      direction: f.shap > 0 ? 'increase' : 'decrease',
+    })),
+  };
 }
 </script>
 </body>

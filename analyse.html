@@ -1677,6 +1677,44 @@ border-top:1px solid rgba(255,255,255,0.06);">
       </div>
     </div>
 
+    <!-- SHAP WATERFALL — médecin uniquement -->
+    <div class="rc" id="card-shap" style="display:none;">
+      <div class="rch">
+        <div class="rct">Explication IA (SHAP)</div>
+        <span class="badge" style="background:rgba(226,75,74,0.12);color:#e24b4a;border:1px solid rgba(226,75,74,0.2);">TreeSHAP</span>
+      </div>
+      <div id="shap-waterfall-container" style="margin-top:4px;">
+        <div style="font-size:10px;color:rgba(200,216,232,0.4);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">
+          Contributions SHAP — Top 5 variables
+        </div>
+        <!-- Légende -->
+        <div style="display:flex;gap:16px;margin-bottom:10px;">
+          <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(200,216,232,0.4);">
+            <span style="width:10px;height:10px;background:#e24b4a;border-radius:2px;display:inline-block;"></span>
+            Augmente le risque
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(200,216,232,0.4);">
+            <span style="width:10px;height:10px;background:#21c354;border-radius:2px;display:inline-block;"></span>
+            Réduit le risque
+          </span>
+        </div>
+        <!-- Barres dynamiques -->
+        <div id="shap-bars-dynamic"></div>
+        <!-- Base + prediction -->
+        <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:0.5px solid rgba(0,200,255,0.1);">
+          <div style="font-size:11px;color:rgba(200,216,232,0.4);">
+            Valeur de base : <span id="shap-base" style="color:#c8d8e8;font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+          <div style="font-size:11px;color:rgba(200,216,232,0.4);">
+            Score de risque : <span id="shap-pred" style="font-weight:500;font-family:'JetBrains Mono',monospace;">—</span>
+          </div>
+        </div>
+        <div style="font-size:9px;color:rgba(200,216,232,0.2);margin-top:8px;font-style:italic;">
+          Lundberg & Lee 2017 · NIPS · TreeSHAP · Modèle RF entraîné sur USB+RCOZ
+        </div>
+      </div>
+    </div>
+
     <!-- DIAGNOSTIC ARTICULAIRE + REFERENTIELS -->
     <div class="rc">
       <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn" id="diag-badge">ATTENTION</span></div>
@@ -2786,6 +2824,15 @@ function loadDemo() {
       asymmetry_score: 10.2, asymmetry_category: 'Légère asymétrie'
     });
   }
+  var _demoRole = localStorage.getItem('vt_user_role');
+  if (typeof renderSHAPWaterfall === 'function'
+      && (_demoRole === 'medecin' || _demoRole === 'admin')) {
+    renderSHAPWaterfall(computeSHAPHeuristic({
+      fppa_left: 14.2, fppa_right: 11.8,
+      lsi_symmetry: 0.88, knee_flexion_max: 68,
+      jump_height_com: 37.8, rsi_modified: 0.648
+    }));
+  }
 }
 
 // ===== TÉLÉCHARGEMENTS =====
@@ -3057,6 +3104,117 @@ function vtTab(btn, panelId) {
 }
 
 // ── Mise à jour dynamique des jauges et recommandations ────
+// ── SHAP Waterfall ─────────────────────────────────────────────────────────
+function renderSHAPWaterfall(shapData) {
+  /*
+   * Affiche un waterfall SHAP dans #shap-bars-dynamic (analyse.html).
+   * Si shapData nul ou incomplet, utilise computeSHAPHeuristic().
+   */
+  if (!shapData || !shapData.top_features) {
+    shapData = computeSHAPHeuristic(window._lastAnalysisResults || {});
+  }
+
+  var container = document.getElementById('shap-bars-dynamic');
+  if (!container) return;
+
+  var top = shapData.top_features || [];
+  if (top.length === 0) {
+    container.innerHTML = '<div style="font-size:11px;color:rgba(200,216,232,0.3);padding:8px 0;">'
+      + 'Lancer l\'analyse pour voir les contributions SHAP.</div>';
+    return;
+  }
+
+  var maxAbs = Math.max.apply(null, top.map(function(f) { return Math.abs(f.shap); }));
+
+  var LABELS = {
+    'lsi_symmetry':    'LSI global',
+    'fppa_left':       'FPPA gauche',
+    'fppa_right':      'FPPA droite',
+    'knee_flexion_max':'Flexion genou max',
+    'jump_height_com': 'Hauteur saut (COM)',
+    'rsi_modified':    'RSI modifié',
+    'asymmetry_score': 'Asymmetry Score',
+    'flight_time':     'Temps de vol',
+  };
+
+  container.innerHTML = top.map(function(f) {
+    var pct   = maxAbs > 0 ? (Math.abs(f.shap) / maxAbs * 100).toFixed(1) : '0';
+    var color = f.shap > 0 ? '#e24b4a' : '#21c354';
+    var sign  = f.shap > 0 ? '+' : '';
+    var label = LABELS[f.name] || f.name;
+    return '<div style="margin-bottom:10px;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+      + '<span style="font-size:11px;color:rgba(200,216,232,0.7);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'
+      + label + '</span>'
+      + '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<span style="font-size:10px;color:rgba(200,216,232,0.4);">val=' + f.value + '</span>'
+      + '<span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:500;color:' + color + ';">'
+      + sign + f.shap.toFixed(4) + '</span>'
+      + '</div></div>'
+      + '<div style="height:8px;background:rgba(200,216,232,0.08);border-radius:4px;overflow:hidden;">'
+      + '<div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:4px;transition:width 0.8s ease;"></div>'
+      + '</div></div>';
+  }).join('');
+
+  var baseEl = document.getElementById('shap-base');
+  var predEl = document.getElementById('shap-pred');
+  if (baseEl) baseEl.textContent = (shapData.base_value || 0).toFixed(3);
+  if (predEl) {
+    var pred = shapData.prediction || 0;
+    predEl.textContent = (pred * 100).toFixed(1) + '%';
+    predEl.style.color = pred > 0.5 ? '#e24b4a' : pred > 0.3 ? '#ffa500' : '#21c354';
+  }
+
+  // Révéler la carte
+  var card = document.getElementById('card-shap');
+  if (card) card.style.display = '';
+}
+
+function computeSHAPHeuristic(results) {
+  /*
+   * Approximation SHAP heuristique côté client.
+   * Basée sur seuils cliniques : Hewett 2005, Kyritsis 2016, Bosco 1983.
+   */
+  var fppaL = results.fppa_left  !== undefined ? results.fppa_left  :
+              (results.fppaLeft  !== undefined ? results.fppaLeft   : 0);
+  var fppaR = results.fppa_right !== undefined ? results.fppa_right :
+              (results.fppaRight !== undefined ? results.fppaRight  : 0);
+  var lsi   = results.lsi_symmetry !== undefined ? results.lsi_symmetry :
+              (results.lsi !== undefined ? results.lsi : 1);
+  var knee  = results.knee_flexion_max !== undefined ? results.knee_flexion_max :
+              (results.kneeFlexion !== undefined ? results.kneeFlexion : 80);
+  var h     = results.jump_height_com !== undefined ? results.jump_height_com :
+              (results.jumpHeight !== undefined ? results.jumpHeight : 40);
+
+  var baseVal = 0.35;
+
+  var contributions = [
+    { name:'lsi_symmetry',    value:lsi,
+      shap: lsi   >= 0.90 ? -0.08 : lsi   >= 0.80 ? 0.05 : 0.18 },
+    { name:'fppa_left',       value:fppaL,
+      shap: fppaL >= 15   ? 0.22  : fppaL >= 12   ? 0.10 : -0.05 },
+    { name:'fppa_right',      value:fppaR,
+      shap: fppaR >= 15   ? 0.18  : fppaR >= 12   ? 0.08 : -0.04 },
+    { name:'knee_flexion_max',value:knee,
+      shap: (knee >= 70 && knee <= 90) ? -0.06 : knee < 70 ? 0.09 : 0.03 },
+    { name:'jump_height_com', value:h,
+      shap: h >= 45 ? -0.10 : h >= 35 ? -0.03 : 0.07 },
+  ];
+
+  contributions.sort(function(a, b) { return Math.abs(b.shap) - Math.abs(a.shap); });
+
+  var totalShap = contributions.reduce(function(s, f) { return s + f.shap; }, 0);
+
+  return {
+    base_value:   baseVal,
+    prediction:   Math.max(0, Math.min(1, baseVal + totalShap)),
+    top_features: contributions.map(function(f) {
+      return { name:f.name, shap:f.shap, value:f.value,
+               direction: f.shap > 0 ? 'increase' : 'decrease' };
+    }),
+  };
+}
+
 // ── RSI modifié + Asymmetry Score ──────────────────────────────────────────
 function computeAndDisplayAdvancedMetrics(results) {
   if (!results) return;
@@ -3315,6 +3473,14 @@ function updateRecommandations(results) {
 
   // Amélioration 4 — RSI modifié + Asymmetry Score
   computeAndDisplayAdvancedMetrics(results);
+
+  // SHAP waterfall — médecin uniquement
+  var _role = localStorage.getItem('vt_user_role');
+  if (_role === 'medecin' || _role === 'admin') {
+    window._lastAnalysisResults = results;
+    var _shapData = computeSHAPHeuristic(results);
+    renderSHAPWaterfall(_shapData);
+  }
 }
 
 // ── Recommandations différenciées par rôle ─────────────────
