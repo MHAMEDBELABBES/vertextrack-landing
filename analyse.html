@@ -843,6 +843,23 @@ body {
   color: rgba(255,200,100,0.75); line-height: 1.5;
 }
 
+/* ── Amélioration 1 : seuils cliniques ─────────────────────── */
+/* Alias for backwards compat with new renderGaugeWithThreshold */
+.vt-threshold-line{position:absolute;top:-5px;width:2px;height:17px;background:rgba(255,255,255,0.55);border-radius:1px;transform:translateX(-50%);z-index:2;}
+.vt-gauge-wrap{position:relative;margin-bottom:18px;}
+
+/* ── Amélioration 2 : courbe temporelle ─────────────────────── */
+.vt-temporal-card{background:#040a14;border:1px solid rgba(255,255,255,.06);padding:20px;margin-bottom:14px;display:none;}
+.vt-chart-legend{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap;}
+.vt-chart-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(200,216,232,0.5);}
+.vt-chart-legend-dot{width:10px;height:2px;border-radius:1px;display:inline-block;}
+
+/* ── Amélioration 3 : percentiles ────────────────────────────── */
+.vt-pct-note{font-size:9px;color:rgba(200,216,232,0.3);font-style:italic;margin-bottom:10px;line-height:1.5;}
+#table-percentiles th{text-align:left;font-size:9px;color:rgba(200,216,232,0.35);text-transform:uppercase;letter-spacing:0.8px;padding:5px 8px;border-bottom:0.5px solid rgba(0,200,255,0.1);}
+#table-percentiles td{padding:7px 8px;border-bottom:0.5px solid rgba(0,200,255,0.06);vertical-align:middle;}
+#table-percentiles tr:last-child td{border-bottom:none;}
+
 /* ══ END MODULE 1 ═════════════════════════════════════════════ */
 </style>
 </head>
@@ -1476,6 +1493,30 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div class="mr"><span class="l">Temps de vol</span><span class="r">0.558 s</span></div>
       <div class="mr"><span class="l">Vitesse décollage</span><span class="r">2.73 m/s</span></div>
     </div>
+
+    <!-- COURBE TEMPORELLE — Angles articulaires CMJ -->
+    <div class="vt-temporal-card" id="card-temporal-curve">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;">
+        Courbe temporelle — Angles articulaires CMJ
+      </div>
+      <div class="vt-chart-legend">
+        <span class="vt-chart-legend-item">
+          <span class="vt-chart-legend-dot" style="background:#00c8ff;"></span>
+          Flexion genou (°)
+        </span>
+        <span class="vt-chart-legend-item">
+          <span class="vt-chart-legend-dot" style="background:#21c354;"></span>
+          ROM hanche (°)
+        </span>
+      </div>
+      <div style="position:relative;height:200px;">
+        <canvas id="chart-temporal"></canvas>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(200,216,232,0.25);margin-top:4px;font-family:'Barlow',sans-serif;">
+        <span>Descente</span><span>Propulsion</span><span>Vol</span><span>Atterrissage</span>
+      </div>
+    </div>
+
     <!-- DIAGNOSTIC ARTICULAIRE + REFERENTIELS -->
     <div class="rc">
       <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn" id="diag-badge">ATTENTION</span></div>
@@ -1495,7 +1536,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
             <span class="vt-gauge-label">FPPA gauche</span>
             <span class="vt-gauge-value warn" id="val-fppa-left">14.2°</span>
           </div>
-          <div class="vt-gauge-track-wrap">
+          <div class="vt-gauge-track-wrap" id="gauge-fppa-left">
             <div class="vt-gauge-track">
               <div class="vt-gauge-fill" id="fill-fppa-left"
                 style="width:47%; background:linear-gradient(90deg,#ffa500,#ff6b00);">
@@ -1503,10 +1544,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
               <div class="vt-threshold-marker" style="left:50%"></div>
               <div class="vt-threshold-label" style="left:50%">Seuil 15°</div>
             </div>
-          </div>
-          <div class="vt-gauge-ref">
-            Valgus dynamique · Seuil risque ≥ 15°
-            <span class="vt-ref-badge">HEWETT 2005</span>
+            <div class="vt-gauge-ref">
+              Valgus dynamique · Seuil risque ≥ 15°
+              <span class="vt-ref-badge">HEWETT 2005</span>
+            </div>
           </div>
         </div>
 
@@ -1516,7 +1557,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
             <span class="vt-gauge-label">FPPA droite</span>
             <span class="vt-gauge-value ok" id="val-fppa-right">11.8°</span>
           </div>
-          <div class="vt-gauge-track-wrap">
+          <div class="vt-gauge-track-wrap" id="gauge-fppa-right">
             <div class="vt-gauge-track">
               <div class="vt-gauge-fill" id="fill-fppa-right"
                 style="width:39%; background:linear-gradient(90deg,#00c8ff,#0099cc);">
@@ -1524,10 +1565,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
               <div class="vt-threshold-marker" style="left:50%"></div>
               <div class="vt-threshold-label" style="left:50%">Seuil 15°</div>
             </div>
-          </div>
-          <div class="vt-gauge-ref">
-            Valgus dynamique · Dans les normes
-            <span class="vt-ref-badge">HEWETT 2005</span>
+            <div class="vt-gauge-ref">
+              Valgus dynamique · Dans les normes
+              <span class="vt-ref-badge">HEWETT 2005</span>
+            </div>
           </div>
         </div>
 
@@ -1537,7 +1578,7 @@ border-top:1px solid rgba(255,255,255,0.06);">
             <span class="vt-gauge-label">Flexion genou max</span>
             <span class="vt-gauge-value ok" id="val-knee">68°</span>
           </div>
-          <div class="vt-gauge-track-wrap">
+          <div class="vt-gauge-track-wrap" id="gauge-knee">
             <div class="vt-gauge-track">
               <div class="vt-optimal-zone" style="left:58%; width:17%;"></div>
               <div class="vt-gauge-fill" id="fill-knee"
@@ -1548,10 +1589,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
               <div class="vt-threshold-marker" style="left:75%"></div>
               <div class="vt-threshold-label" style="left:75%">90°</div>
             </div>
-          </div>
-          <div class="vt-gauge-ref">
-            Zone optimale 70–90° · Légèrement sous-optimal
-            <span class="vt-ref-badge">DINGENEN 2015</span>
+            <div class="vt-gauge-ref">
+              Zone optimale 70–90° · Légèrement sous-optimal
+              <span class="vt-ref-badge">DINGENEN 2015</span>
+            </div>
           </div>
         </div>
 
@@ -1582,6 +1623,20 @@ border-top:1px solid rgba(255,255,255,0.06);">
         <div class="mr" style="margin-top:6px">
           <span class="l">LSI symétrie</span>
           <span class="r" style="color:#ffa500;font-family:'JetBrains Mono',monospace;" id="val-lsi">0.88</span>
+        </div>
+        <!-- Jauge LSI avec seuil 0.90 -->
+        <div class="vt-gauge-track-wrap" id="gauge-lsi">
+          <div class="vt-gauge-track">
+            <div class="vt-gauge-fill" id="fill-lsi"
+              style="width:88%; background:linear-gradient(90deg,#ffc800,#ffa500);">
+            </div>
+            <div class="vt-threshold-marker" style="left:90%"></div>
+            <div class="vt-threshold-label" style="left:90%">0.90</div>
+          </div>
+          <div class="vt-gauge-ref">
+            Retour sport ≥ 0.90
+            <span class="vt-ref-badge">KYRITSIS 2016</span>
+          </div>
         </div>
 
         <!-- Interpretation LSI -->
@@ -1614,6 +1669,30 @@ border-top:1px solid rgba(255,255,255,0.06);">
 
       <!-- ONGLET REFERENTIELS -->
       <div class="vt-tab-panel hidden" id="vt-ref">
+
+        <!-- Tableau percentiles USB/RCOZ -->
+        <div class="vt-pct-note">
+          Normes USB/RCOZ provisoires basées sur la littérature basketball/football
+          (Bosco 1983, Hewett 2005, Dingenen 2015). Seront mises à jour après collecte terrain.
+        </div>
+        <table id="table-percentiles" style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px;">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th style="text-align:center;">Athlète</th>
+              <th style="text-align:center;">Norme littérature</th>
+              <th style="text-align:center;color:rgba(255,165,0,0.5);">USB/RCOZ*</th>
+              <th style="text-align:center;">Percentile</th>
+            </tr>
+          </thead>
+          <tbody id="percentile-tbody">
+            <tr>
+              <td colspan="5" style="text-align:center;padding:16px;color:rgba(200,216,232,0.3);font-size:12px;">
+                Lancer une analyse pour voir les percentiles.
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <table class="vt-ref-table">
           <thead>
@@ -2460,10 +2539,34 @@ function launch() {
             }, 300);
           }
           markBcStep(3);
+          // Mettre à jour jauges, courbe et percentiles avec données demo
+          if (typeof updateRecommandations === 'function') {
+            updateRecommandations({
+              fppaLeft: 14.2, fppaRight: 11.8,
+              kneeFlexion: 68, lsi: 0.88, jumpHeight: 37.8
+            });
+          }
         }, 800);
       }
     }, i * 1200);
   });
+}
+
+// ===== DEMO =====
+function loadDemo() {
+  var resSection = document.getElementById('res');
+  if (resSection) {
+    resSection.style.display = 'block';
+    setTimeout(function() { resSection.scrollIntoView({behavior:'smooth'}); }, 200);
+  }
+  markBcStep(3);
+  if (typeof updateRecommandations === 'function') {
+    updateRecommandations({
+      fppaLeft: 14.2, fppaRight: 11.8,
+      kneeFlexion: 68, lsi: 0.88, jumpHeight: 37.8,
+      kneeAnglesSeries: [], hipAnglesSeries: []
+    });
+  }
 }
 
 // ===== TÉLÉCHARGEMENTS =====
@@ -2731,6 +2834,63 @@ function updateRecommandations(results) {
     recs.map(function(r) {
       return '<div class="vt-rec-item">' + r + '</div>';
     }).join('');
+
+  // ── Amélioration 1 : seuils cliniques sur jauges ──────────
+  if (typeof renderGaugeWithThreshold === 'function') {
+    renderGaugeWithThreshold('gauge-fppa-left', fppaL, {
+      max: 30, fillColor: fppaL >= 15
+        ? 'linear-gradient(90deg,#ef5350,#ff1744)'
+        : fppaL >= 12
+          ? 'linear-gradient(90deg,#ffa500,#ff6b00)'
+          : 'linear-gradient(90deg,#21c354,#00c8ff)',
+      thresholds: [{ pct: 50, label: 'Seuil 15\u00b0' }],
+      refText: 'Valgus dynamique \u00b7 seuil risque \u2265 15\u00b0',
+      badge: 'HEWETT 2005', lowerIsBetter: true
+    });
+    renderGaugeWithThreshold('gauge-fppa-right', fppaR, {
+      max: 30, fillColor: fppaR >= 15
+        ? 'linear-gradient(90deg,#ef5350,#ff1744)'
+        : fppaR >= 12
+          ? 'linear-gradient(90deg,#ffa500,#ff6b00)'
+          : 'linear-gradient(90deg,#21c354,#00c8ff)',
+      thresholds: [{ pct: 50, label: 'Seuil 15\u00b0' }],
+      refText: 'Valgus dynamique \u00b7 seuil risque \u2265 15\u00b0',
+      badge: 'HEWETT 2005', lowerIsBetter: true
+    });
+    renderGaugeWithThreshold('gauge-knee', knee, {
+      max: 120, fillColor: 'linear-gradient(90deg,#00c8ff,#00ffaa)',
+      thresholds: [{ pct: 58, label: '70\u00b0' }, { pct: 75, label: '90\u00b0' }],
+      optimalZone: { from: 58, to: 75 },
+      refText: 'Zone optimale 70\u201390\u00b0', badge: 'DINGENEN 2015'
+    });
+    renderGaugeWithThreshold('gauge-lsi', lsi, {
+      max: 1, fillColor: lsi >= 0.90
+        ? 'linear-gradient(90deg,#21c354,#00c8ff)'
+        : 'linear-gradient(90deg,#ffc800,#ffa500)',
+      thresholds: [{ pct: 90, label: '0.90' }],
+      refText: 'Retour sport \u2265 0.90', badge: 'KYRITSIS 2016'
+    });
+  }
+
+  // ── Amélioration 2 : courbe temporelle ────────────────────
+  if (typeof renderTemporalCurve === 'function') {
+    renderTemporalCurve(
+      results.kneeAnglesSeries || [],
+      results.hipAnglesSeries  || [],
+      60
+    );
+  }
+
+  // ── Amélioration 3 : percentiles USB/RCOZ ─────────────────
+  if (typeof renderPercentileTable === 'function') {
+    renderPercentileTable({
+      jump_height_com:  hCom,
+      fppa_left:        fppaL,
+      fppa_right:       fppaR,
+      knee_flexion_max: knee,
+      lsi_symmetry:     lsi
+    });
+  }
 }
 
 // ── Recommandations différenciées par rôle ─────────────────
@@ -2817,6 +2977,251 @@ function getRecommandationsByRole(results) {
     recs.push('Profil biomécanique dans les normes.');
 
   return recs;
+}
+
+// ═══════════════════════════════════════════════════════════
+// AMÉLIORATION 1 — renderGaugeWithThreshold
+// ═══════════════════════════════════════════════════════════
+function renderGaugeWithThreshold(containerId, value, config) {
+  var container = document.getElementById(containerId);
+  if (!container || value == null) return;
+
+  var pct = Math.min(Math.abs(value) / config.max * 100, 100);
+  var color = config.fillColor || '#00c8ff';
+
+  var thresholdsHTML = '';
+  (config.thresholds || []).forEach(function(t) {
+    thresholdsHTML +=
+      '<div class="vt-threshold-marker" style="left:' + t.pct + '%"></div>' +
+      '<div class="vt-threshold-label" style="left:' + t.pct + '%">' + t.label + '</div>';
+  });
+
+  var zoneHTML = '';
+  if (config.optimalZone) {
+    var w = config.optimalZone.to - config.optimalZone.from;
+    zoneHTML = '<div class="vt-optimal-zone" style="left:' +
+      config.optimalZone.from + '%;width:' + w + '%;"></div>';
+  }
+
+  var badgeHTML = config.badge ?
+    '<span class="vt-ref-badge">' + config.badge + '</span>' : '';
+
+  container.innerHTML =
+    '<div class="vt-gauge-track">' +
+      zoneHTML +
+      '<div class="vt-gauge-fill" style="width:' + pct.toFixed(1) + '%;background:' +
+        color + ';position:relative;z-index:2;"></div>' +
+      thresholdsHTML +
+    '</div>' +
+    '<div class="vt-gauge-ref">' + (config.refText || '') + badgeHTML + '</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// AMÉLIORATION 2 — Courbe temporelle Chart.js
+// ═══════════════════════════════════════════════════════════
+function loadChartJS(callback) {
+  if (window.Chart) { callback(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+  s.onload = callback;
+  document.head.appendChild(s);
+}
+
+var temporalChart = null;
+
+function renderTemporalCurve(kneeAngles, hipAngles, fps) {
+  fps = fps || 60;
+
+  // Données de démo si vides
+  if (!kneeAngles || kneeAngles.length === 0) {
+    var n = 120;
+    kneeAngles = Array.from({length: n}, function(_, i) {
+      if (i < 30) return 10 + i * 2.5;
+      if (i < 50) return 85 - (i - 30) * 3;
+      if (i < 80) return 25 + (i - 50) * 1;
+      return 50 - (i - 80) * 1.5;
+    });
+    hipAngles = Array.from({length: n}, function(_, i) {
+      if (i < 30) return 5 + i * 1.2;
+      if (i < 50) return 41 - (i - 30) * 1.5;
+      if (i < 80) return 11 + (i - 50) * 0.8;
+      return 35 - (i - 80) * 1;
+    });
+  }
+
+  var labels = kneeAngles.map(function(_, i) {
+    return (i / fps).toFixed(2) + 's';
+  });
+
+  var card = document.getElementById('card-temporal-curve');
+  if (card) card.style.display = 'block';
+
+  loadChartJS(function() {
+    var ctx = document.getElementById('chart-temporal');
+    if (!ctx) return;
+    if (temporalChart) { temporalChart.destroy(); temporalChart = null; }
+    temporalChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Flexion genou (\u00b0)',
+            data: kneeAngles,
+            borderColor: '#00c8ff',
+            backgroundColor: 'rgba(0,200,255,0.05)',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'ROM hanche (\u00b0)',
+            data: hipAngles,
+            borderColor: '#21c354',
+            backgroundColor: 'rgba(33,195,84,0.05)',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '\u00b0';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { maxTicksLimit: 8, color: 'rgba(200,216,232,0.3)', font: { size: 9 } },
+            grid: { color: 'rgba(200,216,232,0.05)' }
+          },
+          y: {
+            ticks: {
+              color: 'rgba(200,216,232,0.3)', font: { size: 9 },
+              callback: function(v) { return v + '\u00b0'; }
+            },
+            grid: { color: 'rgba(200,216,232,0.05)' }
+          }
+        }
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// AMÉLIORATION 3 — Percentiles USB/RCOZ
+// ═══════════════════════════════════════════════════════════
+var NORMS = {
+  jump_height_com: {
+    label: 'Hauteur CMJ (cm)',
+    lit_mean: 42, lit_sd: 6, lit_ref: 'Bosco 1983',
+    club_mean: 38, club_sd: 5,
+    unit: 'cm', lower_is_better: false
+  },
+  fppa_left: {
+    label: 'FPPA gauche (\u00b0)',
+    lit_mean: 10, lit_sd: 4, lit_ref: 'Hewett 2005',
+    club_mean: 11, club_sd: 3,
+    unit: '\u00b0', lower_is_better: true
+  },
+  fppa_right: {
+    label: 'FPPA droite (\u00b0)',
+    lit_mean: 10, lit_sd: 4, lit_ref: 'Hewett 2005',
+    club_mean: 11, club_sd: 3,
+    unit: '\u00b0', lower_is_better: true
+  },
+  knee_flexion_max: {
+    label: 'Flexion genou (\u00b0)',
+    lit_mean: 80, lit_sd: 8, lit_ref: 'Dingenen 2015',
+    club_mean: 78, club_sd: 7,
+    unit: '\u00b0', lower_is_better: false
+  },
+  lsi_symmetry: {
+    label: 'LSI sym\u00e9trie',
+    lit_mean: 0.95, lit_sd: 0.05, lit_ref: 'Kyritsis 2016',
+    club_mean: 0.93, club_sd: 0.04,
+    unit: '', lower_is_better: false
+  }
+};
+
+function computePercentile(value, mean, sd, lowerIsBetter) {
+  var z = (value - mean) / sd;
+  var absZ = Math.abs(z);
+  var pct = 0.5 * (1 + Math.sign(z) *
+    (1 - Math.exp(-absZ * (0.196854 + absZ *
+      (0.115194 + absZ * (0.000344 + absZ * 0.019527))))));
+  var raw = Math.round(pct * 100);
+  return lowerIsBetter ? 100 - raw : raw;
+}
+
+function getPercentileColor(pct) {
+  if (pct >= 75) return '#21c354';
+  if (pct >= 50) return '#00c8ff';
+  if (pct >= 25) return '#ffa500';
+  return '#e24b4a';
+}
+
+function renderPercentileTable(results) {
+  var tbody = document.getElementById('percentile-tbody');
+  if (!tbody) return;
+
+  // Normalise clés camelCase → snake_case
+  var norm = {
+    jump_height_com:  results.jump_height_com  || results.jumpHeight     || null,
+    fppa_left:        results.fppa_left        || results.fppaLeft       || null,
+    fppa_right:       results.fppa_right       || results.fppaRight      || null,
+    knee_flexion_max: results.knee_flexion_max || results.kneeFlexion    || null,
+    lsi_symmetry:     results.lsi_symmetry     || results.lsi            || null
+  };
+
+  var rows = Object.keys(NORMS).map(function(key) {
+    var value = norm[key];
+    var n = NORMS[key];
+    if (value == null) return null;
+
+    var pctLit  = computePercentile(value, n.lit_mean,  n.lit_sd,  n.lower_is_better);
+    var pctClub = computePercentile(value, n.club_mean, n.club_sd, n.lower_is_better);
+    var cLit    = getPercentileColor(pctLit);
+    var cClub   = getPercentileColor(pctClub);
+
+    var display   = n.unit === '' ? value.toFixed(2) : value.toFixed(1) + ' ' + n.unit;
+    var litDisp   = n.unit === ''
+      ? n.lit_mean.toFixed(2)  + ' \u00b1 ' + n.lit_sd.toFixed(2)
+      : n.lit_mean  + ' \u00b1 ' + n.lit_sd  + ' ' + n.unit;
+    var clubDisp  = n.unit === ''
+      ? n.club_mean.toFixed(2) + ' \u00b1 ' + n.club_sd.toFixed(2)
+      : n.club_mean + ' \u00b1 ' + n.club_sd + ' ' + n.unit;
+
+    return '<tr>' +
+      '<td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,200,255,0.06);color:rgba(200,216,232,0.7);">' + n.label + '</td>' +
+      '<td style="padding:7px 8px;text-align:center;border-bottom:0.5px solid rgba(0,200,255,0.06);font-family:\'JetBrains Mono\',monospace;font-weight:500;color:#c8d8e8;">' + display + '</td>' +
+      '<td style="padding:7px 8px;text-align:center;border-bottom:0.5px solid rgba(0,200,255,0.06);color:rgba(200,216,232,0.4);font-size:10px;">' +
+        litDisp + '<br><span style="font-size:9px;color:rgba(0,200,255,0.4);">' + n.lit_ref + '</span></td>' +
+      '<td style="padding:7px 8px;text-align:center;border-bottom:0.5px solid rgba(0,200,255,0.06);color:rgba(200,216,232,0.4);font-size:10px;">' +
+        clubDisp + '<br><span style="font-size:9px;color:rgba(255,165,0,0.5);">USB/RCOZ*</span></td>' +
+      '<td style="padding:7px 8px;text-align:center;border-bottom:0.5px solid rgba(0,200,255,0.06);">' +
+        '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">' +
+          '<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:500;color:' + cLit + ';">P' + pctLit + '</span>' +
+          '<span style="font-size:9px;color:rgba(200,216,232,0.3);">litt\u00e9rature</span>' +
+          '<span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:500;color:' + cClub + ';">P' + pctClub + '</span>' +
+          '<span style="font-size:9px;color:rgba(255,165,0,0.4);">USB/RCOZ</span>' +
+        '</div></td>' +
+      '</tr>';
+  }).filter(Boolean);
+
+  tbody.innerHTML = rows.length
+    ? rows.join('')
+    : '<tr><td colspan="5" style="text-align:center;padding:16px;color:rgba(200,216,232,0.3);font-size:12px;">Lancer une analyse pour voir les percentiles.</td></tr>';
 }
 </script>
 
