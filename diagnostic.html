@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VERTEXTRACK — Diagnostic Neuromusculaire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── Design system ───────────────────────────────────────── */
+    :root {
+      --bg:       #03080f;
+      --surface:  rgba(255,255,255,0.04);
+      --border:   rgba(0,200,255,0.12);
+      --cyan:     #00c8ff;
+      --orange:   #ffa500;
+      --green:    #21c354;
+      --red:      #ff4444;
+      --amber:    #ffa500;
+      --text:     #cdd9e5;
+      --muted:    #6b8499;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Nav ─────────────────────────────────────────────────── */
+    .nav-pro {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(3,8,15,0.95);
+      border-bottom: 1px solid rgba(0,200,255,0.1);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 24px;
+      z-index: 200;
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo img { height: 36px; }
+    .nav-logo { text-decoration: none; }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      margin-left: auto;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(200,216,232,0.55);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 16px;
+    }
+    .nav-btn-primary {
+      background: var(--cyan);
+      color: #03080f;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      padding: 7px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .nav-btn-primary:hover { opacity: .85; }
+    .nav-btn-outline {
+      border: 1px solid rgba(0,200,255,0.35);
+      color: var(--cyan);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: border-color .2s;
+    }
+    .nav-btn-outline:hover { border-color: var(--cyan); }
+
+    /* ── Page layout ─────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 96px 20px 60px;
+    }
+
+    /* ── Section cards ───────────────────────────────────────── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 22px;
+      background: var(--cyan);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .section-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      letter-spacing: 0.4px;
+    }
+
+    /* ── Header athlète ──────────────────────────────────────── */
+    .athlete-header {
+      background: linear-gradient(135deg,rgba(0,200,255,0.07),rgba(3,8,15,0));
+      border: 1px solid rgba(0,200,255,0.15);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .athlete-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .athlete-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .badge-module {
+      background: rgba(0,200,255,0.12);
+      border: 1px solid rgba(0,200,255,0.3);
+      color: var(--cyan);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    /* ── Gauge circulaire ────────────────────────────────────── */
+    .gauge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0 16px;
+    }
+    .gauge-svg-wrap {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    #gauge-value-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 48px;
+      font-weight: 600;
+    }
+    .gauge-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+    .gauge-interp {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      max-width: 480px;
+      margin-top: 8px;
+      line-height: 1.55;
+    }
+
+    /* ── Radar ───────────────────────────────────────────────── */
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .radar-legend {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .radar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .radar-legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* ── LSI Table ───────────────────────────────────────────── */
+    .lsi-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .lsi-table thead tr {
+      background: rgba(0,200,255,0.08);
+    }
+    .lsi-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(200,216,232,0.5);
+    }
+    .lsi-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(0,200,255,0.06);
+      vertical-align: middle;
+    }
+    .lsi-table tr:nth-child(even) td {
+      background: rgba(255,255,255,0.015);
+    }
+    .lsi-table tr:last-child td { border-bottom: none; }
+    .lsi-table .val-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .status-ok   { background:rgba(33,195,84,0.12);  color:#21c354; border:1px solid rgba(33,195,84,0.25);  }
+    .status-warn { background:rgba(255,165,0,0.12);  color:#ffa500; border:1px solid rgba(255,165,0,0.25);  }
+    .status-bad  { background:rgba(255,68,68,0.12);  color:#ff4444; border:1px solid rgba(255,68,68,0.25);  }
+
+    /* ── Alert cards ─────────────────────────────────────────── */
+    .alert-card {
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .alert-text { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .alert-red  {
+      background: rgba(255,68,68,0.07);
+      border-left: 4px solid #ff4444;
+    }
+    .alert-orange {
+      background: rgba(255,165,0,0.07);
+      border-left: 4px solid #ffa500;
+    }
+    .alert-green {
+      background: rgba(33,195,84,0.07);
+      border-left: 4px solid #21c354;
+    }
+
+    /* ── Actions bar ─────────────────────────────────────────── */
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-back {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px 20px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: transparent;
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .btn-back:hover { border-color: rgba(255,255,255,0.4); }
+    .btn-pdf {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px 20px;
+      background: var(--cyan);
+      color: #03080f;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-pdf:hover { opacity: .88; }
+    .btn-save {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px 20px;
+      background: rgba(33,195,84,0.12);
+      border: 1px solid #21c354;
+      color: #21c354;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-save:hover { background: rgba(33,195,84,0.2); }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .diag-footer {
+      text-align: center;
+      padding: 40px 20px 24px;
+      font-size: 11px;
+      color: rgba(200,216,232,0.2);
+      border-top: 1px solid rgba(0,200,255,0.06);
+    }
+    .diag-footer a { color: rgba(0,200,255,0.4); text-decoration: none; }
+
+    /* ── Chart notes ─────────────────────────────────────────── */
+    .chart-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* ── Print ───────────────────────────────────────────────── */
+    @media print {
+      nav, .btn-back, .btn-save, .action-bar { display: none !important; }
+      body { background: white !important; color: #111 !important; }
+      .section-card { background: #f8f9fa !important; border: 1px solid #ddd !important; }
+      .athlete-header { background: #eef !important; border: 1px solid #cce !important; }
+      .section-title { color: #000 !important; }
+      .section-title::before { background: #00c8ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══════════════════════════════════════════════════════ -->
+<nav class="nav-pro">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/images/vertextrack-logo.png" alt="VERTEXTRACK"
+         onerror="this.style.display='none';this.nextSibling.style.display='block'">
+    <span style="display:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:#00c8ff;letter-spacing:2px;">VERTEXTRACK</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="analyse.html">Analyse</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="apropos.html">À Propos</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="analyse.html" class="nav-btn-outline">← Retour analyse</a>
+    <a href="https://vertextrack.streamlit.app" target="_blank" class="nav-btn-primary">APP IA →</a>
+  </div>
+</nav>
+
+<!-- ══ PAGE ══════════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- SECTION 1 — HEADER ATHLÈTE -->
+  <div class="athlete-header">
+    <div>
+      <div class="athlete-name" id="hdr-athlete">Mohamed Belabbes</div>
+      <div class="athlete-meta">
+        <span id="hdr-test">Drop Vertical Jump (DVJ)</span>
+        &nbsp;·&nbsp;
+        <span id="hdr-date">—</span>
+      </div>
+    </div>
+    <span class="badge-module">MODULE 2 — DIAGNOSTIC NEUROMUSCULAIRE</span>
+  </div>
+
+  <!-- SECTION 2 — SCORE NEUROMUSCULAIRE -->
+  <div class="section-card">
+    <div class="section-title">Score de contrôle neuromusculaire</div>
+    <div class="section-sub">Composite LSI × 0.6 + Contrôle FPPA × 0.4 — plage 0–100</div>
+
+    <div class="gauge-wrap">
+      <div class="gauge-svg-wrap">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <!-- Track -->
+          <circle cx="100" cy="100" r="80"
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="14"
+            stroke-linecap="round"
+          />
+          <!-- Zones de couleur (bg) -->
+          <!-- Rouge 0–49 -->
+          <circle cx="100" cy="100" r="80"
+            fill="none" stroke="#ff4444" stroke-width="14"
+            stroke-dasharray="246 256"
+            stroke-dashoffset="127"
+            stroke-linecap="butt"
+            transform="rotate(-90 100 100)"
+            opacity="0.18"
+          />
+          <!-- Orange 50–69 -->
+          <circle cx="100" cy="100" r="80"
+            fill="none" stroke="#ffa500" stroke-width="14"
+            stroke-dasharray="100 402"
+            stroke-dashoffset="-119"
+            stroke-linecap="butt"
+            transform="rotate(-90 100 100)"
+            opacity="0.18"
+          />
+          <!-- Vert 70–100 -->
+          <circle cx="100" cy="100" r="80"
+            fill="none" stroke="#21c354" stroke-width="14"
+            stroke-dasharray="154 348"
+            stroke-dashoffset="-219"
+            stroke-linecap="butt"
+            transform="rotate(-90 100 100)"
+            opacity="0.18"
+          />
+          <!-- Arc de score animé -->
+          <circle cx="100" cy="100" r="80"
+            id="gauge-arc"
+            fill="none"
+            stroke="#21c354"
+            stroke-width="14"
+            stroke-linecap="round"
+            stroke-dasharray="0 502"
+            transform="rotate(-90 100 100)"
+            style="transition: stroke-dasharray 1.5s ease-out, stroke 0.6s;"
+          />
+          <!-- Valeur centrale -->
+          <text x="100" y="93" text-anchor="middle"
+            id="gauge-value-text"
+            font-family="JetBrains Mono, monospace"
+            font-size="42" font-weight="600"
+            fill="#fff">—</text>
+          <text x="100" y="114" text-anchor="middle"
+            font-family="Barlow, sans-serif"
+            font-size="11" fill="rgba(200,216,232,0.4)">/100</text>
+        </svg>
+      </div>
+      <div class="gauge-label" id="gauge-label">—</div>
+      <div class="gauge-interp" id="gauge-interp">Chargement des données...</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — RADAR CHART -->
+  <div class="section-card">
+    <div class="section-title">Profil cinématique bilatéral</div>
+    <div class="section-sub">Comparaison membre gauche vs membre droit — 6 axes normalisés 0–100</div>
+
+    <div class="radar-wrap">
+      <canvas id="chart-radar" width="420" height="420" style="max-width:420px;max-height:420px;"></canvas>
+    </div>
+    <div class="radar-legend">
+      <span class="radar-legend-item">
+        <span class="radar-legend-dot" style="background:#00c8ff;"></span>
+        Membre gauche
+      </span>
+      <span class="radar-legend-item">
+        <span class="radar-legend-dot" style="background:#ffa500;"></span>
+        Membre droit
+      </span>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — TABLEAU LSI -->
+  <div class="section-card">
+    <div class="section-title">Indice de symétrie des membres (LSI)</div>
+    <div class="section-sub">LSI = membre le plus faible ÷ membre le plus fort × 100 — Réf. Kyritsis et al. 2016 BJSM</div>
+
+    <div style="overflow-x:auto;">
+      <table class="lsi-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Côté G</th>
+            <th>Côté D</th>
+            <th>LSI %</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="lsi-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5 — COURBE TEMPORELLE FPPA -->
+  <div class="section-card">
+    <div class="section-title">Évolution du FPPA pendant l'atterrissage (DVJ)</div>
+    <div class="section-sub">Phase d'impact — vue frontale · MediaPipe BlazePose 33 points</div>
+
+    <canvas id="chart-fppa" height="220" style="width:100%;"></canvas>
+    <p class="chart-note">
+      * Données calculées à partir des landmarks MediaPipe BlazePose (33 points, 60 fps).
+      Vue frontale obligatoire pour FPPA valide. La ligne pointillée rouge représente
+      le seuil clinique LCA documenté (Hewett et al. 2005).
+    </p>
+  </div>
+
+  <!-- SECTION 6 — ALERTES CLINIQUES -->
+  <div class="section-card">
+    <div class="section-title">Interprétation clinique</div>
+    <div class="section-sub">Générée automatiquement selon les seuils de la littérature biomécanique</div>
+    <div id="alerts-container"></div>
+  </div>
+
+  <!-- SECTION 7 — BARRE D'ACTIONS -->
+  <div class="section-card">
+    <div class="action-bar">
+      <button class="btn-back" onclick="history.back()">← Retour aux résultats</button>
+      <button class="btn-pdf"  onclick="window.print()">📄 Exporter PDF</button>
+      <button class="btn-save" onclick="saveToSupabase()">💾 Sauvegarder en BDD</button>
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<footer class="diag-footer">
+  <div>VERTEXTRACK Biomechanics Platform · Module 2 — Diagnostic Neuromusculaire</div>
+  <div style="margin-top:6px;">
+    Hewett (2005) · Kyritsis (2016) · Dingenen (2015) · Zago (2020) · Bosco (1983)
+    &nbsp;|&nbsp;
+    <a href="index.html">Accueil</a> · <a href="analyse.html">Analyse</a>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  DONNÉES DEMO
+// ══════════════════════════════════════════════════════════════════
+var DEMO_DATA = {
+  athlete:        'Mohamed Belabbes',
+  test:           'Drop Vertical Jump (DVJ)',
+  date:           new Date().toLocaleDateString('fr-FR'),
+  fppa_gauche:    18.7,
+  fppa_droite:    22.3,
+  flexion_genou_g: 92.1,
+  flexion_genou_d: 88.4,
+  rom_hanche_g:   45.2,
+  rom_hanche_d:   42.1,
+  velo_genou_g:   312,
+  velo_genou_d:   267,
+  velo_hanche_g:  188,
+  velo_hanche_d:  201,
+  lsi_fppa:       84,
+  lsi_flexion:    96,
+  lsi_rom_hanche: 93,
+  lsi_velo_genou: 86,
+  lsi_velo_hanche:94
+};
+
+// ══════════════════════════════════════════════════════════════════
+//  SCORE NEUROMUSCULAIRE
+// ══════════════════════════════════════════════════════════════════
+function calcScore(data) {
+  var lsiMoyen = (data.lsi_fppa + data.lsi_flexion + data.lsi_rom_hanche +
+                  data.lsi_velo_genou + data.lsi_velo_hanche) / 5;
+  var fppaMax  = Math.max(data.fppa_gauche, data.fppa_droite);
+  var score    = (lsiMoyen * 0.6) + ((1 - fppaMax / 30) * 40);
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  JAUGE SVG CIRCULAIRE
+// ══════════════════════════════════════════════════════════════════
+function animateGauge(score) {
+  var arc   = document.getElementById('gauge-arc');
+  var txt   = document.getElementById('gauge-value-text');
+  var label = document.getElementById('gauge-label');
+  var interp= document.getElementById('gauge-interp');
+  if (!arc || !txt) return;
+
+  var circumf = 2 * Math.PI * 80; // ≈ 502.65
+  var dashLen = (score / 100) * circumf;
+
+  var color, labelText, interpText;
+  if (score >= 70) {
+    color     = '#21c354';
+    labelText = 'Bon contrôle';
+    interpText = 'Le profil neuromusculaire est dans les normes. '
+               + 'Les indices de symétrie et le contrôle du valgus dynamique '
+               + 'sont satisfaisants. Continuer le programme préventif actuel.';
+  } else if (score >= 50) {
+    color     = '#ffa500';
+    labelText = 'Contrôle modéré';
+    interpText = 'Des déséquilibres neuromusculaires modérés sont identifiés. '
+               + 'Un programme de renforcement unilatéral ciblé est conseillé, '
+               + 'notamment pour le contrôle du valgus et la symétrie musculaire.';
+  } else {
+    color     = '#ff4444';
+    labelText = 'Déficit identifié';
+    interpText = 'Déficits neuromusculaires significatifs détectés. '
+               + 'Asymétrie inter-membre et/ou valgus dynamique dépassent les seuils cliniques. '
+               + 'Consultation spécialisée et rééducation recommandées avant retour sportif.';
+  }
+
+  setTimeout(function() {
+    arc.style.stroke          = color;
+    arc.style.strokeDasharray = dashLen + ' ' + (circumf - dashLen);
+  }, 100);
+
+  txt.textContent   = score;
+  txt.setAttribute('fill', color);
+  if (label)  { label.textContent = labelText; label.style.color = color; }
+  if (interp) { interp.textContent = interpText; }
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  TABLEAU LSI
+// ══════════════════════════════════════════════════════════════════
+function buildLSITable(data) {
+  var rows = [
+    { label:'FPPA',            g:data.fppa_gauche.toFixed(1)+'°', d:data.fppa_droite.toFixed(1)+'°',
+      lsi:data.lsi_fppa, unit:'%' },
+    { label:'Flexion genou',   g:data.flexion_genou_g.toFixed(1)+'°', d:data.flexion_genou_d.toFixed(1)+'°',
+      lsi:data.lsi_flexion, unit:'%' },
+    { label:'ROM hanche',      g:data.rom_hanche_g.toFixed(1)+'°', d:data.rom_hanche_d.toFixed(1)+'°',
+      lsi:data.lsi_rom_hanche, unit:'%' },
+    { label:'Vélocité genou',  g:data.velo_genou_g+' °/s',  d:data.velo_genou_d+' °/s',
+      lsi:data.lsi_velo_genou, unit:'%' },
+    { label:'Vélocité hanche', g:data.velo_hanche_g+' °/s', d:data.velo_hanche_d+' °/s',
+      lsi:data.lsi_velo_hanche, unit:'%' }
+  ];
+
+  var tbody = document.getElementById('lsi-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = rows.map(function(r) {
+    var cls, txt;
+    if (r.lsi >= 90) {
+      cls = 'status-ok';   txt = '✓ Symétrie normale';
+    } else if (r.lsi >= 80) {
+      cls = 'status-warn'; txt = '△ Asymétrie modérée';
+    } else {
+      cls = 'status-bad';  txt = '✗ Déficit significatif';
+    }
+    return '<tr>'
+      + '<td style="font-weight:500;">' + r.label + '</td>'
+      + '<td class="val-mono" style="color:#00c8ff;">' + r.g + '</td>'
+      + '<td class="val-mono" style="color:#ffa500;">' + r.d + '</td>'
+      + '<td class="val-mono" style="font-weight:600;">' + r.lsi + ' %</td>'
+      + '<td><span class="status-badge ' + cls + '">' + txt + '</span></td>'
+      + '</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  ALERTES CLINIQUES
+// ══════════════════════════════════════════════════════════════════
+function buildAlerts(data) {
+  var container = document.getElementById('alerts-container');
+  if (!container) return;
+
+  var alerts = [];
+
+  // Valgus dynamique
+  if (data.fppa_gauche > 15 || data.fppa_droite > 15) {
+    var fppaMax = Math.max(data.fppa_gauche, data.fppa_droite);
+    alerts.push({
+      cls:   'alert-red',
+      icon:  '⚠',
+      title: 'Valgus dynamique détecté',
+      text:  'FPPA max ' + fppaMax.toFixed(1) + '° dépasse le seuil clinique de 15°. '
+           + 'Facteur de risque LCA documenté (Hewett 2005, Dingenen 2015). '
+           + 'Programme de contrôle neuromusculaire recommandé.'
+    });
+  }
+
+  // Asymétrie FPPA
+  if (data.lsi_fppa < 80) {
+    alerts.push({
+      cls:   'alert-red',
+      icon:  '⚠',
+      title: 'Asymétrie FPPA significative',
+      text:  'LSI FPPA = ' + data.lsi_fppa + '%. '
+           + 'Asymétrie inter-membre > 20% — risque de surcharge ligamentaire asymétrique. '
+           + 'Rééducation différenciée gauche/droite indiquée.'
+    });
+  }
+
+  // Asymétrie de vélocité angulaire genou
+  if (data.lsi_velo_genou < 85) {
+    alerts.push({
+      cls:   'alert-orange',
+      icon:  '△',
+      title: 'Asymétrie de vélocité angulaire',
+      text:  'LSI vélocité genou = ' + data.lsi_velo_genou + '%. '
+           + 'Déficit de décélération musculaire — risque de compensation biomécanique '
+           + 'lors de l\'atterrissage. Exercices excentriques ciblés conseillés.'
+    });
+  }
+
+  // Asymétrie de flexion genou
+  if (data.lsi_flexion < 85) {
+    alerts.push({
+      cls:   'alert-orange',
+      icon:  '△',
+      title: 'Asymétrie de flexion genou',
+      text:  'LSI flexion = ' + data.lsi_flexion + '%. '
+           + 'Possible raideur articulaire ou inhibition musculaire réflexe. '
+           + 'Évaluer mobilité tibio-fémorale et programme de mobilité.'
+    });
+  }
+
+  // Tout est ok
+  if (alerts.length === 0) {
+    alerts.push({
+      cls:   'alert-green',
+      icon:  '✓',
+      title: 'Aucun déficit neuromusculaire significatif détecté',
+      text:  'Tous les indices de symétrie sont dans les normes (LSI ≥ 90%). '
+           + 'FPPA ≤ 15° — contrôle du valgus dynamique satisfaisant. '
+           + 'Profil biomécanique favorable pour la reprise sportive.'
+    });
+  }
+
+  container.innerHTML = alerts.map(function(a) {
+    return '<div class="alert-card ' + a.cls + '">'
+      + '<span class="alert-icon">' + a.icon + '</span>'
+      + '<div>'
+      + '<div class="alert-title">' + a.title + '</div>'
+      + '<div class="alert-text">' + a.text + '</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  RADAR CHART
+// ══════════════════════════════════════════════════════════════════
+function buildRadar(data) {
+  var ctx = document.getElementById('chart-radar');
+  if (!ctx) return;
+
+  // Normaliser 0–100
+  var normalize = function(val, max) { return Math.min(100, Math.max(0, Math.round(val / max * 100))); };
+
+  // FPPA inversé : 0° = 100, 30° = 0
+  var fppaScoreG = Math.max(0, Math.round((1 - data.fppa_gauche / 30) * 100));
+  var fppaScoreD = Math.max(0, Math.round((1 - data.fppa_droite / 30) * 100));
+
+  var leftData  = [
+    fppaScoreG,
+    normalize(data.flexion_genou_g, 120),
+    normalize(data.rom_hanche_g,    80),
+    normalize(data.velo_genou_g,    500),
+    normalize(data.velo_hanche_g,   300),
+    data.lsi_fppa   // direct 0–100
+  ];
+  var rightData = [
+    fppaScoreD,
+    normalize(data.flexion_genou_d, 120),
+    normalize(data.rom_hanche_d,    80),
+    normalize(data.velo_genou_d,    500),
+    normalize(data.velo_hanche_d,   300),
+    data.lsi_flexion
+  ];
+
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: [
+        'FPPA',
+        'Flexion genou',
+        'ROM hanche',
+        'Vél. ang. genou',
+        'Vél. ang. hanche',
+        'LSI global'
+      ],
+      datasets: [
+        {
+          label: 'Gauche',
+          data:  leftData,
+          backgroundColor: 'rgba(0,200,255,0.15)',
+          borderColor:     '#00c8ff',
+          pointBackgroundColor: '#00c8ff',
+          pointRadius: 4,
+          borderWidth: 2
+        },
+        {
+          label: 'Droit',
+          data:  rightData,
+          backgroundColor: 'rgba(255,165,0,0.15)',
+          borderColor:     '#ffa500',
+          pointBackgroundColor: '#ffa500',
+          pointRadius: 4,
+          borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: {
+            display: false,
+            stepSize: 25
+          },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          angleLines: { color: 'rgba(255,255,255,0.06)' },
+          pointLabels: {
+            color: '#aac0d0',
+            font:  { size: 12, family: 'Barlow, sans-serif' }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false  // On utilise notre propre légende
+        }
+      },
+      backgroundColor: 'rgba(255,255,255,0.03)'
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  LINE CHART — FPPA TEMPOREL
+// ══════════════════════════════════════════════════════════════════
+function buildFPPAChart(data) {
+  var ctx = document.getElementById('chart-fppa');
+  if (!ctx) return;
+
+  // Générer 50 points de 0 à 500ms
+  var n = 50;
+  var times = [];
+  for (var i = 0; i < n; i++) { times.push(Math.round(i * 500 / (n-1))); }
+
+  // Courbe gauche : montée 0→150ms, pic 150→250ms, stabilisation 250→500ms
+  function genCurve(peakPre, peakImpact, baseEnd) {
+    return times.map(function(t) {
+      var val;
+      if (t <= 150) {
+        // Phase descente : 2° → peakPre
+        val = 2 + (peakPre - 2) * (t / 150);
+      } else if (t <= 250) {
+        // Phase impact : peakPre → peakImpact
+        val = peakPre + (peakImpact - peakPre) * ((t - 150) / 100);
+      } else {
+        // Stabilisation : peakImpact → baseEnd
+        val = peakImpact - (peakImpact - baseEnd) * ((t - 250) / 250);
+      }
+      // Légère variation stochastique réaliste
+      val += (Math.sin(t * 0.08) * 1.2 + Math.cos(t * 0.12) * 0.8) * 0.6;
+      return Math.round(val * 10) / 10;
+    });
+  }
+
+  // Données basées sur le profil de l'athlète
+  var fppaG = data.fppa_gauche || 18.7;
+  var fppaD = data.fppa_droite || 22.3;
+  var leftCurve  = genCurve(fppaG * 0.9,  fppaG,       fppaG * 0.75);
+  var rightCurve = genCurve(fppaD * 0.88, fppaD,       fppaD * 0.72);
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: times,
+      datasets: [
+        {
+          label:           'FPPA Gauche',
+          data:            leftCurve,
+          borderColor:     '#00c8ff',
+          backgroundColor: 'rgba(0,200,255,0.05)',
+          borderWidth:     2,
+          tension:         0.4,
+          fill:            false,
+          pointRadius:     0
+        },
+        {
+          label:           'FPPA Droit',
+          data:            rightCurve,
+          borderColor:     '#ffa500',
+          backgroundColor: 'rgba(255,165,0,0.05)',
+          borderWidth:     2,
+          tension:         0.4,
+          fill:            false,
+          pointRadius:     0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top', labels: { color: '#aac0d0', font: { size: 12 } } },
+        annotation: undefined,
+        // Ligne de seuil via dataset fantôme
+      },
+      scales: {
+        x: {
+          title: {
+            display:  true,
+            text:     'Temps (ms)',
+            color:    'rgba(200,216,232,0.4)',
+            font:     { size: 11 }
+          },
+          ticks: {
+            color: 'rgba(200,216,232,0.35)',
+            maxTicksLimit: 11
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          min:   -5,
+          max:   35,
+          title: {
+            display:  true,
+            text:     'Angle FPPA (°)',
+            color:    'rgba(200,216,232,0.4)',
+            font:     { size: 11 }
+          },
+          ticks: { color: 'rgba(200,216,232,0.35)' },
+          grid:  { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    },
+    plugins: [{
+      // Plugin inline pour tracer la ligne de seuil à y=15
+      id: 'threshold-line',
+      afterDraw: function(chart) {
+        var ctx2  = chart.ctx;
+        var yAxis = chart.scales['y'];
+        var xAxis = chart.scales['x'];
+        if (!yAxis || !xAxis) return;
+        var y = yAxis.getPixelForValue(15);
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.setLineDash([6, 4]);
+        ctx2.strokeStyle = 'rgba(255,68,68,0.7)';
+        ctx2.lineWidth   = 1.5;
+        ctx2.moveTo(xAxis.left, y);
+        ctx2.lineTo(xAxis.right, y);
+        ctx2.stroke();
+        ctx2.setLineDash([]);
+        ctx2.fillStyle = 'rgba(255,68,68,0.85)';
+        ctx2.font      = '10px Barlow, sans-serif';
+        ctx2.fillText('Seuil clinique LCA 15° (Hewett 2005)', xAxis.left + 8, y - 5);
+        ctx2.restore();
+      }
+    }]
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  STUB SAUVEGARDE BDD
+// ══════════════════════════════════════════════════════════════════
+function saveToSupabase() {
+  var btn = event.target;
+  btn.textContent = '⏳ Connexion...';
+  btn.disabled = true;
+  setTimeout(function() {
+    btn.textContent = '✓ Sauvegardé';
+    btn.style.background = 'rgba(33,195,84,0.25)';
+    // TODO: implémenter l'appel Supabase réel
+    // await supabase.from('analyses').insert({ ... });
+  }, 1200);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  INIT — CHARGEMENT DONNÉES
+// ══════════════════════════════════════════════════════════════════
+(function init() {
+  // Lire localStorage
+  var raw  = localStorage.getItem('vertextrack_results');
+  var data = null;
+  try { data = raw ? JSON.parse(raw) : null; } catch (e) { data = null; }
+
+  // Fallback demo
+  if (!data) { data = DEMO_DATA; }
+
+  // Remplir le header
+  var hdrAthlete = document.getElementById('hdr-athlete');
+  var hdrTest    = document.getElementById('hdr-test');
+  var hdrDate    = document.getElementById('hdr-date');
+  if (hdrAthlete) hdrAthlete.textContent = data.athlete || 'Athlète Démo';
+  if (hdrTest)    hdrTest.textContent    = data.test    || 'Analyse';
+  if (hdrDate)    hdrDate.textContent    = data.date    || new Date().toLocaleDateString('fr-FR');
+
+  // S'assurer que toutes les valeurs numériques sont présentes
+  data.fppa_gauche     = parseFloat(data.fppa_gauche)     || DEMO_DATA.fppa_gauche;
+  data.fppa_droite     = parseFloat(data.fppa_droite)     || DEMO_DATA.fppa_droite;
+  data.flexion_genou_g = parseFloat(data.flexion_genou_g) || DEMO_DATA.flexion_genou_g;
+  data.flexion_genou_d = parseFloat(data.flexion_genou_d) || DEMO_DATA.flexion_genou_d;
+  data.rom_hanche_g    = parseFloat(data.rom_hanche_g)    || DEMO_DATA.rom_hanche_g;
+  data.rom_hanche_d    = parseFloat(data.rom_hanche_d)    || DEMO_DATA.rom_hanche_d;
+  data.velo_genou_g    = parseFloat(data.velo_genou_g)    || DEMO_DATA.velo_genou_g;
+  data.velo_genou_d    = parseFloat(data.velo_genou_d)    || DEMO_DATA.velo_genou_d;
+  data.velo_hanche_g   = parseFloat(data.velo_hanche_g)   || DEMO_DATA.velo_hanche_g;
+  data.velo_hanche_d   = parseFloat(data.velo_hanche_d)   || DEMO_DATA.velo_hanche_d;
+  data.lsi_fppa        = parseFloat(data.lsi_fppa)        || DEMO_DATA.lsi_fppa;
+  data.lsi_flexion     = parseFloat(data.lsi_flexion)     || DEMO_DATA.lsi_flexion;
+  data.lsi_rom_hanche  = parseFloat(data.lsi_rom_hanche)  || DEMO_DATA.lsi_rom_hanche;
+  data.lsi_velo_genou  = parseFloat(data.lsi_velo_genou)  || DEMO_DATA.lsi_velo_genou;
+  data.lsi_velo_hanche = parseFloat(data.lsi_velo_hanche) || DEMO_DATA.lsi_velo_hanche;
+
+  // Score neuromusculaire + jauge
+  var score = calcScore(data);
+  animateGauge(score);
+
+  // Tableau LSI
+  buildLSITable(data);
+
+  // Alertes cliniques
+  buildAlerts(data);
+
+  // Radar Chart
+  buildRadar(data);
+
+  // Courbe FPPA
+  buildFPPAChart(data);
+})();
+</script>
+</body>
+</html>

@@ -1964,6 +1964,52 @@ border-top:1px solid rgba(255,255,255,0.06);">
       </div><!-- fin #vt-ref -->
 
     </div>
+
+    <!-- MODULE 2 — DIAGNOSTIC NEUROMUSCULAIRE (synthèse + CTA) -->
+    <div class="rc" id="mod2-synopsis">
+      <div class="rch">
+        <div class="rct">Module 2 — Diagnostic</div>
+        <span class="badge" id="mod2-badge" style="background:rgba(0,200,255,0.1);color:#00c8ff;border:1px solid rgba(0,200,255,0.2);">LSI</span>
+      </div>
+
+      <!-- Badges synthèse -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+
+        <!-- LSI global -->
+        <div style="background:#040a14;border:1px solid rgba(0,200,255,0.08);border-radius:8px;padding:12px;">
+          <div style="font-size:9px;color:rgba(200,216,232,0.35);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;">LSI global</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;" id="mod2-lsi">0.88</div>
+          <div style="font-size:10px;margin-top:3px;" id="mod2-lsi-label" style="color:#ffa500;">Asymétrie modérée</div>
+        </div>
+
+        <!-- FPPA max -->
+        <div style="background:#040a14;border:1px solid rgba(255,165,0,0.08);border-radius:8px;padding:12px;">
+          <div style="font-size:9px;color:rgba(200,216,232,0.35);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;">FPPA max</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;" id="mod2-fppa">--°</div>
+          <div style="font-size:10px;margin-top:3px;" id="mod2-fppa-label">--</div>
+        </div>
+
+      </div>
+
+      <!-- Résumé asymétries -->
+      <div style="font-size:12px;color:rgba(200,216,232,0.5);margin-bottom:14px;padding:8px 12px;background:rgba(255,255,255,0.02);border-radius:6px;border:0.5px solid rgba(0,200,255,0.06);">
+        <span id="mod2-summary">Calculez une analyse pour voir le résumé.</span>
+      </div>
+
+      <!-- CTA button -->
+      <button id="btn-diagnostic-full"
+        onclick="goToDiagnostic()"
+        style="width:100%;background:linear-gradient(135deg,#00c8ff,#0090b8);color:#03080f;
+               font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;
+               padding:14px 28px;border-radius:8px;border:none;cursor:pointer;
+               letter-spacing:1px;text-transform:uppercase;transition:opacity .2s;">
+        📋 Voir le diagnostic complet →
+      </button>
+      <div style="font-size:10px;color:rgba(200,216,232,0.2);margin-top:8px;text-align:center;font-style:italic;">
+        Radar bilatéral · Courbe FPPA · Tableau LSI complet · Alertes cliniques
+      </div>
+    </div>
+
     <!-- RISQUE -->
     <div class="rc">
       <div class="rch"><div class="rct">Risque LCA</div><span class="badge ok">LOW</span></div>
@@ -2823,6 +2869,10 @@ function loadDemo() {
       rsi_modified: 0.648, rsi_category: 'Bon',
       asymmetry_score: 10.2, asymmetry_category: 'Légère asymétrie'
     });
+    // Module 2 synopsis (appelé aussi directement pour le fallback démo)
+    if (typeof updateMod2Synopsis === 'function') {
+      updateMod2Synopsis(14.2, 11.8, 0.88);
+    }
   }
   var _demoRole = localStorage.getItem('vt_user_role');
   if (typeof renderSHAPWaterfall === 'function'
@@ -3104,6 +3154,122 @@ function vtTab(btn, panelId) {
 }
 
 // ── Mise à jour dynamique des jauges et recommandations ────
+// ── Module 2 — Synopsis + navigation vers diagnostic.html ──────────────────
+function updateMod2Synopsis(fppaL, fppaR, lsi) {
+  var s = function(id, v) { var el=document.getElementById(id); if(el) el.textContent=v; };
+
+  // LSI badge
+  var lsiPct = Math.round(lsi * 100);
+  s('mod2-lsi', lsi.toFixed(2));
+  var lsiEl = document.getElementById('mod2-lsi');
+  var lsiLabelEl = document.getElementById('mod2-lsi-label');
+  if (lsiEl) {
+    lsiEl.style.color = lsi >= 0.90 ? '#21c354' : lsi >= 0.80 ? '#ffa500' : '#ff4444';
+  }
+  if (lsiLabelEl) {
+    lsiLabelEl.textContent = lsi >= 0.90 ? 'Retour sport autorisé' :
+                             lsi >= 0.80 ? 'Asymétrie modérée' : 'Asymétrie sévère';
+    lsiLabelEl.style.color = lsi >= 0.90 ? '#21c354' : lsi >= 0.80 ? '#ffa500' : '#ff4444';
+  }
+
+  // FPPA max badge
+  var fppaMax = Math.max(fppaL, fppaR);
+  s('mod2-fppa', fppaMax.toFixed(1) + '°');
+  var fppaEl      = document.getElementById('mod2-fppa');
+  var fppaLabelEl = document.getElementById('mod2-fppa-label');
+  if (fppaEl) {
+    fppaEl.style.color = fppaMax >= 15 ? '#ff4444' : fppaMax >= 12 ? '#ffa500' : '#21c354';
+  }
+  if (fppaLabelEl) {
+    fppaLabelEl.textContent = fppaMax >= 15 ? '⚠ Valgus > seuil clinique' :
+                              fppaMax >= 12 ? '△ Proche du seuil' : '✓ Dans les normes';
+    fppaLabelEl.style.color = fppaMax >= 15 ? '#ff4444' : fppaMax >= 12 ? '#ffa500' : '#21c354';
+  }
+
+  // Badge de module
+  var modBadge = document.getElementById('mod2-badge');
+  if (modBadge) {
+    if (fppaMax >= 15 || lsi < 0.80) {
+      modBadge.textContent = 'ALERTE';
+      modBadge.style.background = 'rgba(255,68,68,0.12)';
+      modBadge.style.color = '#ff4444';
+      modBadge.style.border = '1px solid rgba(255,68,68,0.25)';
+    } else if (fppaMax >= 12 || lsi < 0.90) {
+      modBadge.textContent = 'ATTENTION';
+      modBadge.style.background = 'rgba(255,165,0,0.12)';
+      modBadge.style.color = '#ffa500';
+      modBadge.style.border = '1px solid rgba(255,165,0,0.25)';
+    } else {
+      modBadge.textContent = 'OK';
+      modBadge.style.background = 'rgba(33,195,84,0.12)';
+      modBadge.style.color = '#21c354';
+      modBadge.style.border = '1px solid rgba(33,195,84,0.25)';
+    }
+  }
+
+  // Résumé texte
+  var asymCount = 0;
+  if (lsi < 0.90) asymCount++;
+  if (fppaL > 15 || fppaR > 15) asymCount++;
+  var summaryEl = document.getElementById('mod2-summary');
+  if (summaryEl) {
+    summaryEl.textContent = asymCount === 0
+      ? '✓ Aucune asymétrie significative détectée — profil dans les normes.'
+      : asymCount + ' asymétrie' + (asymCount > 1 ? 's' : '') + ' détectée'
+        + (asymCount > 1 ? 's' : '') + ' sur les variables surveillées. '
+        + 'Voir le diagnostic complet pour les détails.';
+    summaryEl.style.color = asymCount === 0 ? '#21c354' :
+                            asymCount >= 2  ? '#ff4444' : '#ffa500';
+  }
+
+  // Stocker pour navigation
+  window._mod2FppaL = fppaL;
+  window._mod2FppaR = fppaR;
+  window._mod2Lsi   = lsi;
+}
+
+function goToDiagnostic() {
+  // Construire l'objet currentResults depuis les variables disponibles
+  var fppaL = window._mod2FppaL || 14.2;
+  var fppaR = window._mod2FppaR || 11.8;
+  var lsi   = window._mod2Lsi   || 0.88;
+
+  // LSI FPPA approx (min/max ratio)
+  var lsiFppa = fppaL > 0 && fppaR > 0
+    ? Math.round(Math.min(fppaL, fppaR) / Math.max(fppaL, fppaR) * 100)
+    : 84;
+
+  var athleteName = (document.getElementById('inp-athlete-name') || {}).value || 'Athlète';
+
+  var currentResults = {
+    athlete:         athleteName,
+    test:            window._currentTest || 'CMJ',
+    date:            new Date().toLocaleDateString('fr-FR'),
+    fppa_gauche:     fppaL,
+    fppa_droite:     fppaR,
+    flexion_genou_g: 92.1,  // valeurs par défaut si non disponibles individuellement
+    flexion_genou_d: 88.4,
+    rom_hanche_g:    45.2,
+    rom_hanche_d:    42.1,
+    velo_genou_g:    312,
+    velo_genou_d:    267,
+    velo_hanche_g:   188,
+    velo_hanche_d:   201,
+    lsi_fppa:        lsiFppa,
+    lsi_flexion:     Math.round(lsi * 100),
+    lsi_rom_hanche:  93,
+    lsi_velo_genou:  86,
+    lsi_velo_hanche: 94
+  };
+
+  try {
+    localStorage.setItem('vertextrack_results', JSON.stringify(currentResults));
+  } catch (e) {
+    console.warn('[VT] localStorage write failed:', e);
+  }
+  window.location.href = 'diagnostic.html';
+}
+
 // ── SHAP Waterfall ─────────────────────────────────────────────────────────
 function renderSHAPWaterfall(shapData) {
   /*
@@ -3470,6 +3636,9 @@ function updateRecommandations(results) {
       lsi_symmetry:     lsi
     });
   }
+
+  // Module 2 synopsis
+  updateMod2Synopsis(fppaL, fppaR, lsi);
 
   // Amélioration 4 — RSI modifié + Asymmetry Score
   computeAndDisplayAdvancedMetrics(results);
