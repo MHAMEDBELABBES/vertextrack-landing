@@ -233,6 +233,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .locked-btn{background:rgba(255,255,255,0.08);color:#555;cursor:not-allowed;}
 .ready-btn{background:linear-gradient(135deg,#00c8ff,#0090cc);color:#03080f;cursor:pointer;animation:pulse-ready 2s infinite;box-shadow:0 0 30px rgba(0,200,255,0.4);}
 @keyframes pulse-ready{0%,100%{box-shadow:0 0 20px rgba(0,200,255,0.4);}50%{box-shadow:0 0 50px rgba(0,200,255,0.8),0 0 80px rgba(0,200,255,0.3);}}
+.vt-btn-export{width:100%;background:rgba(0,200,255,.06);color:var(--cyan);border:1px solid rgba(0,200,255,.3);padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;transition:all .2s;margin-top:10px;}
+.vt-btn-export:hover:not(:disabled){background:rgba(0,200,255,.12);border-color:rgba(0,200,255,.6);}
+.vt-btn-export:disabled{opacity:.45;cursor:not-allowed;}
+.vt-export-prog{margin-top:8px;display:none;}
+.vt-export-prog-msg{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.vt-export-prog-bar-wrap{height:3px;background:rgba(255,255,255,.06);border-radius:2px;}
+.vt-export-prog-bar{height:3px;background:var(--cyan);border-radius:2px;width:0%;transition:width .3s;}
 
 /* PROGRESS */
 .prog{display:none;margin-top:14px;}
@@ -384,7 +391,17 @@ footer{background:#020508;padding:20px 60px;display:flex;justify-content:space-b
 .disc-foot{text-align:center;font-size:10px;color:rgba(255,255,255,0.3);margin-top:20px;}
 
 /* WIZARD */
-.wiz-stepper{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.wiz-stepper{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+  /* BUG 2 FIX — sticky sous navbar (64px) + breadcrumb (48px) */
+  position:sticky;
+  top:112px;
+  z-index:85;
+  background:#03080f;
+  padding:10px 0;
+  border-bottom:0.5px solid rgba(0,200,255,0.08);
+}
 .wiz-step{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;position:relative;}
 .wiz-step::after{content:'';position:absolute;right:-18px;top:50%;width:12px;height:1px;background:rgba(255,255,255,0.1);}
 .wiz-step:last-child::after{display:none;}
@@ -1338,6 +1355,17 @@ border-top:1px solid rgba(255,255,255,0.06);">
     </div>
     <video id="previewSJ" style="display:none;width:100%;border-radius:8px;margin-top:12px;max-height:200px;" controls></video>
     <div class="file-info" id="infoSJ" style="display:none"></div>
+    <!-- EXPORT RAPIDE SJ — visible après upload -->
+    <div id="wizExportSJ" style="display:none;">
+      <button type="button" id="wizExportSJBtn" class="vt-btn-export" onclick="startVideoExport('SJ')">
+        <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Exporter SJ avec landmarks
+      </button>
+      <div class="vt-export-prog" id="wizExportSJProg">
+        <div class="vt-export-prog-msg" id="wizExportSJMsg">Préparation...</div>
+        <div class="vt-export-prog-bar-wrap"><div class="vt-export-prog-bar" id="wizExportSJBar"></div></div>
+      </div>
+    </div>
   </div>
 
   <!-- ÉTAPE 3 : DVJ -->
@@ -1365,6 +1393,17 @@ border-top:1px solid rgba(255,255,255,0.06);">
         </div>
         <video id="previewDVJsag" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:150px;" controls></video>
         <div class="file-info" id="infoDVJsag" style="display:none"></div>
+        <!-- EXPORT RAPIDE DVJ SAG -->
+        <div id="wizExportDVJsag" style="display:none;">
+          <button type="button" id="wizExportDVJsagBtn" class="vt-btn-export" onclick="startVideoExport('DVJsag')">
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#00c8ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Exporter DVJ SAG landmarks
+          </button>
+          <div class="vt-export-prog" id="wizExportDVJsagProg">
+            <div class="vt-export-prog-msg" id="wizExportDVJsagMsg">Préparation...</div>
+            <div class="vt-export-prog-bar-wrap"><div class="vt-export-prog-bar" id="wizExportDVJsagBar"></div></div>
+          </div>
+        </div>
       </div>
       <!-- DVJ FRONT -->
       <div>
@@ -1379,13 +1418,24 @@ border-top:1px solid rgba(255,255,255,0.06);">
         </div>
         <video id="previewDVJfront" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:150px;" controls></video>
         <div class="file-info" id="infoDVJfront" style="display:none"></div>
+        <!-- EXPORT RAPIDE DVJ FRONT -->
+        <div id="wizExportDVJfront" style="display:none;">
+          <button type="button" id="wizExportDVJfrontBtn" class="vt-btn-export" style="border-color:rgba(245,158,11,.3);color:var(--amber);" onclick="startVideoExport('DVJfront')">
+            <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><path d="M9 1v10M9 11L5 7M9 11l4-4M2 14h14" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Exporter DVJ FRONT valgus
+          </button>
+          <div class="vt-export-prog" id="wizExportDVJfrontProg">
+            <div class="vt-export-prog-msg" id="wizExportDVJfrontMsg">Préparation...</div>
+            <div class="vt-export-prog-bar-wrap"><div class="vt-export-prog-bar" id="wizExportDVJfrontBar" style="background:var(--amber);"></div></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- BOUTON ANALYSER -->
   <div style="margin-top:32px;">
-    <button id="lbtn" class="btn-analyse locked-btn" disabled onclick="launch()">
+    <button id="lbtn" type="button" class="btn-analyse locked-btn" disabled onclick="launch()">
       🔒 UPLOADEZ LES 3 TESTS POUR ANALYSER
     </button>
   </div>
@@ -2116,10 +2166,26 @@ function drawPoseOnCanvas(ctx, kps, W, H) {
 
 async function exportGeneric(inputId, previewId, filename, type) {
   var vid = document.getElementById(previewId);
+  // Use wizard-step UI elements when available (priority), fallback to #res section IDs
   var btnId = 'exportVidBtn', prgId = 'exportProgress', msgId = 'exportMsg', barId = 'exportBar';
-  if (type === 'SJ') { btnId = 'exportSJBtn'; prgId = 'exportSJProgress'; msgId = 'exportSJMsg'; barId = 'exportSJBar'; }
-  if (type === 'DVJsag') { btnId = 'exportDVJBtn'; prgId = 'exportDVJProgress'; msgId = 'exportDVJMsg'; barId = 'exportDVJBar'; }
-  if (type === 'DVJfront') { btnId = 'exportDVJVidBtn'; prgId = 'exportDVJProgress'; msgId = 'exportDVJMsg'; barId = 'exportDVJBar'; }
+  if (type === 'SJ') {
+    btnId = document.getElementById('wizExportSJBtn')    ? 'wizExportSJBtn'    : 'exportSJBtn';
+    prgId = document.getElementById('wizExportSJProg')   ? 'wizExportSJProg'  : 'exportSJProgress';
+    msgId = document.getElementById('wizExportSJMsg')    ? 'wizExportSJMsg'   : 'exportSJMsg';
+    barId = document.getElementById('wizExportSJBar')    ? 'wizExportSJBar'   : 'exportSJBar';
+  }
+  if (type === 'DVJsag') {
+    btnId = document.getElementById('wizExportDVJsagBtn')  ? 'wizExportDVJsagBtn'  : 'exportDVJBtn';
+    prgId = document.getElementById('wizExportDVJsagProg') ? 'wizExportDVJsagProg' : 'exportDVJProgress';
+    msgId = document.getElementById('wizExportDVJsagMsg')  ? 'wizExportDVJsagMsg'  : 'exportDVJMsg';
+    barId = document.getElementById('wizExportDVJsagBar')  ? 'wizExportDVJsagBar'  : 'exportDVJBar';
+  }
+  if (type === 'DVJfront') {
+    btnId = document.getElementById('wizExportDVJfrontBtn')  ? 'wizExportDVJfrontBtn'  : 'exportDVJVidBtn';
+    prgId = document.getElementById('wizExportDVJfrontProg') ? 'wizExportDVJfrontProg' : 'exportDVJProgress';
+    msgId = document.getElementById('wizExportDVJfrontMsg')  ? 'wizExportDVJfrontMsg'  : 'exportDVJMsg';
+    barId = document.getElementById('wizExportDVJfrontBar')  ? 'wizExportDVJfrontBar'  : 'exportDVJBar';
+  }
   var btn = document.getElementById(btnId);
   var prog = document.getElementById(prgId);
   var msg = document.getElementById(msgId);
@@ -2140,6 +2206,7 @@ async function exportGeneric(inputId, previewId, filename, type) {
   var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
   var stream = offCv.captureStream(fps);
   var recorder = new MediaRecorder(stream, {mimeType: mimeType, videoBitsPerSecond: 3000000});
+  window._vtCurrentRecorder = recorder;
   var chunks = [];
   recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
   recorder.onstop = () => {
@@ -2205,11 +2272,24 @@ async function exportGeneric(inputId, previewId, filename, type) {
   if (msg) msg.textContent = 'Finalisation du fichier...';
 }
 
+// Lance l'export vidéo — alias public utilisé par les boutons du wizard
+function startVideoExport(type) {
+  exportAnnotatedVideo(type);
+}
+
+// Arrête l'export en cours si actif
+function stopVideoExport() {
+  if (window._vtCurrentRecorder && window._vtCurrentRecorder.state !== 'inactive') {
+    try { window._vtCurrentRecorder.stop(); } catch(e) {}
+    window._vtCurrentRecorder = null;
+  }
+}
+
 function exportAnnotatedVideo(type) {
-  if (type === 'CMJ') exportGeneric('inputCMJ', 'previewCMJ', 'VERTEXTRACK_CMJ_Landmarks', 'CMJ');
-  else if (type === 'SJ') exportGeneric('inputSJ', 'previewSJ', 'VERTEXTRACK_SJ_Landmarks', 'SJ');
-  else if (type === 'DVJsag') exportGeneric('inputDVJsag', 'previewDVJsag', 'VERTEXTRACK_DVJ_SAG_Landmarks', 'DVJsag');
-  else if (type === 'DVJfront') exportGeneric('inputDVJfront', 'previewDVJfront', 'VERTEXTRACK_DVJ_FRONT_Valgus', 'DVJfront');
+  if (type === 'CMJ')      exportGeneric('inputCMJ',     'previewCMJ',     'VERTEXTRACK_CMJ_SAG_landmarks',  'CMJ');
+  else if (type === 'SJ')  exportGeneric('inputSJ',      'previewSJ',      'VERTEXTRACK_SJ_SAG_landmarks',   'SJ');
+  else if (type === 'DVJsag')   exportGeneric('inputDVJsag',   'previewDVJsag',   'VERTEXTRACK_DVJ_SAG_landmarks',   'DVJsag');
+  else if (type === 'DVJfront') exportGeneric('inputDVJfront', 'previewDVJfront', 'VERTEXTRACK_DVJ_FRONT_landmarks', 'DVJfront');
 }
 
 // ===== WIZARD UPLOAD SÉQUENTIEL =====
@@ -2239,6 +2319,10 @@ function exportAnnotatedVideo(type) {
         info.style.display = 'flex';
       }
       if (check) check.style.display = 'inline';
+
+      // Afficher le bouton export rapide pour SJ / DVJ
+      var wizExport = document.getElementById('wizExport' + key);
+      if (wizExport) wizExport.style.display = 'block';
 
       up[key] = true;
       window._vtUploaded = up;
