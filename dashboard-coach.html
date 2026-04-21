@@ -231,15 +231,14 @@
 </head>
 <body>
 
-<!-- ── Guard auth ──────────────────────────────────────────── -->
+<!-- ── Guard dashboard-coach ────────────────────────────────── -->
 <script>
 (function(){
   var mode = localStorage.getItem('vt_auth_mode');
   var role = localStorage.getItem('vt_user_role');
   if (mode !== 'account') {
-    sessionStorage.setItem('vt_redirect_msg',
-      'Accès réservé aux coachs et médecins connectés.');
-    window.location.replace('login.html');
+    // Pas de compte → accueil (évite boucle login↔dashboard)
+    window.location.replace('index.html');
     return;
   }
   if (role === 'athlete') {
