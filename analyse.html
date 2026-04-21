@@ -769,6 +769,63 @@ body {
 .vt-status-warn { color:#ffa500; font-size:14px; }
 .vt-lit-caption { font-size:10px; color:rgba(200,216,232,0.22); font-style:italic; line-height:1.6; margin-top:8px; }
 
+/* ── Protocole filmage ── */
+.vt-protocol-guide { margin-bottom: 16px; }
+.vt-protocol-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(200,216,232,0.5);
+  margin-bottom: 8px;
+}
+.vt-protocol-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 10px;
+}
+.vt-protocol-card {
+  background: #060e1a;
+  border: 0.5px solid rgba(0,200,255,0.12);
+  border-radius: 8px; padding: 10px 12px;
+}
+.vt-protocol-card.frontal {
+  border-color: rgba(255,165,0,0.2);
+}
+.vt-protocol-card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.vt-protocol-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0;
+  border-bottom: 0.5px solid rgba(0,200,255,0.06);
+  font-size: 11px; color: rgba(200,216,232,0.6);
+}
+.vt-protocol-row:last-child { border-bottom: none; }
+.vt-proto-num {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+.vt-proto-badge {
+  font-size: 9px; font-weight: 600; padding: 1px 5px;
+  border-radius: 3px; margin-left: 4px;
+}
+.vt-protocol-tip {
+  background: rgba(0,200,255,0.04);
+  border: 0.5px solid rgba(0,200,255,0.15);
+  border-radius: 6px; padding: 8px 11px;
+  font-size: 11px; color: rgba(200,216,232,0.55);
+  line-height: 1.5; margin-bottom: 8px;
+}
+.vt-protocol-warn {
+  background: rgba(255,165,0,0.04);
+  border: 0.5px solid rgba(255,165,0,0.2);
+  border-left: 2px solid #ffa500;
+  border-radius: 0 6px 6px 0;
+  padding: 7px 11px; font-size: 11px;
+  color: rgba(255,200,100,0.75); line-height: 1.5;
+}
+
 /* ══ END MODULE 1 ═════════════════════════════════════════════ */
 </style>
 </head>
@@ -1141,6 +1198,108 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <span class="badge-vue badge-front">Vue SAGITTALE</span>
       <span class="step-check" id="checkCMJ" style="display:none">✅</span>
     </div>
+
+    <!-- GUIDE PROTOCOLE FILMAGE -->
+    <div class="vt-protocol-guide">
+      <div class="vt-protocol-title">
+        Protocole de filmage — 2 passages recommandés
+      </div>
+
+      <div class="vt-protocol-grid">
+
+        <!-- Passage 1 : Vue sagittale -->
+        <div class="vt-protocol-card">
+          <div class="vt-protocol-card-title" style="color:#00c8ff;">
+            Passage 1 — Vue sagittale (côté)
+          </div>
+
+          <svg viewBox="0 0 220 80" width="100%"
+            style="margin-bottom:8px;"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="220" height="80" fill="#03080f" rx="4"/>
+            <ellipse cx="80" cy="28" rx="6" ry="7" fill="none" stroke="#00c8ff" stroke-width="1"/>
+            <rect x="75" y="35" width="11" height="18" rx="2" fill="none" stroke="#00c8ff" stroke-width="1"/>
+            <line x1="75" y1="53" x2="70" y2="68" stroke="#00c8ff" stroke-width="1" stroke-linecap="round"/>
+            <line x1="86" y1="53" x2="90" y2="68" stroke="#00c8ff" stroke-width="1" stroke-linecap="round"/>
+            <line x1="80" y1="40" x2="70" y2="50" stroke="#00c8ff" stroke-width="1" stroke-linecap="round"/>
+            <line x1="80" y1="40" x2="90" y2="50" stroke="#00c8ff" stroke-width="1" stroke-linecap="round"/>
+            <line x1="50" y1="70" x2="120" y2="70" stroke="rgba(200,216,232,0.15)" stroke-width="0.5"/>
+            <rect x="165" y="30" width="28" height="20" rx="3" fill="#060e1a" stroke="rgba(0,200,255,0.5)" stroke-width="0.8"/>
+            <rect x="168" y="33" width="14" height="10" rx="1" fill="rgba(0,200,255,0.12)"/>
+            <circle cx="186" cy="39" r="4" fill="rgba(0,200,255,0.15)" stroke="rgba(0,200,255,0.5)" stroke-width="0.6"/>
+            <line x1="163" y1="40" x2="125" y2="40" stroke="rgba(0,200,255,0.3)" stroke-width="0.6" stroke-dasharray="3,2"/>
+            <text x="144" y="52" text-anchor="middle" font-size="8" fill="rgba(0,200,255,0.4)" font-family="Barlow,sans-serif">3–4 m</text>
+            <text x="110" y="76" text-anchor="middle" font-size="7" fill="rgba(200,216,232,0.3)" font-family="Barlow,sans-serif">Pieds entiers visibles</text>
+          </svg>
+
+          <div class="vt-protocol-row">
+            <div class="vt-proto-num" style="background:rgba(0,200,255,0.12);color:#00c8ff;">1</div>
+            <span>CMJ
+              <span class="vt-proto-badge" style="background:rgba(33,195,84,0.12);color:#21c354;">t_vol ✓</span>
+              <span class="vt-proto-badge" style="background:rgba(33,195,84,0.12);color:#21c354;">COM ✓</span>
+            </span>
+          </div>
+          <div class="vt-protocol-row">
+            <div class="vt-proto-num" style="background:rgba(0,200,255,0.12);color:#00c8ff;">2</div>
+            <span>SJ
+              <span class="vt-proto-badge" style="background:rgba(33,195,84,0.12);color:#21c354;">t_vol ✓</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Passage 2 : Vue frontale -->
+        <div class="vt-protocol-card frontal">
+          <div class="vt-protocol-card-title" style="color:#ffa500;">
+            Passage 2 — Vue frontale (face)
+          </div>
+
+          <svg viewBox="0 0 220 80" width="100%"
+            style="margin-bottom:8px;"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="220" height="80" fill="#03080f" rx="4"/>
+            <ellipse cx="80" cy="24" rx="7" ry="8" fill="none" stroke="#ffa500" stroke-width="1"/>
+            <rect x="72" y="32" width="16" height="20" rx="2" fill="none" stroke="#ffa500" stroke-width="1"/>
+            <line x1="72" y1="52" x2="64" y2="68" stroke="#ffa500" stroke-width="1" stroke-linecap="round"/>
+            <line x1="88" y1="52" x2="96" y2="68" stroke="#ffa500" stroke-width="1" stroke-linecap="round"/>
+            <line x1="72" y1="38" x2="58" y2="46" stroke="#ffa500" stroke-width="1" stroke-linecap="round"/>
+            <line x1="88" y1="38" x2="102" y2="46" stroke="#ffa500" stroke-width="1" stroke-linecap="round"/>
+            <line x1="50" y1="70" x2="120" y2="70" stroke="rgba(200,216,232,0.15)" stroke-width="0.5"/>
+            <rect x="165" y="30" width="28" height="20" rx="3" fill="#060e1a" stroke="rgba(255,165,0,0.5)" stroke-width="0.8"/>
+            <rect x="168" y="33" width="14" height="10" rx="1" fill="rgba(255,165,0,0.12)"/>
+            <circle cx="186" cy="39" r="4" fill="rgba(255,165,0,0.15)" stroke="rgba(255,165,0,0.5)" stroke-width="0.6"/>
+            <line x1="163" y1="40" x2="125" y2="40" stroke="rgba(255,165,0,0.3)" stroke-width="0.6" stroke-dasharray="3,2"/>
+            <text x="144" y="52" text-anchor="middle" font-size="8" fill="rgba(255,165,0,0.4)" font-family="Barlow,sans-serif">3–4 m</text>
+            <text x="110" y="76" text-anchor="middle" font-size="7" fill="rgba(200,216,232,0.3)" font-family="Barlow,sans-serif">Genoux et pieds visibles</text>
+          </svg>
+
+          <div class="vt-protocol-row">
+            <div class="vt-proto-num" style="background:rgba(255,165,0,0.12);color:#ffa500;">1</div>
+            <span>CMJ
+              <span class="vt-proto-badge" style="background:rgba(0,200,255,0.12);color:#00c8ff;">FPPA ✓</span>
+              <span class="vt-proto-badge" style="background:rgba(0,200,255,0.12);color:#00c8ff;">LSI ✓</span>
+            </span>
+          </div>
+          <div class="vt-protocol-row">
+            <div class="vt-proto-num" style="background:rgba(255,165,0,0.12);color:#ffa500;">2</div>
+            <span>DVJ
+              <span class="vt-proto-badge" style="background:rgba(0,200,255,0.12);color:#00c8ff;">FPPA ✓</span>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="vt-protocol-tip">
+        Les 2 passages ensemble donnent le bilan biomécanique complet :
+        hauteur de saut (côté) + valgus dynamique FPPA (face) + symétrie LSI.
+      </div>
+      <div class="vt-protocol-warn">
+        Distance caméra 3–4 m · Hauteur niveau hanches ·
+        Trépied obligatoire · Athlète entier dans le cadre
+      </div>
+    </div>
+    <!-- FIN GUIDE PROTOCOLE FILMAGE -->
+
     <div class="drop-zone" id="zoneCMJ">
       <div class="drop-inner">
         <p style="margin:0 0 4px;font-size:16px;letter-spacing:1px;">GLISSEZ VOTRE VIDÉO ICI</p>
