@@ -866,6 +866,36 @@ body {
 #table-percentiles tr:last-child td{border-bottom:none;}
 
 /* ══ END MODULE 1 ═════════════════════════════════════════════ */
+
+/* ══ PRINT / PDF ══════════════════════════════════════════════ */
+@media print {
+  /* Cacher tout ce qui n'est pas le rapport */
+  body > *:not(#print-root) { display: none !important; }
+  #print-root { display: block !important; }
+
+  /* Remettre l'affichage des sections de résultats */
+  #res { display: block !important; }
+
+  /* Masquer éléments non imprimables */
+  .wiz-stepper, .nav, .vt-btn, .drop-zone, .wiz-card,
+  #btn-export-pdf, #btn-export-pdf-radar,
+  .vt-tab-nav, .vt-temporal-card { display: none !important; }
+
+  /* Cartes de résultats */
+  .rc { break-inside: avoid; margin-bottom: 12px; page-break-inside: avoid; }
+
+  /* Jauge */
+  .vt-gauge-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Canvas radar */
+  #canvas-radar-pdf { max-width: 280px; margin: 0 auto; display: block; }
+
+  /* Couleurs sur fond blanc */
+  body { background: #fff !important; color: #000 !important; }
+  .rc  { background: #f8f9fa !important; border: 1px solid #ddd !important; }
+  .l   { color: #444 !important; }
+  .r   { color: #000 !important; }
+}
 </style>
 </head>
 <body>
@@ -1594,6 +1624,59 @@ border-top:1px solid rgba(255,255,255,0.06);">
       </div>
     </div>
 
+    <!-- RSI MODIFIÉ + ASYMMETRY SCORE -->
+    <div class="rc" id="card-advanced-metrics">
+      <div class="rch">
+        <div class="rct">Métriques avancées CMJ</div>
+        <span class="badge" id="adv-badge" style="background:rgba(0,200,255,0.12);color:#00c8ff;border:1px solid rgba(0,200,255,0.2);">RSI + ASYM</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+
+        <!-- RSI Modifié -->
+        <div style="background:#040a14;border:1px solid rgba(0,200,255,0.08);border-radius:8px;padding:14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(200,216,232,0.45);margin-bottom:6px;">RSI MODIFIÉ · EBBEN & PETUSHEK 2010</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#00c8ff;line-height:1;" id="val-rsi">--</span>
+            <span style="font-size:11px;color:rgba(200,216,232,0.4);">m/s</span>
+          </div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;" id="cat-rsi">--</div>
+          <!-- Barre RSI (plage 0–1.2) -->
+          <div style="position:relative;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;margin-bottom:6px;">
+            <div id="bar-rsi" style="position:absolute;height:100%;border-radius:3px;background:linear-gradient(90deg,#ffa500,#00c8ff);width:0%;transition:width .6s ease;"></div>
+            <!-- seuils -->
+            <div style="position:absolute;left:25%;top:-3px;width:1px;height:12px;background:rgba(255,255,255,0.25);"></div>
+            <div style="position:absolute;left:50%;top:-3px;width:1px;height:12px;background:rgba(255,255,255,0.25);"></div>
+            <div style="position:absolute;left:75%;top:-3px;width:1px;height:12px;background:rgba(255,255,255,0.25);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:rgba(200,216,232,0.25);font-family:'Barlow',sans-serif;">
+            <span>0</span><span>0.30</span><span>0.60</span><span>0.90</span><span>1.2+</span>
+          </div>
+          <div style="font-size:9px;color:rgba(200,216,232,0.3);margin-top:6px;font-style:italic;">RSI = hauteur (m) ÷ temps de vol (s)</div>
+        </div>
+
+        <!-- Asymmetry Score -->
+        <div style="background:#040a14;border:1px solid rgba(255,165,0,0.08);border-radius:8px;padding:14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(200,216,232,0.45);margin-bottom:6px;">ASYMÉTRIE FPPA · BISHOP ET AL. 2018</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#ffa500;line-height:1;" id="val-asym">--</span>
+            <span style="font-size:11px;color:rgba(200,216,232,0.4);">%</span>
+          </div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;" id="cat-asym">--</div>
+          <!-- Barre Asymmetry (plage 0–30%) -->
+          <div style="position:relative;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;margin-bottom:6px;">
+            <div id="bar-asym" style="position:absolute;height:100%;border-radius:3px;background:linear-gradient(90deg,#21c354,#ffa500,#e53935);width:0%;transition:width .6s ease;"></div>
+            <div style="position:absolute;left:33.3%;top:-3px;width:1px;height:12px;background:rgba(255,255,255,0.25);"></div>
+            <div style="position:absolute;left:50%;top:-3px;width:1px;height:12px;background:rgba(255,255,255,0.25);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:rgba(200,216,232,0.25);font-family:'Barlow',sans-serif;">
+            <span>0</span><span>10%</span><span>15%</span><span>30%+</span>
+          </div>
+          <div style="font-size:9px;color:rgba(200,216,232,0.3);margin-top:6px;font-style:italic;">|FPPA_G − FPPA_D| ÷ mean(FPPA) × 100</div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- DIAGNOSTIC ARTICULAIRE + REFERENTIELS -->
     <div class="rc">
       <div class="rch"><div class="rct">Diagnostic</div><span class="badge warn" id="diag-badge">ATTENTION</span></div>
@@ -1968,6 +2051,18 @@ border-top:1px solid rgba(255,255,255,0.06);">
     </div>
     <!-- Export PDF restreint : admin + médical uniquement -->
     <button class="xbtn" data-role="admin,medical" onclick="vtDownloadPDF()">⬇ Exporter rapport PDF</button>
+
+    <!-- Export PDF + Radar — accessible à tous les rôles -->
+    <button id="btn-export-pdf-radar"
+      onclick="exportPDFWithRadar()"
+      style="width:100%;margin-top:8px;background:rgba(33,195,84,0.07);color:#21c354;border:1px solid rgba(33,195,84,0.25);padding:11px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;transition:all .2s;"
+      onmouseover="this.style.background='rgba(33,195,84,0.14)'"
+      onmouseout="this.style.background='rgba(33,195,84,0.07)'">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1v9M8 10L4 6M8 10l4-4M1 13h14" stroke="#21c354" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Exporter rapport PDF + Radar
+    </button>
 
     <!-- TÉLÉCHARGER VIDÉO AVEC LANDMARKS -->
     <div class="rc" style="margin-top:14px;">
@@ -2685,7 +2780,10 @@ function loadDemo() {
     updateRecommandations({
       fppaLeft: 14.2, fppaRight: 11.8,
       kneeFlexion: 68, lsi: 0.88, jumpHeight: 37.8,
-      kneeAnglesSeries: [], hipAnglesSeries: []
+      kneeAnglesSeries: [], hipAnglesSeries: [],
+      // Démo RSI + Asymétrie
+      rsi_modified: 0.648, rsi_category: 'Bon',
+      asymmetry_score: 10.2, asymmetry_category: 'Légère asymétrie'
     });
   }
 }
@@ -2799,6 +2897,103 @@ function trackExport(type) {
   if (typeof vtToast === 'function') vtToast('✅ ' + type + ' téléchargé !');
 }
 
+// ── Export PDF avec radar Chart.js ────────────────────────────────────────
+function exportPDFWithRadar() {
+  // Collect current metric values
+  var rsiVal  = (document.getElementById('val-rsi')  || {}).textContent || '--';
+  var rsiCat  = (document.getElementById('cat-rsi')  || {}).textContent || '';
+  var asymVal = (document.getElementById('val-asym') || {}).textContent || '--';
+  var asymCat = (document.getElementById('cat-asym') || {}).textContent || '';
+  var fppaL   = (document.getElementById('val-fppa-left')   || {}).textContent || '--';
+  var fppaR   = (document.getElementById('val-fppa-right')  || {}).textContent || '--';
+  var knee    = (document.getElementById('val-knee')        || {}).textContent || '--';
+  var lsi     = (document.getElementById('val-lsi')         || {}).textContent || '--';
+  var jumpH   = (document.querySelector('.bign .v')         || {}).textContent || '--';
+  var athlete = (document.getElementById('inp-athlete-name')|| {}).value || 'Athlète';
+  var date    = new Date().toLocaleDateString('fr-FR');
+
+  // Build radar data (normalised 0-1 scale for display)
+  // Metrics: Hauteur CMJ, RSI, Symétrie (1-asym/30), Flexion genou /120, FPPA G inversé /30, FPPA D inversé /30
+  var h      = parseFloat(jumpH)  || 0;
+  var rsi    = parseFloat(rsiVal) || 0;
+  var asym   = parseFloat(asymVal)|| 0;
+  var kn     = parseFloat(knee)   || 0;
+  var fpL    = parseFloat(fppaL)  || 0;
+  var fpR    = parseFloat(fppaR)  || 0;
+
+  var radarData = [
+    Math.min(h / 50, 1),                     // Hauteur CMJ (max 50cm)
+    Math.min(rsi / 1.2, 1),                   // RSI modifié (max 1.2)
+    Math.max(0, 1 - asym / 30),              // Symétrie (inverse asymétrie)
+    Math.min(Math.max(kn, 0) / 120, 1),       // Flexion genou (max 120°)
+    Math.max(0, 1 - Math.abs(fpL) / 30),      // FPPA G (inversé, max 30°)
+    Math.max(0, 1 - Math.abs(fpR) / 30),      // FPPA D (inversé)
+  ];
+
+  // Build printable HTML page
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">'
+    + '<title>Rapport VERTEXTRACK – ' + athlete + '</title>'
+    + '<style>'
+    + 'body{font-family:Arial,sans-serif;background:#fff;color:#111;margin:0;padding:20px;}'
+    + 'h1{font-size:20px;margin-bottom:4px;color:#020e1e;}'
+    + '.sub{font-size:12px;color:#666;margin-bottom:18px;}'
+    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}'
+    + '.card{border:1px solid #ddd;border-radius:8px;padding:14px;}'
+    + '.card h3{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin:0 0 6px;}'
+    + '.val{font-size:26px;font-weight:700;color:#020e1e;}'
+    + '.cat{font-size:12px;font-weight:600;margin-top:3px;}'
+    + '.cat.good{color:#21c354;} .cat.warn{color:#ffa500;} .cat.bad{color:#e53935;}'
+    + '.cat.ok{color:#00c8ff;}'
+    + '#radar-wrap{text-align:center;margin-bottom:18px;}'
+    + 'canvas#rc{max-width:300px;}'
+    + '.footer{font-size:9px;color:#aaa;border-top:1px solid #eee;padding-top:8px;margin-top:10px;}'
+    + '</style>'
+    + '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>'
+    + '</head><body>'
+    + '<h1>Rapport VERTEXTRACK</h1>'
+    + '<div class="sub">Athlète : <strong>' + athlete + '</strong> &nbsp;|&nbsp; Date : ' + date + '</div>'
+    + '<div id="radar-wrap"><canvas id="rc" width="300" height="300"></canvas></div>'
+    + '<div class="grid">'
+    + _pdfCard('Hauteur CMJ', jumpH, 'cm', '', 'ok')
+    + _pdfCard('RSI Modifié', rsiVal, 'm/s', rsiCat, _pdfCatClass(rsiCat, ['Excellent','Bon'], ['Modéré'], ['Faible']))
+    + _pdfCard('Asymétrie FPPA', asymVal, '%', asymCat, _pdfCatClass(asymCat, ['Symétrique'], ['Légère asymétrie'], ['Asymétrie marquée']))
+    + _pdfCard('Flexion genou', knee, '°', '', 'ok')
+    + _pdfCard('FPPA gauche', fppaL, '', '', parseFloat(fppaL)>=15?'bad':parseFloat(fppaL)>=12?'warn':'good')
+    + _pdfCard('FPPA droit',  fppaR, '', '', parseFloat(fppaR)>=15?'bad':parseFloat(fppaR)>=12?'warn':'good')
+    + '</div>'
+    + '<div class="footer">Généré par VERTEXTRACK Biomechanics Platform · ' + date + ' · Données confidentielles athlète</div>'
+    + '<script>'
+    + 'window.addEventListener("load",function(){'
+    + 'var ctx=document.getElementById("rc").getContext("2d");'
+    + 'new Chart(ctx,{type:"radar",data:{labels:["Hauteur CMJ","RSI Modifié","Symétrie","Flexion genou","FPPA G","FPPA D"],'
+    + 'datasets:[{label:"Profil",data:' + JSON.stringify(radarData) + ','
+    + 'backgroundColor:"rgba(0,200,255,0.12)",borderColor:"#00c8ff",pointBackgroundColor:"#00c8ff",borderWidth:2}]},'
+    + 'options:{scales:{r:{min:0,max:1,ticks:{display:false},grid:{color:"rgba(0,0,0,0.08)"},pointLabels:{font:{size:11}}}},'
+    + 'plugins:{legend:{display:false}}}});'
+    + 'setTimeout(function(){window.print();},600);});'
+    + '<\/script></body></html>';
+
+  var win = window.open('', '_blank');
+  if (!win) { if (typeof vtToast === 'function') vtToast('⚠ Autorisez les pop-ups pour générer le PDF'); return; }
+  win.document.write(html);
+  win.document.close();
+  trackExport('PDF Radar');
+}
+
+// Helpers PDF
+function _pdfCard(label, val, unit, cat, catClass) {
+  return '<div class="card"><h3>' + label + '</h3>'
+    + '<div class="val">' + val + (unit ? ' <span style="font-size:14px;color:#888;">' + unit + '</span>' : '') + '</div>'
+    + (cat ? '<div class="cat ' + catClass + '">' + cat + '</div>' : '')
+    + '</div>';
+}
+function _pdfCatClass(cat, good, warn, bad) {
+  if (good.indexOf(cat) !== -1) return 'good';
+  if (warn.indexOf(cat) !== -1) return 'warn';
+  if (bad.indexOf(cat)  !== -1) return 'bad';
+  return 'ok';
+}
+
 /* ===== END VERTEXTRACK ===== */
 </script>
 <script>
@@ -2862,6 +3057,111 @@ function vtTab(btn, panelId) {
 }
 
 // ── Mise à jour dynamique des jauges et recommandations ────
+// ── RSI modifié + Asymmetry Score ──────────────────────────────────────────
+function computeAndDisplayAdvancedMetrics(results) {
+  if (!results) return;
+
+  // ── Lire les entrées ──────────────────────────────────────────────────────
+  // RSI peut arriver directement dans results (depuis pipeline Python)
+  // ou être calculé ici depuis jumpHeight + flightTime
+  var rsi = results.rsi_modified !== undefined ? results.rsi_modified : null;
+  var rsiCat = results.rsi_category || null;
+
+  if (rsi === null) {
+    var hCm  = results.jumpHeight !== undefined ? results.jumpHeight :
+               (results.jump_height_com || results.jump_height_flight || null);
+    var tVol = results.flightTime !== undefined ? results.flightTime :
+               (results.flight_time || null);
+    if (hCm !== null && tVol !== null && tVol > 0) {
+      rsi = Math.round(((hCm / 100) / tVol) * 1000) / 1000;
+      if      (rsi < 0.30) rsiCat = 'Faible';
+      else if (rsi < 0.60) rsiCat = 'Modéré';
+      else if (rsi < 0.90) rsiCat = 'Bon';
+      else                  rsiCat = 'Excellent';
+    }
+  }
+
+  var asym = results.asymmetry_score !== undefined ? results.asymmetry_score : null;
+  var asymCat = results.asymmetry_category || null;
+
+  if (asym === null) {
+    var fppaG = results.fppaLeft  !== undefined ? results.fppaLeft  :
+                (results.fppa_left || null);
+    var fppaD = results.fppaRight !== undefined ? results.fppaRight :
+                (results.fppa_right || null);
+    if (fppaG !== null && fppaD !== null) {
+      var meanFppa = (Math.abs(fppaG) + Math.abs(fppaD)) / 2;
+      if (meanFppa > 0) {
+        asym = Math.round(Math.abs(fppaG - fppaD) / meanFppa * 1000) / 10;
+        if      (asym < 10) asymCat = 'Symétrique';
+        else if (asym <= 15) asymCat = 'Légère asymétrie';
+        else                 asymCat = 'Asymétrie marquée';
+      }
+    }
+  }
+
+  // ── Affichage RSI ─────────────────────────────────────────────────────────
+  var elRsi = document.getElementById('val-rsi');
+  var elRsiCat = document.getElementById('cat-rsi');
+  var elBarRsi = document.getElementById('bar-rsi');
+
+  if (rsi !== null) {
+    if (elRsi) elRsi.textContent = rsi.toFixed(3);
+    var rsiColors = { 'Faible':'#e53935', 'Modéré':'#ffa500', 'Bon':'#00c8ff', 'Excellent':'#21c354' };
+    if (elRsiCat) {
+      elRsiCat.textContent = rsiCat;
+      elRsiCat.style.color = rsiColors[rsiCat] || '#fff';
+    }
+    if (elBarRsi) {
+      elBarRsi.style.width = Math.min(rsi / 1.2 * 100, 100) + '%';
+      elBarRsi.style.background = rsiCat === 'Excellent' ? '#21c354' :
+                                  rsiCat === 'Bon'       ? '#00c8ff' :
+                                  rsiCat === 'Modéré'    ? '#ffa500' : '#e53935';
+    }
+    // Badge global
+    var advBadge = document.getElementById('adv-badge');
+    if (advBadge) {
+      if (rsiCat === 'Excellent' || rsiCat === 'Bon') {
+        advBadge.textContent = 'BON RSI';
+        advBadge.style.background = 'rgba(33,195,84,0.12)';
+        advBadge.style.color = '#21c354';
+        advBadge.style.border = '1px solid rgba(33,195,84,0.2)';
+      } else if (rsiCat === 'Modéré') {
+        advBadge.textContent = 'RSI MODÉRÉ';
+        advBadge.style.background = 'rgba(255,165,0,0.12)';
+        advBadge.style.color = '#ffa500';
+        advBadge.style.border = '1px solid rgba(255,165,0,0.2)';
+      } else {
+        advBadge.textContent = 'RSI FAIBLE';
+        advBadge.style.background = 'rgba(229,57,53,0.12)';
+        advBadge.style.color = '#e53935';
+        advBadge.style.border = '1px solid rgba(229,57,53,0.2)';
+      }
+    }
+  }
+
+  // ── Affichage Asymmetry Score ─────────────────────────────────────────────
+  var elAsym = document.getElementById('val-asym');
+  var elAsymCat = document.getElementById('cat-asym');
+  var elBarAsym = document.getElementById('bar-asym');
+
+  if (asym !== null) {
+    if (elAsym) elAsym.textContent = asym.toFixed(1);
+    var asymColors = { 'Symétrique':'#21c354', 'Légère asymétrie':'#ffa500', 'Asymétrie marquée':'#e53935' };
+    if (elAsymCat) {
+      elAsymCat.textContent = asymCat;
+      elAsymCat.style.color = asymColors[asymCat] || '#fff';
+    }
+    if (elBarAsym) {
+      elBarAsym.style.width = Math.min(asym / 30 * 100, 100) + '%';
+    }
+  }
+
+  // Afficher la carte si elle était cachée
+  var card = document.getElementById('card-advanced-metrics');
+  if (card) card.style.display = '';
+}
+
 function updateRecommandations(results) {
   if (!results) return;
 
@@ -3012,6 +3312,9 @@ function updateRecommandations(results) {
       lsi_symmetry:     lsi
     });
   }
+
+  // Amélioration 4 — RSI modifié + Asymmetry Score
+  computeAndDisplayAdvancedMetrics(results);
 }
 
 // ── Recommandations différenciées par rôle ─────────────────
