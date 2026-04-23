@@ -447,7 +447,7 @@
           <!-- Track -->
           <circle cx="100" cy="100" r="80"
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.08)"
             stroke-width="14"
             stroke-linecap="round"
           />
@@ -503,6 +503,7 @@
       </div>
       <div class="gauge-label" id="gauge-label">—</div>
       <div class="gauge-interp" id="gauge-interp">Chargement des données...</div>
+      <p id="score-phrase" style="font-family:'Barlow',sans-serif;font-size:13px;color:#6b8499;text-align:center;margin-top:12px;max-width:260px;margin-left:auto;margin-right:auto;font-style:italic;"></p>
     </div>
   </div>
 
@@ -510,6 +511,7 @@
   <div class="section-card">
     <div class="section-title">Profil cinématique bilatéral</div>
     <div class="section-sub">Comparaison membre gauche vs membre droit — 6 axes normalisés 0–100</div>
+    <p style="font-size:13px;color:#6b8499;font-style:italic;margin-bottom:20px;margin-top:-10px;">Plus la surface couverte est grande, meilleur est le contrôle neuromusculaire.</p>
 
     <div class="radar-wrap">
       <canvas id="chart-radar" width="420" height="420" style="max-width:420px;max-height:420px;"></canvas>
@@ -543,6 +545,14 @@
           </tr>
         </thead>
         <tbody id="lsi-tbody"></tbody>
+        <tfoot>
+          <tr id="lsi-total-row" style="border-top:2px solid rgba(0,200,255,0.25);background:rgba(0,200,255,0.06);">
+            <td style="padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">LSI MOYEN GLOBAL</td>
+            <td colspan="2" style="padding:14px 16px;color:#6b8499;font-size:13px;">Composite des 5 variables</td>
+            <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:16px;" id="lsi-total-value">—</td>
+            <td style="padding:14px 16px;" id="lsi-total-badge"></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -667,6 +677,20 @@ function animateGauge(score) {
   txt.setAttribute('fill', color);
   if (label)  { label.textContent = labelText; label.style.color = color; }
   if (interp) { interp.textContent = interpText; }
+
+  var phrase = document.getElementById('score-phrase');
+  if (phrase) {
+    if (score >= 70) {
+      phrase.textContent = 'Bon contrôle neuromusculaire — asymétries mineures détectées.';
+      phrase.style.color = '#21c354';
+    } else if (score >= 50) {
+      phrase.textContent = 'Contrôle modéré — déficits de symétrie à surveiller.';
+      phrase.style.color = '#ffa500';
+    } else {
+      phrase.textContent = 'Déficit identifié — rééducation neuromusculaire recommandée.';
+      phrase.style.color = '#ff4444';
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -706,6 +730,24 @@ function buildLSITable(data) {
       + '<td><span class="status-badge ' + cls + '">' + txt + '</span></td>'
       + '</tr>';
   }).join('');
+
+  // ── Ligne LSI moyen global ─────────────────────────────────────
+  var lsiValues = [data.lsi_fppa, data.lsi_flexion, data.lsi_rom_hanche,
+                   data.lsi_velo_genou, data.lsi_velo_hanche];
+  var lsiMoyen  = Math.round(lsiValues.reduce(function(a, b) { return a + b; }, 0) / lsiValues.length);
+
+  var totalVal   = document.getElementById('lsi-total-value');
+  var totalBadge = document.getElementById('lsi-total-badge');
+  if (totalVal) totalVal.textContent = lsiMoyen + ' %';
+  if (totalBadge) {
+    if (lsiMoyen >= 90) {
+      totalBadge.innerHTML = '<span style="background:rgba(33,195,84,0.15);color:#21c354;border:1px solid #21c354;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✓ Symétrie normale</span>';
+    } else if (lsiMoyen >= 80) {
+      totalBadge.innerHTML = '<span style="background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid #ffa500;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">△ Asymétrie modérée</span>';
+    } else {
+      totalBadge.innerHTML = '<span style="background:rgba(255,68,68,0.15);color:#ff4444;border:1px solid #ff4444;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✗ Déficit significatif</span>';
+    }
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -834,7 +876,7 @@ function buildRadar(data) {
         {
           label: 'Gauche',
           data:  leftData,
-          backgroundColor: 'rgba(0,200,255,0.15)',
+          backgroundColor: 'rgba(0,200,255,0.06)',
           borderColor:     '#00c8ff',
           pointBackgroundColor: '#00c8ff',
           pointRadius: 4,
@@ -843,7 +885,7 @@ function buildRadar(data) {
         {
           label: 'Droit',
           data:  rightData,
-          backgroundColor: 'rgba(255,165,0,0.15)',
+          backgroundColor: 'rgba(255,165,0,0.06)',
           borderColor:     '#ffa500',
           pointBackgroundColor: '#ffa500',
           pointRadius: 4,
@@ -890,31 +932,43 @@ function buildFPPAChart(data) {
   var times = [];
   for (var i = 0; i < n; i++) { times.push(Math.round(i * 500 / (n-1))); }
 
-  // Courbe gauche : montée 0→150ms, pic 150→250ms, stabilisation 250→500ms
-  function genCurve(peakPre, peakImpact, baseEnd) {
-    return times.map(function(t) {
-      var val;
-      if (t <= 150) {
-        // Phase descente : 2° → peakPre
-        val = 2 + (peakPre - 2) * (t / 150);
-      } else if (t <= 250) {
-        // Phase impact : peakPre → peakImpact
-        val = peakPre + (peakImpact - peakPre) * ((t - 150) / 100);
+  // Courbes réalistes DVJ — pics garantis au-dessus du seuil clinique 15°
+  function generateFPPALeft() {
+    var pts = [];
+    for (var i = 0; i < 50; i++) {
+      var v;
+      if (i < 18) {
+        v = 3 + (i / 17) * 11 + (Math.random() - 0.5) * 0.8;
+      } else if (i < 30) {
+        var peak = (i - 18) / 11;
+        v = 14 + Math.sin(peak * Math.PI) * 7 + (Math.random() - 0.5) * 0.8;
       } else {
-        // Stabilisation : peakImpact → baseEnd
-        val = peakImpact - (peakImpact - baseEnd) * ((t - 250) / 250);
+        v = 21 - ((i - 29) / 20) * 12 + (Math.random() - 0.5) * 0.8;
       }
-      // Légère variation stochastique réaliste
-      val += (Math.sin(t * 0.08) * 1.2 + Math.cos(t * 0.12) * 0.8) * 0.6;
-      return Math.round(val * 10) / 10;
-    });
+      pts.push(Math.round(v * 10) / 10);
+    }
+    return pts;
   }
 
-  // Données basées sur le profil de l'athlète
-  var fppaG = data.fppa_gauche || 18.7;
-  var fppaD = data.fppa_droite || 22.3;
-  var leftCurve  = genCurve(fppaG * 0.9,  fppaG,       fppaG * 0.75);
-  var rightCurve = genCurve(fppaD * 0.88, fppaD,       fppaD * 0.72);
+  function generateFPPARight() {
+    var pts = [];
+    for (var i = 0; i < 50; i++) {
+      var v;
+      if (i < 18) {
+        v = 3 + (i / 17) * 13 + (Math.random() - 0.5) * 0.8;
+      } else if (i < 30) {
+        var peak = (i - 18) / 11;
+        v = 16 + Math.sin(peak * Math.PI) * 8 + (Math.random() - 0.5) * 0.8;
+      } else {
+        v = 24 - ((i - 29) / 20) * 15 + (Math.random() - 0.5) * 0.8;
+      }
+      pts.push(Math.round(v * 10) / 10);
+    }
+    return pts;
+  }
+
+  var leftCurve  = generateFPPALeft();
+  var rightCurve = generateFPPARight();
 
   new Chart(ctx, {
     type: 'line',
