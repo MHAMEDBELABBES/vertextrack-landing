@@ -729,463 +729,18 @@
 // ══════════════════════════════════════════════════════════════════
 //  DONNÉES DEMO
 // ══════════════════════════════════════════════════════════════════
-var DEMO_DATA = {
-  athlete:        'Mohamed Belabbes',
-  test:           'Drop Vertical Jump (DVJ)',
-  date:           new Date().toLocaleDateString('fr-FR'),
-  fppa_gauche:    18.7,
-  fppa_droite:    22.3,
-  flexion_genou_g: 92.1,
-  flexion_genou_d: 88.4,
-  rom_hanche_g:   45.2,
-  rom_hanche_d:   42.1,
-  velo_genou_g:   312,
-  velo_genou_d:   267,
-  velo_hanche_g:  188,
-  velo_hanche_d:  201,
-  lsi_fppa:       84,
-  lsi_flexion:    96,
-  lsi_rom_hanche: 93,
-  lsi_velo_genou: 86,
-  lsi_velo_hanche:94
+const DEMO_DATA = {
+  athlete: "Mohamed Belabbes",
+  test: "Drop Vertical Jump (DVJ)",
+  date: new Date().toLocaleDateString('fr-FR'),
+  fppa_gauche: 18.7, fppa_droite: 22.3,
+  flexion_genou_g: 92.1, flexion_genou_d: 88.4,
+  rom_hanche_g: 45.2, rom_hanche_d: 42.1,
+  velo_genou_g: 312, velo_genou_d: 267,
+  velo_hanche_g: 188, velo_hanche_d: 201,
+  lsi_fppa: 84, lsi_flexion: 96,
+  lsi_rom_hanche: 93, lsi_velo_genou: 86, lsi_velo_hanche: 94
 };
-
-// ══════════════════════════════════════════════════════════════════
-//  SCORE NEUROMUSCULAIRE
-// ══════════════════════════════════════════════════════════════════
-function calcScore(data) {
-  var lsiMoyen = (data.lsi_fppa + data.lsi_flexion + data.lsi_rom_hanche +
-                  data.lsi_velo_genou + data.lsi_velo_hanche) / 5;
-  var fppaMax  = Math.max(data.fppa_gauche, data.fppa_droite);
-  var score    = (lsiMoyen * 0.6) + ((1 - fppaMax / 30) * 40);
-  return Math.min(100, Math.max(0, Math.round(score)));
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  JAUGE SVG CIRCULAIRE
-// ══════════════════════════════════════════════════════════════════
-function animateGauge(score) {
-  var arc   = document.getElementById('gauge-arc');
-  var txt   = document.getElementById('gauge-value-text');
-  var label = document.getElementById('gauge-label');
-  var interp= document.getElementById('gauge-interp');
-  if (!arc || !txt) return;
-
-  var circumf = 2 * Math.PI * 80; // ≈ 502.65
-  var dashLen = (score / 100) * circumf;
-
-  var color, labelText, interpText;
-  if (score >= 70) {
-    color     = '#21c354';
-    labelText = 'Bon contrôle';
-    interpText = 'Le profil neuromusculaire est dans les normes. '
-               + 'Les indices de symétrie et le contrôle du valgus dynamique '
-               + 'sont satisfaisants. Continuer le programme préventif actuel.';
-  } else if (score >= 50) {
-    color     = '#ffa500';
-    labelText = 'Contrôle modéré';
-    interpText = 'Des déséquilibres neuromusculaires modérés sont identifiés. '
-               + 'Un programme de renforcement unilatéral ciblé est conseillé, '
-               + 'notamment pour le contrôle du valgus et la symétrie musculaire.';
-  } else {
-    color     = '#ff4444';
-    labelText = 'Déficit identifié';
-    interpText = 'Déficits neuromusculaires significatifs détectés. '
-               + 'Asymétrie inter-membre et/ou valgus dynamique dépassent les seuils cliniques. '
-               + 'Consultation spécialisée et rééducation recommandées avant retour sportif.';
-  }
-
-  setTimeout(function() {
-    arc.style.stroke          = color;
-    arc.style.strokeDasharray = dashLen + ' ' + (circumf - dashLen);
-  }, 100);
-
-  txt.textContent   = score;
-  txt.setAttribute('fill', color);
-  if (label)  { label.textContent = labelText; label.style.color = color; }
-  if (interp) { interp.textContent = interpText; }
-
-  var phrase = document.getElementById('score-phrase');
-  if (phrase) {
-    if (score >= 70) {
-      phrase.textContent = 'Bon contrôle neuromusculaire — asymétries mineures détectées.';
-      phrase.style.color = '#21c354';
-    } else if (score >= 50) {
-      phrase.textContent = 'Contrôle modéré — déficits de symétrie à surveiller.';
-      phrase.style.color = '#ffa500';
-    } else {
-      phrase.textContent = 'Déficit identifié — rééducation neuromusculaire recommandée.';
-      phrase.style.color = '#ff4444';
-    }
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  TABLEAU LSI
-// ══════════════════════════════════════════════════════════════════
-function buildLSITable(data) {
-  var rows = [
-    { label:'FPPA',            g:data.fppa_gauche.toFixed(1)+'°', d:data.fppa_droite.toFixed(1)+'°',
-      lsi:data.lsi_fppa, unit:'%', norme: '≤ 15°<br><span style="font-size:10px; color:#4a6070;">Hewett 2005</span>' },
-    { label:'Flexion genou',   g:data.flexion_genou_g.toFixed(1)+'°', d:data.flexion_genou_d.toFixed(1)+'°',
-      lsi:data.lsi_flexion, unit:'%', norme: '≥ 90°<br><span style="font-size:10px; color:#4a6070;">Dingenen 2015</span>' },
-    { label:'ROM hanche',      g:data.rom_hanche_g.toFixed(1)+'°', d:data.rom_hanche_d.toFixed(1)+'°',
-      lsi:data.lsi_rom_hanche, unit:'%', norme: '≥ 40°<br><span style="font-size:10px; color:#4a6070;">Zazulak 2007</span>' },
-    { label:'Vélocité genou',  g:data.velo_genou_g+' °/s',  d:data.velo_genou_d+' °/s',
-      lsi:data.lsi_velo_genou, unit:'%', norme: 'LSI ≥ 90%<br><span style="font-size:10px; color:#4a6070;">Thomee 2011</span>' },
-    { label:'Vélocité hanche', g:data.velo_hanche_g+' °/s', d:data.velo_hanche_d+' °/s',
-      lsi:data.lsi_velo_hanche, unit:'%', norme: 'LSI ≥ 90%<br><span style="font-size:10px; color:#4a6070;">Thomee 2011</span>' }
-  ];
-
-  var tbody = document.getElementById('lsi-tbody');
-  if (!tbody) return;
-
-  tbody.innerHTML = rows.map(function(r) {
-    var cls, txt;
-    if (r.lsi >= 90) {
-      cls = 'status-ok';   txt = '✓ Symétrie normale';
-    } else if (r.lsi >= 80) {
-      cls = 'status-warn'; txt = '△ Asymétrie modérée';
-    } else {
-      cls = 'status-bad';  txt = '✗ Déficit significatif';
-    }
-    return '<tr>'
-      + '<td style="font-weight:500;">' + r.label + '</td>'
-      + '<td class="val-mono" style="color:#00c8ff;">' + r.g + '</td>'
-      + '<td class="val-mono" style="color:#ffa500;">' + r.d + '</td>'
-      + '<td class="val-mono" style="font-weight:600;">' + r.lsi + ' %</td>'
-      + '<td style="padding:14px 16px; font-family:\'JetBrains Mono\',monospace; font-size:13px; color:#6b8499;">' + r.norme + '</td>'
-      + '<td><span class="status-badge ' + cls + '">' + txt + '</span></td>'
-      + '</tr>';
-  }).join('');
-
-  // ── Ligne LSI moyen global ─────────────────────────────────────
-  var lsiValues = [data.lsi_fppa, data.lsi_flexion, data.lsi_rom_hanche,
-                   data.lsi_velo_genou, data.lsi_velo_hanche];
-  var lsiMoyen  = Math.round(lsiValues.reduce(function(a, b) { return a + b; }, 0) / lsiValues.length);
-
-  var totalVal   = document.getElementById('lsi-total-value');
-  var totalBadge = document.getElementById('lsi-total-badge');
-  if (totalVal) totalVal.textContent = lsiMoyen + ' %';
-  if (totalBadge) {
-    if (lsiMoyen >= 90) {
-      totalBadge.innerHTML = '<span style="background:rgba(33,195,84,0.15);color:#21c354;border:1px solid #21c354;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✓ Symétrie normale</span>';
-    } else if (lsiMoyen >= 80) {
-      totalBadge.innerHTML = '<span style="background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid #ffa500;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">△ Asymétrie modérée</span>';
-    } else {
-      totalBadge.innerHTML = '<span style="background:rgba(255,68,68,0.15);color:#ff4444;border:1px solid #ff4444;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✗ Déficit significatif</span>';
-    }
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  ALERTES CLINIQUES
-// ══════════════════════════════════════════════════════════════════
-function buildAlerts(data) {
-  var container = document.getElementById('alerts-container');
-  if (!container) return;
-
-  var alerts = [];
-
-  // Valgus dynamique
-  if (data.fppa_gauche > 15 || data.fppa_droite > 15) {
-    var fppaMax = Math.max(data.fppa_gauche, data.fppa_droite);
-    alerts.push({
-      cls:   'alert-red',
-      icon:  '⚠',
-      title: 'Valgus dynamique détecté',
-      text:  'FPPA max ' + fppaMax.toFixed(1) + '° dépasse le seuil clinique de 15°. '
-           + 'Facteur de risque LCA documenté (Hewett 2005, Dingenen 2015). '
-           + 'Programme de contrôle neuromusculaire recommandé.'
-    });
-  }
-
-  // Asymétrie FPPA
-  if (data.lsi_fppa < 80) {
-    alerts.push({
-      cls:   'alert-red',
-      icon:  '⚠',
-      title: 'Asymétrie FPPA significative',
-      text:  'LSI FPPA = ' + data.lsi_fppa + '%. '
-           + 'Asymétrie inter-membre > 20% — risque de surcharge ligamentaire asymétrique. '
-           + 'Rééducation différenciée gauche/droite indiquée.'
-    });
-  }
-
-  // Asymétrie de vélocité angulaire genou
-  if (data.lsi_velo_genou < 85) {
-    alerts.push({
-      cls:   'alert-orange',
-      icon:  '△',
-      title: 'Asymétrie de vélocité angulaire',
-      text:  'LSI vélocité genou = ' + data.lsi_velo_genou + '%. '
-           + 'Déficit de décélération musculaire — risque de compensation biomécanique '
-           + 'lors de l\'atterrissage. Exercices excentriques ciblés conseillés.'
-    });
-  }
-
-  // Asymétrie de flexion genou
-  if (data.lsi_flexion < 85) {
-    alerts.push({
-      cls:   'alert-orange',
-      icon:  '△',
-      title: 'Asymétrie de flexion genou',
-      text:  'LSI flexion = ' + data.lsi_flexion + '%. '
-           + 'Possible raideur articulaire ou inhibition musculaire réflexe. '
-           + 'Évaluer mobilité tibio-fémorale et programme de mobilité.'
-    });
-  }
-
-  // Tout est ok
-  if (alerts.length === 0) {
-    alerts.push({
-      cls:   'alert-green',
-      icon:  '✓',
-      title: 'Aucun déficit neuromusculaire significatif détecté',
-      text:  'Tous les indices de symétrie sont dans les normes (LSI ≥ 90%). '
-           + 'FPPA ≤ 15° — contrôle du valgus dynamique satisfaisant. '
-           + 'Profil biomécanique favorable pour la reprise sportive.'
-    });
-  }
-
-  container.innerHTML = alerts.map(function(a) {
-    return '<div class="alert-card ' + a.cls + '">'
-      + '<span class="alert-icon">' + a.icon + '</span>'
-      + '<div>'
-      + '<div class="alert-title">' + a.title + '</div>'
-      + '<div class="alert-text">' + a.text + '</div>'
-      + '</div></div>';
-  }).join('');
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  RADAR CHART
-// ══════════════════════════════════════════════════════════════════
-function buildRadar(data) {
-  var ctx = document.getElementById('chart-radar');
-  if (!ctx) return;
-
-  // Normaliser 0–100
-  var normalize = function(val, max) { return Math.min(100, Math.max(0, Math.round(val / max * 100))); };
-
-  // FPPA inversé : 0° = 100, 30° = 0
-  var fppaScoreG = Math.max(0, Math.round((1 - data.fppa_gauche / 30) * 100));
-  var fppaScoreD = Math.max(0, Math.round((1 - data.fppa_droite / 30) * 100));
-
-  var leftData  = [
-    fppaScoreG,
-    normalize(data.flexion_genou_g, 120),
-    normalize(data.rom_hanche_g,    80),
-    normalize(data.velo_genou_g,    500),
-    normalize(data.velo_hanche_g,   300),
-    data.lsi_fppa   // direct 0–100
-  ];
-  var rightData = [
-    fppaScoreD,
-    normalize(data.flexion_genou_d, 120),
-    normalize(data.rom_hanche_d,    80),
-    normalize(data.velo_genou_d,    500),
-    normalize(data.velo_hanche_d,   300),
-    data.lsi_flexion
-  ];
-
-  new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: [
-        'FPPA',
-        'Flexion genou',
-        'ROM hanche',
-        'Vél. ang. genou',
-        'Vél. ang. hanche',
-        'LSI global'
-      ],
-      datasets: [
-        {
-          label: 'Gauche',
-          data:  leftData,
-          backgroundColor: 'rgba(0,200,255,0.06)',
-          borderColor:     '#00c8ff',
-          pointBackgroundColor: '#00c8ff',
-          pointRadius: 4,
-          borderWidth: 2
-        },
-        {
-          label: 'Droit',
-          data:  rightData,
-          backgroundColor: 'rgba(255,165,0,0.06)',
-          borderColor:     '#ffa500',
-          pointBackgroundColor: '#ffa500',
-          pointRadius: 4,
-          borderWidth: 2
-        }
-      ]
-    },
-    options: {
-      scales: {
-        r: {
-          min: 0,
-          max: 100,
-          ticks: {
-            display: false,
-            stepSize: 25
-          },
-          grid: { color: 'rgba(255,255,255,0.08)' },
-          angleLines: { color: 'rgba(255,255,255,0.06)' },
-          pointLabels: {
-            color: '#aac0d0',
-            font:  { size: 12, family: 'Barlow, sans-serif' }
-          }
-        }
-      },
-      plugins: {
-        legend: {
-          display: false  // On utilise notre propre légende
-        }
-      },
-      backgroundColor: 'rgba(255,255,255,0.03)'
-    }
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════
-//  LINE CHART — FPPA TEMPOREL
-// ══════════════════════════════════════════════════════════════════
-function buildFPPAChart(data) {
-  var ctx = document.getElementById('chart-fppa');
-  if (!ctx) return;
-
-  // Générer 50 points de 0 à 500ms
-  var n = 50;
-  var times = [];
-  for (var i = 0; i < n; i++) { times.push(Math.round(i * 500 / (n-1))); }
-
-  // Courbes réalistes DVJ — pics garantis au-dessus du seuil clinique 15°
-  function generateFPPALeft() {
-    var pts = [];
-    for (var i = 0; i < 50; i++) {
-      var v;
-      if (i < 18) {
-        v = 3 + (i / 17) * 11 + (Math.random() - 0.5) * 0.8;
-      } else if (i < 30) {
-        var peak = (i - 18) / 11;
-        v = 14 + Math.sin(peak * Math.PI) * 7 + (Math.random() - 0.5) * 0.8;
-      } else {
-        v = 21 - ((i - 29) / 20) * 12 + (Math.random() - 0.5) * 0.8;
-      }
-      pts.push(Math.round(v * 10) / 10);
-    }
-    return pts;
-  }
-
-  function generateFPPARight() {
-    var pts = [];
-    for (var i = 0; i < 50; i++) {
-      var v;
-      if (i < 18) {
-        v = 3 + (i / 17) * 13 + (Math.random() - 0.5) * 0.8;
-      } else if (i < 30) {
-        var peak = (i - 18) / 11;
-        v = 16 + Math.sin(peak * Math.PI) * 8 + (Math.random() - 0.5) * 0.8;
-      } else {
-        v = 24 - ((i - 29) / 20) * 15 + (Math.random() - 0.5) * 0.8;
-      }
-      pts.push(Math.round(v * 10) / 10);
-    }
-    return pts;
-  }
-
-  var leftCurve  = generateFPPALeft();
-  var rightCurve = generateFPPARight();
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: times,
-      datasets: [
-        {
-          label:           'FPPA Gauche',
-          data:            leftCurve,
-          borderColor:     '#00c8ff',
-          backgroundColor: 'rgba(0,200,255,0.05)',
-          borderWidth:     2,
-          tension:         0.4,
-          fill:            false,
-          pointRadius:     0
-        },
-        {
-          label:           'FPPA Droit',
-          data:            rightCurve,
-          borderColor:     '#ffa500',
-          backgroundColor: 'rgba(255,165,0,0.05)',
-          borderWidth:     2,
-          tension:         0.4,
-          fill:            false,
-          pointRadius:     0
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top', labels: { color: '#aac0d0', font: { size: 12 } } },
-        annotation: undefined,
-        // Ligne de seuil via dataset fantôme
-      },
-      scales: {
-        x: {
-          title: {
-            display:  true,
-            text:     'Temps (ms)',
-            color:    'rgba(200,216,232,0.4)',
-            font:     { size: 11 }
-          },
-          ticks: {
-            color: 'rgba(200,216,232,0.35)',
-            maxTicksLimit: 11
-          },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        },
-        y: {
-          min:   -5,
-          max:   35,
-          title: {
-            display:  true,
-            text:     'Angle FPPA (°)',
-            color:    'rgba(200,216,232,0.4)',
-            font:     { size: 11 }
-          },
-          ticks: { color: 'rgba(200,216,232,0.35)' },
-          grid:  { color: 'rgba(255,255,255,0.04)' }
-        }
-      }
-    },
-    plugins: [{
-      // Plugin inline pour tracer la ligne de seuil à y=15
-      id: 'threshold-line',
-      afterDraw: function(chart) {
-        var ctx2  = chart.ctx;
-        var yAxis = chart.scales['y'];
-        var xAxis = chart.scales['x'];
-        if (!yAxis || !xAxis) return;
-        var y = yAxis.getPixelForValue(15);
-        ctx2.save();
-        ctx2.beginPath();
-        ctx2.setLineDash([6, 4]);
-        ctx2.strokeStyle = 'rgba(255,68,68,0.7)';
-        ctx2.lineWidth   = 1.5;
-        ctx2.moveTo(xAxis.left, y);
-        ctx2.lineTo(xAxis.right, y);
-        ctx2.stroke();
-        ctx2.setLineDash([]);
-        ctx2.fillStyle = 'rgba(255,68,68,0.85)';
-        ctx2.font      = '10px Barlow, sans-serif';
-        ctx2.fillText('Seuil clinique LCA 15° (Hewett 2005)', xAxis.left + 8, y - 5);
-        ctx2.restore();
-      }
-    }]
-  });
-}
 
 // ══════════════════════════════════════════════════════════════════
 //  STUB SAUVEGARDE BDD
@@ -1197,68 +752,12 @@ function saveToSupabase() {
   setTimeout(function() {
     btn.textContent = '✓ Sauvegardé';
     btn.style.background = 'rgba(33,195,84,0.25)';
-    // TODO: implémenter l'appel Supabase réel
-    // await supabase.from('analyses').insert({ ... });
   }, 1200);
 }
 
 // ══════════════════════════════════════════════════════════════════
-//  INIT — CHARGEMENT DONNÉES
+// RECOMMANDATIONS
 // ══════════════════════════════════════════════════════════════════
-(function init() {
-  // Lire localStorage
-  var raw  = localStorage.getItem('vertextrack_results');
-  var data = null;
-  try { data = raw ? JSON.parse(raw) : null; } catch (e) { data = null; }
-
-  // Fallback demo
-  if (!data) { data = DEMO_DATA; }
-
-  // Remplir le header
-  var hdrAthlete = document.getElementById('hdr-athlete');
-  var hdrTest    = document.getElementById('hdr-test');
-  var hdrDate    = document.getElementById('hdr-date');
-  if (hdrAthlete) hdrAthlete.textContent = data.athlete || 'Athlète Démo';
-  if (hdrTest)    hdrTest.textContent    = data.test    || 'Analyse';
-  if (hdrDate)    hdrDate.textContent    = data.date    || new Date().toLocaleDateString('fr-FR');
-
-  // S'assurer que toutes les valeurs numériques sont présentes
-  data.fppa_gauche     = parseFloat(data.fppa_gauche)     || DEMO_DATA.fppa_gauche;
-  data.fppa_droite     = parseFloat(data.fppa_droite)     || DEMO_DATA.fppa_droite;
-  data.flexion_genou_g = parseFloat(data.flexion_genou_g) || DEMO_DATA.flexion_genou_g;
-  data.flexion_genou_d = parseFloat(data.flexion_genou_d) || DEMO_DATA.flexion_genou_d;
-  data.rom_hanche_g    = parseFloat(data.rom_hanche_g)    || DEMO_DATA.rom_hanche_g;
-  data.rom_hanche_d    = parseFloat(data.rom_hanche_d)    || DEMO_DATA.rom_hanche_d;
-  data.velo_genou_g    = parseFloat(data.velo_genou_g)    || DEMO_DATA.velo_genou_g;
-  data.velo_genou_d    = parseFloat(data.velo_genou_d)    || DEMO_DATA.velo_genou_d;
-  data.velo_hanche_g   = parseFloat(data.velo_hanche_g)   || DEMO_DATA.velo_hanche_g;
-  data.velo_hanche_d   = parseFloat(data.velo_hanche_d)   || DEMO_DATA.velo_hanche_d;
-  data.lsi_fppa        = parseFloat(data.lsi_fppa)        || DEMO_DATA.lsi_fppa;
-  data.lsi_flexion     = parseFloat(data.lsi_flexion)     || DEMO_DATA.lsi_flexion;
-  data.lsi_rom_hanche  = parseFloat(data.lsi_rom_hanche)  || DEMO_DATA.lsi_rom_hanche;
-  data.lsi_velo_genou  = parseFloat(data.lsi_velo_genou)  || DEMO_DATA.lsi_velo_genou;
-  data.lsi_velo_hanche = parseFloat(data.lsi_velo_hanche) || DEMO_DATA.lsi_velo_hanche;
-
-  // Score neuromusculaire + jauge
-  var score = calcScore(data);
-  animateGauge(score);
-
-  // Tableau LSI
-  buildLSITable(data);
-
-  // Alertes cliniques
-  buildAlerts(data);
-
-  // Radar Chart
-  buildRadar(data);
-
-  // Courbe FPPA
-  buildFPPAChart(data);
-
-  // Recommandations personnalisées
-  generateRecommandations(data);
-})();
-
 function generateRecommandations(data) {
   const container = document.getElementById('reco-container');
   if (!container) return;
@@ -1268,9 +767,7 @@ function generateRecommandations(data) {
   // RÈGLE 1 : FPPA > 15° (valgus dynamique)
   if (data.fppa_gauche > 15 || data.fppa_droite > 15) {
     recos.push({
-      priorite: 'HAUTE',
-      couleur: '#ff4444',
-      icon: '🦵',
+      priorite: 'HAUTE', couleur: '#ff4444', icon: '🦵',
       titre: 'Renforcement des abducteurs et rotateurs externes de hanche',
       exercices: [
         'Clamshell avec élastique — 3×15 reps · focus activation fessier moyen',
@@ -1285,9 +782,7 @@ function generateRecommandations(data) {
   // RÈGLE 2 : LSI flexion genou < 85%
   if (data.lsi_flexion < 85) {
     recos.push({
-      priorite: 'HAUTE',
-      couleur: '#ff4444',
-      icon: '⚡',
+      priorite: 'HAUTE', couleur: '#ff4444', icon: '⚡',
       titre: 'Travail excentrique quadriceps — rééquilibrage inter-membres',
       exercices: [
         'Single-leg press excentrique — 4×8 reps · phase descente 4 secondes',
@@ -1302,9 +797,7 @@ function generateRecommandations(data) {
   // RÈGLE 3 : LSI vélocité genou < 85%
   if (data.lsi_velo_genou < 85) {
     recos.push({
-      priorite: 'MOYENNE',
-      couleur: '#ffa500',
-      icon: '🏃',
+      priorite: 'MOYENNE', couleur: '#ffa500', icon: '🏃',
       titre: 'Pliométrie unilatérale — rééducation de la décélération',
       exercices: [
         'Box step-down unilatéral — 3×10 reps · atterrissage contrôlé',
@@ -1319,9 +812,7 @@ function generateRecommandations(data) {
   // RÈGLE 4 : LSI FPPA < 80%
   if (data.lsi_fppa < 80) {
     recos.push({
-      priorite: 'HAUTE',
-      couleur: '#ff4444',
-      icon: '⚖️',
+      priorite: 'HAUTE', couleur: '#ff4444', icon: '⚖️',
       titre: 'Rééquilibrage proprioceptif et contrôle postural frontal',
       exercices: [
         'Équilibre unipodal sur surface instable — 3×45s · yeux ouverts puis fermés',
@@ -1336,9 +827,7 @@ function generateRecommandations(data) {
   // RÈGLE 5 : LSI ROM hanche < 85%
   if (data.lsi_rom_hanche < 85) {
     recos.push({
-      priorite: 'MOYENNE',
-      couleur: '#ffa500',
-      icon: '🔄',
+      priorite: 'MOYENNE', couleur: '#ffa500', icon: '🔄',
       titre: 'Mobilité hanche et flexibilité ischio-jambiers',
       exercices: [
         'Hip flexor stretch unilatéral — 3×45s · position chevalier servant',
@@ -1353,9 +842,7 @@ function generateRecommandations(data) {
   // RÈGLE 6 : Tout normal
   if (recos.length === 0) {
     recos.push({
-      priorite: 'MAINTIEN',
-      couleur: '#21c354',
-      icon: '✅',
+      priorite: 'MAINTIEN', couleur: '#21c354', icon: '✅',
       titre: 'Profil neuromusculaire équilibré — programme de maintien',
       exercices: [
         'Pliométrie bilatérale et unilatérale — 2 séances/semaine',
@@ -1418,7 +905,409 @@ function generateRecommandations(data) {
     </div>
   `).join('');
 }
-})();
+
+// ══════════════════════════════════════════
+// INITIALISATION ROBUSTE — après chargement
+// complet DOM + scripts externes (Chart.js)
+// ══════════════════════════════════════════
+function initDiagnostic() {
+  // 1. Charger les données (localStorage ou DEMO)
+  let data;
+  try {
+    const raw = localStorage.getItem('vt_last_results');
+    data = raw ? JSON.parse(raw) : null;
+  } catch(e) {
+    data = null;
+  }
+  
+  if (!data) {
+    try {
+      const raw = localStorage.getItem('vertextrack_results');
+      data = raw ? JSON.parse(raw) : null;
+    } catch(e) {
+      data = null;
+    }
+  }
+
+  if (!data || Object.keys(data).length === 0) {
+    data = DEMO_DATA; // fallback sur les données démo
+  }
+
+  // 2. Remplir le header athlète
+  const elNom = document.getElementById('hdr-athlete');
+  const elTest = document.getElementById('hdr-test');
+  const elDate = document.getElementById('hdr-date');
+  if (elNom) elNom.textContent = data.athlete || 'Athlète Demo';
+  if (elTest) elTest.textContent = data.test || 'Drop Vertical Jump (DVJ)';
+  if (elDate) elDate.textContent = data.date || new Date().toLocaleDateString('fr-FR');
+
+  // 3. Calculer le score neuromusculaire
+  const lsiVals = [
+    data.lsi_fppa || 83,
+    data.lsi_flexion || 96,
+    data.lsi_rom_hanche || 93,
+    data.lsi_velo_genou || 86,
+    data.lsi_velo_hanche || 94
+  ];
+  const lsiMoyen = lsiVals.reduce((a,b) => a+b, 0) / lsiVals.length;
+  const fppaMax = Math.max(data.fppa_gauche || 18.7, data.fppa_droite || 22.3);
+  const score = Math.min(100, Math.max(0, Math.round((lsiMoyen * 0.6) + ((1 - fppaMax/30) * 40))));
+
+  // 4. Afficher le score dans la jauge SVG
+  const elScore = document.getElementById('gauge-value-text');
+  const elPhrase = document.getElementById('score-phrase');
+  const gaugeFill = document.getElementById('gauge-arc');
+
+  if (elScore) elScore.textContent = score;
+
+  if (gaugeFill) {
+    const circumference = 2 * Math.PI * 80; // rayon=80
+    const dashArray = (score / 100) * circumference;
+    // Couleur selon score
+    let color = '#ff4444';
+    if (score >= 70) color = '#21c354';
+    else if (score >= 50) color = '#ffa500';
+    gaugeFill.style.stroke = color;
+    if (elScore) elScore.setAttribute('fill', color);
+    
+    // Animation
+    gaugeFill.style.strokeDasharray = '0 ' + circumference;
+    gaugeFill.style.transition = 'stroke-dasharray 1.5s ease-out';
+    setTimeout(() => {
+      gaugeFill.style.strokeDasharray = dashArray + ' ' + (circumference - dashArray);
+    }, 100);
+  }
+
+  if (elPhrase) {
+    if (score >= 70) {
+      elPhrase.textContent = 'Bon contrôle neuromusculaire — asymétries mineures détectées.';
+      elPhrase.style.color = '#21c354';
+    } else if (score >= 50) {
+      elPhrase.textContent = 'Contrôle modéré — déficits de symétrie à surveiller.';
+      elPhrase.style.color = '#ffa500';
+    } else {
+      elPhrase.textContent = 'Déficit identifié — rééducation neuromusculaire recommandée.';
+      elPhrase.style.color = '#ff4444';
+    }
+  }
+
+  // 5. Remplir le tableau LSI (5 lignes variables)
+  const tableVars = [
+    {
+      id: 'row-fppa',
+      label: 'FPPA',
+      vg: (data.fppa_gauche || 14.2).toFixed(1) + '°',
+      vd: (data.fppa_droite || 11.8).toFixed(1) + '°',
+      lsi: data.lsi_fppa || 83,
+      norme: '≤ 15°',
+      ref: 'Hewett 2005'
+    },
+    {
+      id: 'row-flexion',
+      label: 'Flexion genou',
+      vg: (data.flexion_genou_g || 92.1).toFixed(1) + '°',
+      vd: (data.flexion_genou_d || 88.4).toFixed(1) + '°',
+      lsi: data.lsi_flexion || 96,
+      norme: '≥ 90°',
+      ref: 'Dingenen 2015'
+    },
+    {
+      id: 'row-rom',
+      label: 'ROM hanche',
+      vg: (data.rom_hanche_g || 45.2).toFixed(1) + '°',
+      vd: (data.rom_hanche_d || 42.1).toFixed(1) + '°',
+      lsi: data.lsi_rom_hanche || 93,
+      norme: '≥ 40°',
+      ref: 'Zazulak 2007'
+    },
+    {
+      id: 'row-velo-genou',
+      label: 'Vélocité genou',
+      vg: (data.velo_genou_g || 312).toFixed(0) + ' °/s',
+      vd: (data.velo_genou_d || 267).toFixed(0) + ' °/s',
+      lsi: data.lsi_velo_genou || 86,
+      norme: 'LSI ≥ 90%',
+      ref: 'Thomee 2011'
+    },
+    {
+      id: 'row-velo-hanche',
+      label: 'Vélocité hanche',
+      vg: (data.velo_hanche_g || 188).toFixed(0) + ' °/s',
+      vd: (data.velo_hanche_d || 201).toFixed(0) + ' °/s',
+      lsi: data.lsi_velo_hanche || 94,
+      norme: 'LSI ≥ 90%',
+      ref: 'Thomee 2011'
+    }
+  ];
+
+  function getBadge(lsi) {
+    if (lsi >= 90) return '<span style="background:rgba(33,195,84,0.15);color:#21c354;border:1px solid #21c354;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✓ Symétrie normale</span>';
+    if (lsi >= 80) return '<span style="background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid #ffa500;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">△ Asymétrie modérée</span>';
+    return '<span style="background:rgba(255,68,68,0.15);color:#ff4444;border:1px solid #ff4444;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">✗ Déficit significatif</span>';
+  }
+
+  const tbody = document.getElementById('lsi-tbody');
+  if (tbody) {
+    tbody.innerHTML = tableVars.map(v => `
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:14px 16px;color:#cdd9e5;font-size:14px;font-weight:500;">${v.label}</td>
+        <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#00c8ff;">${v.vg}</td>
+        <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:14px;color:#ffa500;">${v.vd}</td>
+        <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:#cdd9e5;">${v.lsi} %</td>
+        <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b8499;">
+          ${v.norme}<br><span style="font-size:10px;color:#4a6070;">${v.ref}</span>
+        </td>
+        <td style="padding:14px 16px;">${getBadge(v.lsi)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Ligne total LSI moyen
+  const lsiMoyenRound = Math.round(lsiMoyen);
+  const totalVal = document.getElementById('lsi-total-value');
+  const totalBadge = document.getElementById('lsi-total-badge');
+  if (totalVal) totalVal.textContent = lsiMoyenRound + ' %';
+  if (totalBadge) totalBadge.innerHTML = getBadge(lsiMoyenRound);
+
+  // 6. Radar Chart bilatéral
+  const radarCanvas = document.getElementById('chart-radar');
+  if (radarCanvas && typeof Chart !== 'undefined') {
+    // Détruire le chart précédent s'il existe
+    if (radarCanvas._chartInstance) radarCanvas._chartInstance.destroy();
+
+    function norm(val, max) { return Math.min(100, Math.max(0, Math.round((val / max) * 100))); }
+    function normFPPA(val) { return Math.max(0, Math.round((1 - val/30) * 100)); }
+
+    const dataG = [
+      normFPPA(data.fppa_gauche || 14.2),
+      norm(data.flexion_genou_g || 92.1, 120),
+      norm(data.rom_hanche_g || 45.2, 80),
+      norm(data.velo_genou_g || 312, 500),
+      norm(data.velo_hanche_g || 188, 300),
+      data.lsi_fppa || 83
+    ];
+    const dataD = [
+      normFPPA(data.fppa_droite || 11.8),
+      norm(data.flexion_genou_d || 88.4, 120),
+      norm(data.rom_hanche_d || 42.1, 80),
+      norm(data.velo_genou_d || 267, 500),
+      norm(data.velo_hanche_d || 201, 300),
+      data.lsi_flexion || 96
+    ];
+
+    const chart = new Chart(radarCanvas, {
+      type: 'radar',
+      data: {
+        labels: ['FPPA', 'Flexion genou', 'ROM hanche', 'Vél. ang. genou', 'Vél. ang. hanche', 'LSI global'],
+        datasets: [
+          {
+            label: 'Membre gauche',
+            data: dataG,
+            backgroundColor: 'rgba(0,200,255,0.06)',
+            borderColor: '#00c8ff',
+            borderWidth: 2,
+            pointBackgroundColor: '#00c8ff',
+            pointRadius: 4
+          },
+          {
+            label: 'Membre droit',
+            data: dataD,
+            backgroundColor: 'rgba(255,165,0,0.06)',
+            borderColor: '#ffa500',
+            borderWidth: 2,
+            pointBackgroundColor: '#ffa500',
+            pointRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            min: 0,
+            max: 100,
+            ticks: { display: false, stepSize: 25 },
+            grid: { color: 'rgba(255,255,255,0.08)' },
+            angleLines: { color: 'rgba(255,255,255,0.08)' },
+            pointLabels: { color: '#aac0d0', font: { size: 13, family: 'Barlow, sans-serif' } }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+    radarCanvas._chartInstance = chart;
+  }
+
+  // 7. Courbe FPPA temporelle
+  const fppaCanvas = document.getElementById('chart-fppa');
+  if (fppaCanvas && typeof Chart !== 'undefined') {
+    if (fppaCanvas._chartInstance) fppaCanvas._chartInstance.destroy();
+
+    function generateFPPALeft() {
+      const pts = [];
+      for (let i = 0; i < 50; i++) {
+        let v;
+        if (i < 18) { v = 3 + (i/17)*11 + (Math.random()-0.5)*0.8; }
+        else if (i < 30) { const p=(i-18)/11; v=14+Math.sin(p*Math.PI)*7+(Math.random()-0.5)*0.8; }
+        else { v=21-((i-29)/20)*12+(Math.random()-0.5)*0.8; }
+        pts.push(Math.round(v*10)/10);
+      }
+      return pts;
+    }
+
+    function generateFPPARight() {
+      const pts = [];
+      for (let i = 0; i < 50; i++) {
+        let v;
+        if (i < 18) { v = 3 + (i/17)*13 + (Math.random()-0.5)*0.8; }
+        else if (i < 30) { const p=(i-18)/11; v=16+Math.sin(p*Math.PI)*8+(Math.random()-0.5)*0.8; }
+        else { v=24-((i-29)/20)*15+(Math.random()-0.5)*0.8; }
+        pts.push(Math.round(v*10)/10);
+      }
+      return pts;
+    }
+
+    const labels = Array.from({length:50}, (_,i) => Math.round(i*10));
+
+    // Plugin inline pour la ligne seuil à 15°
+    const seuilPlugin = {
+      id: 'seuilLCA',
+      afterDraw(chart) {
+        const {ctx, scales:{y,x}} = chart;
+        if (!y || !x) return;
+        const yPos = y.getPixelForValue(15);
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash([6,4]);
+        ctx.strokeStyle = '#ff4444';
+        ctx.lineWidth = 1.5;
+        ctx.moveTo(x.left, yPos);
+        ctx.lineTo(x.right, yPos);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ff4444';
+        ctx.font = '11px Barlow';
+        ctx.fillText('Seuil clinique LCA 15° (Hewett 2005)', x.left+8, yPos-6);
+        ctx.restore();
+      }
+    };
+
+    const fppaChart = new Chart(fppaCanvas, {
+      type: 'line',
+      plugins: [seuilPlugin],
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'FPPA Gauche',
+            data: generateFPPALeft(),
+            borderColor: '#00c8ff',
+            backgroundColor: 'rgba(0,200,255,0.05)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: false,
+            pointRadius: 0
+          },
+          {
+            label: 'FPPA Droit',
+            data: generateFPPARight(),
+            borderColor: '#ffa500',
+            backgroundColor: 'rgba(255,165,0,0.05)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: false,
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: { display:true, text:'Temps (ms)', color:'rgba(200,216,232,0.4)', font: { size: 11 } },
+            grid: { color:'rgba(255,255,255,0.04)' },
+            ticks: { color:'rgba(200,216,232,0.35)' }
+          },
+          y: {
+            min: -5,
+            max: 35,
+            title: { display:true, text:'Angle FPPA (°)', color:'rgba(200,216,232,0.4)', font: { size: 11 } },
+            grid: { color:'rgba(255,255,255,0.04)' },
+            ticks: { color:'rgba(200,216,232,0.35)' }
+          }
+        },
+        plugins: {
+          legend: { position:'top', labels:{ color:'#aac0d0', font:{size:12} } }
+        }
+      }
+    });
+    fppaCanvas._chartInstance = fppaChart;
+  }
+
+  // 8. Alertes cliniques
+  const alertContainer = document.getElementById('alerts-container');
+  if (alertContainer) {
+    const alerts = [];
+    if ((data.fppa_gauche||14.2) > 15 || (data.fppa_droite||11.8) > 15) {
+      alerts.push({ color:'#ff4444', icon:'⚠', titre:'Valgus dynamique détecté',
+        texte:`FPPA max ${fppaMax.toFixed(1)}° dépasse le seuil clinique de 15°. Facteur de risque LCA documenté (Hewett 2005, Dingenen 2015).` });
+    }
+    if ((data.lsi_fppa||83) < 80) {
+      alerts.push({ color:'#ff4444', icon:'⚠', titre:'Asymétrie FPPA significative',
+        texte:`LSI FPPA = ${data.lsi_fppa||83}%. Asymétrie inter-membre > 20% — risque de surcharge ligamentaire asymétrique.` });
+    }
+    if ((data.lsi_velo_genou||86) < 85) {
+      alerts.push({ color:'#ffa500', icon:'△', titre:'Asymétrie de vélocité angulaire',
+        texte:`LSI vélocité genou = ${data.lsi_velo_genou||86}%. Déficit de décélération musculaire — risque de compensation biomécanique.` });
+    }
+    if ((data.lsi_flexion||96) < 85) {
+      alerts.push({ color:'#ffa500', icon:'△', titre:'Asymétrie de flexion genou',
+        texte:`LSI flexion = ${data.lsi_flexion||96}%. Possible raideur articulaire ou inhibition musculaire réflexe.` });
+    }
+    if (alerts.length === 0) {
+      alerts.push({ color:'#21c354', icon:'✓', titre:'Aucun déficit neuromusculaire significatif détecté',
+        texte:'Tous les indices de symétrie sont dans les normes (LSI ≥ 90%). Profil biomécanique favorable.' });
+    }
+    alertContainer.innerHTML = alerts.map(a => `
+      <div style="border-left:4px solid ${a.color};background:${a.color}11;border-radius:8px;padding:16px 20px;margin-bottom:12px; display:flex; gap:14px;">
+        <span style="font-size:18px;">${a.icon}</span>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:0.5px;">
+            ${a.titre}
+          </div>
+          <p style="font-size:13px;color:#aac0d0;line-height:1.55;margin:0;">${a.texte}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 9. Recommandations personnalisées
+  if (typeof generateRecommandations === 'function') {
+    generateRecommandations(data);
+  }
+}
+
+// ══════════════════════════════════════════
+// LANCEMENT : attendre que Chart.js soit prêt
+// ══════════════════════════════════════════
+function waitForChartAndInit() {
+  if (typeof Chart !== 'undefined') {
+    initDiagnostic();
+  } else {
+    setTimeout(waitForChartAndInit, 100);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', waitForChartAndInit);
+} else {
+  waitForChartAndInit();
+}
 </script>
 </body>
 </html>
