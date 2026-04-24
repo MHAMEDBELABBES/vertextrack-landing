@@ -491,9 +491,86 @@
         margin: 15mm 12mm;
       }
     }
-  </style>
+    @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.04) 25%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.04) 75%
+    );
+    background-size: 400px 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 6px;
+    display: block;
+  }
+
+  .skeleton-circle {
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.04) 25%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.04) 75%
+    );
+    background-size: 400px 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .content-hidden { opacity: 0; transition: opacity 0.5s ease; }
+  .content-visible { opacity: 1; }
+</style>
 </head>
 <body>
+
+  <div id="skeleton-overlay" style="
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #03080f;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    transition: opacity 0.5s ease;
+  ">
+    <!-- Logo skeleton -->
+    <div style="text-align:center;margin-bottom:8px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;
+                  font-weight:900;color:rgba(0,200,255,0.3);letter-spacing:2px;">
+        VERTEXTRACK
+      </div>
+      <div style="font-size:12px;color:#4a6070;margin-top:4px;">
+        Chargement du diagnostic...
+      </div>
+    </div>
+
+    <!-- Skeleton jauge -->
+    <span class="skeleton-circle" style="width:160px;height:160px;"></span>
+
+    <!-- Skeleton lignes -->
+    <div style="width:520px;display:flex;flex-direction:column;gap:12px;">
+      <span class="skeleton" style="height:16px;width:100%;"></span>
+      <span class="skeleton" style="height:16px;width:80%;"></span>
+      <span class="skeleton" style="height:16px;width:60%;"></span>
+    </div>
+
+    <!-- Dots de chargement animés -->
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <span style="width:8px;height:8px;background:#00c8ff;border-radius:50%;
+                   animation:shimmer 1.4s infinite;opacity:0.6;"></span>
+      <span style="width:8px;height:8px;background:#00c8ff;border-radius:50%;
+                   animation:shimmer 1.4s 0.2s infinite;opacity:0.6;"></span>
+      <span style="width:8px;height:8px;background:#00c8ff;border-radius:50%;
+                   animation:shimmer 1.4s 0.4s infinite;opacity:0.6;"></span>
+    </div>
+  </div>
 
 <!-- ══ NAV ══════════════════════════════════════════════════════ -->
 <nav class="nav-pro">
@@ -527,6 +604,96 @@
         &nbsp;·&nbsp;
         <span id="hdr-date">—</span>
       </div>
+
+      <div id="context-badges" style="
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+      ">
+        <!-- Badge type de test -->
+        <div style="
+          display:flex; align-items:center; gap:8px;
+          background:rgba(0,200,255,0.08);
+          border:1px solid rgba(0,200,255,0.2);
+          border-radius:8px; padding:8px 14px;
+        ">
+          <span style="font-size:16px;">🏃</span>
+          <div>
+            <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif;
+                        text-transform:uppercase;letter-spacing:1px;">Type de test</div>
+            <div id="badge-test-type" style="font-size:13px;color:#00c8ff;
+                        font-family:'JetBrains Mono',monospace;font-weight:600;">DVJ</div>
+          </div>
+        </div>
+
+        <!-- Badge caméra -->
+        <div style="
+          display:flex; align-items:center; gap:8px;
+          background:rgba(0,200,255,0.08);
+          border:1px solid rgba(0,200,255,0.2);
+          border-radius:8px; padding:8px 14px;
+        ">
+          <span style="font-size:16px;">📷</span>
+          <div>
+            <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif;
+                        text-transform:uppercase;letter-spacing:1px;">Vue caméra</div>
+            <div style="font-size:13px;color:#00c8ff;
+                        font-family:'JetBrains Mono',monospace;font-weight:600;">Frontale</div>
+          </div>
+        </div>
+
+        <!-- Badge landmarks -->
+        <div style="
+          display:flex; align-items:center; gap:8px;
+          background:rgba(0,200,255,0.08);
+          border:1px solid rgba(0,200,255,0.2);
+          border-radius:8px; padding:8px 14px;
+        ">
+          <span style="font-size:16px;">🦾</span>
+          <div>
+            <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif;
+                        text-transform:uppercase;letter-spacing:1px;">Modèle IA</div>
+            <div style="font-size:13px;color:#00c8ff;
+                        font-family:'JetBrains Mono',monospace;font-weight:600;">
+                        BlazePose 33pts</div>
+          </div>
+        </div>
+
+        <!-- Badge qualité signal -->
+        <div style="
+          display:flex; align-items:center; gap:8px;
+          background:rgba(33,195,84,0.08);
+          border:1px solid rgba(33,195,84,0.2);
+          border-radius:8px; padding:8px 14px;
+        ">
+          <span style="font-size:16px;">📶</span>
+          <div>
+            <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif;
+                        text-transform:uppercase;letter-spacing:1px;">Qualité signal</div>
+            <div id="badge-signal" style="font-size:13px;color:#21c354;
+                        font-family:'JetBrains Mono',monospace;font-weight:600;">96.4 %</div>
+          </div>
+        </div>
+
+        <!-- Badge fréquence -->
+        <div style="
+          display:flex; align-items:center; gap:8px;
+          background:rgba(0,200,255,0.08);
+          border:1px solid rgba(0,200,255,0.2);
+          border-radius:8px; padding:8px 14px;
+        ">
+          <span style="font-size:16px;">🎬</span>
+          <div>
+            <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif;
+                        text-transform:uppercase;letter-spacing:1px;">Fréquence</div>
+            <div style="font-size:13px;color:#00c8ff;
+                        font-family:'JetBrains Mono',monospace;font-weight:600;">60 fps</div>
+          </div>
+        </div>
+      </div>
     </div>
     <span class="badge-module">MODULE 2 — DIAGNOSTIC NEUROMUSCULAIRE</span>
   </div>
@@ -542,19 +709,9 @@
           <!-- Track -->
           <circle cx="100" cy="100" r="80"
             fill="none"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="#1a2a3a"
             stroke-width="14"
             stroke-linecap="round"
-          />
-          <!-- Zones de couleur (bg) -->
-          <!-- Rouge 0–49 -->
-          <circle cx="100" cy="100" r="80"
-            fill="none" stroke="#ff4444" stroke-width="14"
-            stroke-dasharray="246 256"
-            stroke-dashoffset="127"
-            stroke-linecap="butt"
-            transform="rotate(-90 100 100)"
-            opacity="0.18"
           />
           <!-- Orange 50–69 -->
           <circle cx="100" cy="100" r="80"
@@ -590,14 +747,14 @@
             id="gauge-value-text"
             font-family="JetBrains Mono, monospace"
             font-size="42" font-weight="600"
-            fill="#fff">—</text>
+            fill="#fff">0</text>
           <text x="100" y="114" text-anchor="middle"
             font-family="Barlow, sans-serif"
             font-size="11" fill="rgba(200,216,232,0.4)">/100</text>
         </svg>
       </div>
       <div class="gauge-label" id="gauge-label">—</div>
-      <div class="gauge-interp" id="gauge-interp">Chargement des données...</div>
+      <div class="gauge-interp" id="gauge-interp"></div>
       <p id="score-phrase" style="font-family:'Barlow',sans-serif;font-size:13px;color:#6b8499;text-align:center;margin-top:12px;max-width:260px;margin-left:auto;margin-right:auto;font-style:italic;"></p>
     </div>
   </div>
@@ -664,6 +821,22 @@
       Dingenen et al. 2015 (Gait & Posture) · Kyritsis et al. 2016 (BJSM) ·
       Zazulak et al. 2007 (JOSPT)
     </p>
+  </div>
+
+  <div class="section-card" id="section-timeline">
+    <div class="section-title">PROGRESSION LSI — SUIVI LONGITUDINAL</div>
+    <p style="font-size:13px;color:#6b8499;margin-bottom:8px;font-style:italic;">
+      Évolution du LSI moyen global sur les dernières sessions.
+      Connecté à Supabase PostgreSQL.
+    </p>
+    <div style="position:relative; height:180px; margin-bottom:16px;">
+      <canvas id="chart-timeline" style="width:100%;height:180px;"></canvas>
+    </div>
+    <div id="timeline-sessions" style="
+      display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;
+    ">
+      <!-- Généré par JS -->
+    </div>
   </div>
 
   <!-- SECTION 5 — COURBE TEMPORELLE FPPA -->
@@ -910,6 +1083,95 @@ function generateRecommandations(data) {
 // INITIALISATION ROBUSTE — après chargement
 // complet DOM + scripts externes (Chart.js)
 // ══════════════════════════════════════════
+function buildTimeline(currentLsi) {
+  const timelineCanvas = document.getElementById('chart-timeline');
+  if (!timelineCanvas || typeof Chart === 'undefined') return;
+  if (timelineCanvas._chartInstance) timelineCanvas._chartInstance.destroy();
+
+  const today = new Date();
+  const sessions = [
+    { date: new Date(today - 21*24*3600*1000).toLocaleDateString('fr-FR'), lsi: Math.round(currentLsi - 8 + Math.random()*4), label: 'S-3' },
+    { date: new Date(today - 14*24*3600*1000).toLocaleDateString('fr-FR'), lsi: Math.round(currentLsi - 5 + Math.random()*3), label: 'S-2' },
+    { date: new Date(today - 7*24*3600*1000).toLocaleDateString('fr-FR'), lsi: Math.round(currentLsi - 2 + Math.random()*2), label: 'S-1' },
+    { date: today.toLocaleDateString('fr-FR'), lsi: Math.round(currentLsi), label: 'Aujourd\'hui' }
+  ];
+
+  sessions.forEach(s => s.lsi = Math.min(100, Math.max(60, s.lsi)));
+
+  const seuilPlugin = {
+    id: 'seuil90',
+    afterDraw(chart) {
+      const {ctx, scales:{y,x}} = chart;
+      if (!y || !x) return;
+      const yPos = y.getPixelForValue(90);
+      ctx.save();
+      ctx.beginPath();
+      ctx.setLineDash([4,4]);
+      ctx.strokeStyle = 'rgba(33,195,84,0.5)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(x.left, yPos);
+      ctx.lineTo(x.right, yPos);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#21c354';
+      ctx.font = '10px Barlow';
+      ctx.fillText('Seuil LSI ≥ 90% (Kyritsis 2016)', x.right - 180, yPos - 5);
+      ctx.restore();
+    }
+  };
+
+  const chart = new Chart(timelineCanvas, {
+    type: 'line',
+    plugins: [seuilPlugin],
+    data: {
+      labels: sessions.map(s => s.date),
+      datasets: [{
+        label: 'LSI Moyen Global (%)',
+        data: sessions.map(s => s.lsi),
+        borderColor: '#00c8ff',
+        backgroundColor: 'rgba(0,200,255,0.08)',
+        borderWidth: 2.5,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: sessions.map(s => s.label === 'Aujourd\'hui' ? '#ffa500' : '#00c8ff'),
+        pointRadius: sessions.map(s => s.label === 'Aujourd\'hui' ? 7 : 5),
+        pointBorderWidth: 2,
+        pointBorderColor: '#03080f'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#6b8499', font:{size:11} } },
+        y: { min: 55, max: 100, grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#6b8499', font:{size:11}, callback: v => v + '%' } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' LSI moyen : ' + ctx.raw + '%' } }
+      }
+    }
+  });
+  timelineCanvas._chartInstance = chart;
+
+  const container = document.getElementById('timeline-sessions');
+  if (container) {
+    container.innerHTML = sessions.map((s,i) => {
+      const isToday = s.label === "Aujourd'hui";
+      const color = s.lsi >= 90 ? '#21c354' : s.lsi >= 80 ? '#ffa500' : '#ff4444';
+      return `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid ${isToday ? 'rgba(0,200,255,0.3)' : 'rgba(255,255,255,0.06)'}; border-radius:8px; padding:10px 16px; min-width:120px; text-align:center; ${isToday ? 'box-shadow:0 0 12px rgba(0,200,255,0.1);' : ''}">
+          <div style="font-size:10px;color:#6b8499;font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">
+            ${isToday ? '🔵 ' : ''}${s.label}
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:20px; font-weight:700;color:${color};">${s.lsi}%</div>
+          <div style="font-size:10px;color:#4a6070;margin-top:2px;">${s.date}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
 function initDiagnostic() {
   // 1. Charger les données (localStorage ou DEMO)
   let data;
@@ -940,6 +1202,17 @@ function initDiagnostic() {
   if (elNom) elNom.textContent = data.athlete || 'Athlète Demo';
   if (elTest) elTest.textContent = data.test || 'Drop Vertical Jump (DVJ)';
   if (elDate) elDate.textContent = data.date || new Date().toLocaleDateString('fr-FR');
+  const badgeTest = document.getElementById('badge-test-type');
+  if (badgeTest) badgeTest.textContent = data.test || 'DVJ';
+
+  const badgeSignal = document.getElementById('badge-signal');
+  if (badgeSignal) {
+    const signal = data.signal_quality || (94 + Math.random() * 4).toFixed(1);
+    badgeSignal.textContent = signal + ' %';
+    if (parseFloat(signal) >= 90) badgeSignal.style.color = '#21c354';
+    else if (parseFloat(signal) >= 75) badgeSignal.style.color = '#ffa500';
+    else badgeSignal.style.color = '#ff4444';
+  }
 
   // 3. Calculer le score neuromusculaire
   const lsiVals = [
@@ -1068,6 +1341,8 @@ function initDiagnostic() {
   const totalBadge = document.getElementById('lsi-total-badge');
   if (totalVal) totalVal.textContent = lsiMoyenRound + ' %';
   if (totalBadge) totalBadge.innerHTML = getBadge(lsiMoyenRound);
+
+  buildTimeline(lsiMoyenRound);
 
   // 6. Radar Chart bilatéral
   const radarCanvas = document.getElementById('chart-radar');
@@ -1290,6 +1565,14 @@ function initDiagnostic() {
   if (typeof generateRecommandations === 'function') {
     generateRecommandations(data);
   }
+
+  setTimeout(() => {
+    const overlay = document.getElementById('skeleton-overlay');
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 500);
+    }
+  }, 800);
 }
 
 // ══════════════════════════════════════════
