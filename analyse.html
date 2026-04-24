@@ -1961,6 +1961,20 @@ border-top:1px solid rgba(255,255,255,0.06);">
           Kyritsis et al. (2016) Br J Sports Med · Zago et al. (2020) · Bosco (1983)
         </p>
 
+        <!-- CTA programme personnalisé -->
+        <div style="margin-top:16px;text-align:center;">
+          <button onclick="voirProgramme()"
+            style="background:rgba(0,200,255,0.10);color:#00c8ff;
+                   border:1px solid rgba(0,200,255,0.28);border-radius:8px;
+                   padding:11px 20px;font-size:13px;font-weight:600;
+                   font-family:'Barlow',sans-serif;cursor:pointer;
+                   width:100%;letter-spacing:.3px;transition:background .2s;"
+            onmouseover="this.style.background='rgba(0,200,255,0.18)'"
+            onmouseout="this.style.background='rgba(0,200,255,0.10)'">
+            Voir mon programme personnalisé →
+          </button>
+        </div>
+
       </div><!-- fin #vt-ref -->
 
     </div>
@@ -2992,6 +3006,19 @@ function vtToast(msg) {
 function trackExport(type) {
   markBcStep(4);
   if (typeof vtToast === 'function') vtToast('✅ ' + type + ' téléchargé !');
+}
+
+// ── Voir programme personnalisé ───────────────────────────────────────────
+function voirProgramme() {
+  var results = window._lastAnalysisResults || {
+    fppa_left: 14.2, fppa_right: 17.8,
+    lsi: 88, knee_flexion: 68,
+    jump_height_cm: 32, rsi_modified: 0.51, asymmetry_score: 13.4
+  };
+  try {
+    localStorage.setItem('vt_last_results', JSON.stringify(results));
+  } catch(e) {}
+  window.location.href = 'programme.html';
 }
 
 // ── Export PDF avec radar Chart.js ────────────────────────────────────────

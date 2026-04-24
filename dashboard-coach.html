@@ -672,9 +672,21 @@ function renderTable() {
           onclick="window.location.href='analyse.html?athlete=${p.id}'">
           Analyser
         </button>
+        <button class="vt-btn-sm"
+          onclick="voirProgrammeJoueur('${p.id}')"
+          style="margin-left:6px;background:rgba(0,200,255,0.08);
+                 border-color:rgba(0,200,255,0.22);color:#00c8ff;">
+          Programme
+        </button>
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Programme personnalisé joueur ──────────────────────────
+function voirProgrammeJoueur(athleteId) {
+  localStorage.setItem('vt_last_athlete_id', athleteId);
+  window.location.href = 'programme.html?athlete=' + athleteId;
 }
 
 // ── Tri tableau ────────────────────────────────────────────

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Programme personnalisé · VERTEXTRACK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #03080f;
+      --surface: #060d18;
+      --card:    #040a14;
+      --cyan:    #00c8ff;
+      --orange:  #ffa500;
+      --green:   #21c354;
+      --red:     #e24b4a;
+      --text:    #c8d8e8;
+      --muted:   rgba(200,216,232,0.40);
+      --border:  rgba(0,200,255,0.10);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(3,8,15,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px; height: 52px;
+    }
+    .nav-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px; font-weight: 700; letter-spacing: 2px;
+      color: var(--cyan); text-decoration: none;
+    }
+    .nav-badge {
+      background: rgba(0,200,255,0.12);
+      color: var(--cyan); border: 1px solid rgba(0,200,255,0.22);
+      border-radius: 4px; font-size: 9px; font-weight: 700;
+      letter-spacing: 1.4px; padding: 2px 7px; text-transform: uppercase;
+    }
+    .nav-right { margin-left: auto; display: flex; gap: 8px; }
+    .nav-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 6px; padding: 5px 12px;
+      font-size: 12px; cursor: pointer; font-family: 'Barlow', sans-serif;
+      transition: border-color .2s, color .2s;
+    }
+    .nav-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .nav-btn-print {
+      background: rgba(33,195,84,0.12); border-color: rgba(33,195,84,0.3);
+      color: var(--green);
+    }
+    .nav-btn-print:hover { background: rgba(33,195,84,0.22); border-color: var(--green); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 760px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    /* ── ATHLETE ROW ── */
+    .athlete-row {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+    .athlete-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(0,200,255,0.12);
+      border: 2px solid rgba(0,200,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px; font-weight: 700; color: var(--cyan);
+      flex-shrink: 0;
+    }
+    .athlete-info { flex: 1; }
+    .athlete-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px; font-weight: 700; letter-spacing: .5px;
+    }
+    .athlete-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .athlete-meta {
+      text-align: right; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--muted);
+    }
+    .athlete-meta strong { color: var(--text); display: block; font-size: 13px; }
+
+    /* ── ALERT CHIPS ── */
+    .alerts-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .alert-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card); border-radius: 20px;
+      padding: 5px 12px; font-size: 11px; font-weight: 500;
+      border: 1px solid;
+    }
+    .alert-chip.danger { border-color: rgba(226,75,74,0.4); color: var(--red); }
+    .alert-chip.warn   { border-color: rgba(255,165,0,0.35); color: var(--orange); }
+    .alert-chip.ok     { border-color: rgba(33,195,84,0.35); color: var(--green); }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; overflow-x: auto; }
+    .tab-btn {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); border-radius: 8px;
+      padding: 8px 16px; font-size: 12px; font-weight: 600;
+      letter-spacing: .5px; cursor: pointer; white-space: nowrap;
+      font-family: 'Barlow', sans-serif; transition: all .2s;
+    }
+    .tab-btn.active {
+      background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.35);
+      color: var(--cyan);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── WEEK HEADER ── */
+    .week-header {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+      margin: 18px 0 10px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── EXERCISE CARD ── */
+    .exo-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .exo-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,200,255,0.10); border: 1px solid rgba(0,200,255,0.20);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--cyan); font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    }
+    .exo-body { flex: 1; }
+    .exo-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px; font-weight: 700; margin-bottom: 4px;
+    }
+    .exo-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+    .exo-params {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .exo-param {
+      background: rgba(0,200,255,0.07); border: 1px solid rgba(0,200,255,0.15);
+      border-radius: 4px; padding: 3px 8px;
+      font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--cyan);
+    }
+    .exo-focus {
+      font-size: 10px; color: var(--orange);
+      background: rgba(255,165,0,0.07); border: 1px solid rgba(255,165,0,0.2);
+      border-radius: 4px; padding: 3px 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .exo-tag-green {
+      background: rgba(33,195,84,0.07); border: 1px solid rgba(33,195,84,0.2);
+      border-radius: 4px; padding: 3px 8px;
+      font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--green);
+    }
+
+    /* ── REVAL BLOCK ── */
+    .reval-card {
+      background: var(--card); border: 1px solid rgba(0,200,255,0.15);
+      border-radius: 12px; padding: 20px;
+    }
+    .reval-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 700; margin-bottom: 6px;
+      color: var(--cyan);
+    }
+    .reval-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+    .reval-check { display: flex; flex-direction: column; gap: 10px; }
+    .reval-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text);
+    }
+    .reval-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan); flex-shrink: 0;
+    }
+    .reval-thresh {
+      margin-left: auto; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--cyan);
+    }
+    .reval-section {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; color: var(--muted);
+      margin: 18px 0 8px;
+    }
+    .reval-score-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-top: 14px;
+    }
+    .reval-score-box {
+      background: rgba(0,200,255,0.05); border: 1px solid rgba(0,200,255,0.12);
+      border-radius: 8px; padding: 12px; text-align: center;
+    }
+    .reval-score-label {
+      font-size: 10px; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 6px;
+    }
+    .reval-score-val {
+      font-family: 'JetBrains Mono', monospace; font-size: 22px;
+      font-weight: 700; color: var(--cyan);
+    }
+    .reval-score-target {
+      font-size: 10px; color: var(--muted); margin-top: 3px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .prog-bar-wrap {
+      background: rgba(0,200,255,0.06); border-radius: 10px;
+      height: 5px; margin-top: 6px; overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--cyan), rgba(0,200,255,0.5));
+      transition: width .6s ease;
+    }
+
+    /* ── EMPTY STATE ── */
+    .vt-empty {
+      text-align: center; color: var(--muted);
+      padding: 40px 20px; font-size: 13px;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      nav, .nav-right, .tabs, .tab-btn { display: none !important; }
+      .tab-panel { display: block !important; page-break-inside: avoid; }
+      body { background: #fff !important; color: #000 !important; }
+      .athlete-row, .exo-card, .reval-card {
+        background: #f8f8f8 !important;
+        border: 1px solid #ddd !important;
+        color: #000 !important;
+        break-inside: avoid;
+      }
+      .exo-name, .reval-title { color: #003a5c !important; }
+      .exo-desc, .athlete-sub, .week-header { color: #444 !important; }
+      .exo-param, .exo-focus, .exo-tag-green { background: #eee !important; border-color: #ccc !important; color: #003a5c !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH GUARD -->
+<script>
+(function() {
+  if (!localStorage.getItem('vt_auth_mode')) {
+    window.location.replace('login.html');
+  }
+})();
+</script>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="index.html">VERTEXTRACK</a>
+  <span class="nav-badge">PROGRAMME</span>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="history.back()">← Retour</button>
+    <button class="nav-btn nav-btn-print" onclick="window.print()">🖨 Imprimer</button>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- Athlete row -->
+  <div class="athlete-row">
+    <div class="athlete-avatar" id="pg-avatar">--</div>
+    <div class="athlete-info">
+      <div class="athlete-name" id="pg-name">Chargement…</div>
+      <div class="athlete-sub" id="pg-sub">Programme personnalisé · 6 semaines</div>
+    </div>
+    <div class="athlete-meta" id="pg-meta">
+      <strong id="pg-date">--</strong>
+      Généré le
+    </div>
+  </div>
+
+  <!-- Alert chips -->
+  <div class="alerts-row" id="vt-alerts-row"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('s12', this)">Sem 1–2</button>
+    <button class="tab-btn" onclick="switchTab('s34', this)">Sem 3–4</button>
+    <button class="tab-btn" onclick="switchTab('s56', this)">Sem 5–6</button>
+    <button class="tab-btn" onclick="switchTab('reval', this)">Réévaluation</button>
+  </div>
+
+  <!-- Tab panels -->
+  <div id="tab-s12" class="tab-panel active"></div>
+  <div id="tab-s34" class="tab-panel"></div>
+  <div id="tab-s56" class="tab-panel"></div>
+  <div id="tab-reval" class="tab-panel"></div>
+
+</div><!-- end .page -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// EXERCISE DATABASE
+// ─────────────────────────────────────────────────────────────────────────────
+var EXERCISE_DB = {
+  tke: {
+    name: 'Terminal Knee Extension (TKE)',
+    desc: 'Renforcement terminal du quadriceps avec élastique. Genou à 20–30° de flexion. Contrôle du valgus dynamique en charge partielle.',
+    sets: '3', reps: '15', rest: '45 s',
+    focus: 'Quadriceps / Contrôle valgus'
+  },
+  clamshell: {
+    name: 'Clamshell + résistance',
+    desc: 'Décubitus latéral, hanche à 45°. Abduction contrôlée sans rotation lombaire. Priorité côté déficitaire.',
+    sets: '3', reps: '20', rest: '30 s',
+    focus: 'Moyen fessier / Stabilité hanche'
+  },
+  lateralWalk: {
+    name: 'Lateral Band Walk',
+    desc: 'Marche latérale avec élastique aux chevilles. Maintien d\'une légère flexion de hanche et genou. Éviter l\'effondrement du tronc.',
+    sets: '3', reps: '12 pas/côté', rest: '45 s',
+    focus: 'Abducteurs / Kinesthésie genou'
+  },
+  stepUp: {
+    name: 'Step-up unilatéral',
+    desc: 'Montée lente (2 s) sur marche 20 cm. Contrôle excentrique de la descente (3 s). Genou aligné sur 2e orteil.',
+    sets: '4', reps: '10/côté', rest: '60 s',
+    focus: 'Quadriceps / Contrôle valgus'
+  },
+  pistolAssist: {
+    name: 'Pistol Squat assisté (TRX)',
+    desc: 'Squat unipodal avec support TRX ou anneau. Descente lente jusqu\'à 90° de flexion. Progression vers version libre.',
+    sets: '3', reps: '8/côté', rest: '60 s',
+    focus: 'Force unilatérale / LSI'
+  },
+  pistolFree: {
+    name: 'Pistol Squat libre',
+    desc: 'Squat unipodal sans appui. Contrôle du valgus en phase de descente et montée. Charge additionnelle si LSI ≥ 95 %.',
+    sets: '4', reps: '6/côté', rest: '75 s',
+    focus: 'Force unilatérale / LSI'
+  },
+  ankMob: {
+    name: 'Mobilité cheville (wall drill)',
+    desc: 'Genou contre le mur, avancer progressivement le pied. 3 × 30 oscillations par côté. Améliore la dorsiflexion et réduit le valgus.',
+    sets: '3', reps: '30 osc./côté', rest: '20 s',
+    focus: 'Dorsiflexion / Valgus'
+  },
+  deepSquat: {
+    name: 'Deep Squat avec bâton',
+    desc: 'Squat profond bras levés avec bâton overhead. Talon surélevé si besoin. Progresser vers squat complet plat pied.',
+    sets: '3', reps: '12', rest: '45 s',
+    focus: 'Flexion genou / Mobilité'
+  },
+  boxJump: {
+    name: 'Box Jump',
+    desc: 'Saut sur boîte 40 cm, réception stable en flexion. Contrôle du valgus en réception. Progression de la hauteur en sem 5–6.',
+    sets: '4', reps: '6', rest: '90 s',
+    focus: 'Puissance / RSI'
+  },
+  depthJump: {
+    name: 'Depth Jump',
+    desc: 'Chute depuis boîte 30 cm, rebond explosif immédiat. Minimiser le temps de contact au sol. Réservé si LSI ≥ 90 %.',
+    sets: '4', reps: '5', rest: '90 s',
+    focus: 'RSI / Réactivité'
+  },
+  cmjFeedback: {
+    name: 'CMJ avec feedback visuel',
+    desc: 'Counter movement jump avec retour vidéo. Analyser l\'alignement genou-pied en réception. Mémoriser la sensation proprioceptive.',
+    sets: '3', reps: '5', rest: '60 s',
+    focus: 'CMJ / FPPA feedback'
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERATE PROGRAM
+// profile: { fppa_left, fppa_right, lsi, knee_flexion, jump_height_cm, rsi_modified, asymmetry_score }
+// ─────────────────────────────────────────────────────────────────────────────
+function generateProgram(profile) {
+  var fppaMax  = Math.max(profile.fppa_left || 0, profile.fppa_right || 0);
+  var lsi      = profile.lsi || profile.lsi_mean || 88;
+  var knee     = profile.knee_flexion || profile.left_knee_flexion_mean || 70;
+  var rsi      = profile.rsi_modified || 0;
+  var asym     = profile.asymmetry_score || 0;
+  var height   = profile.jump_height_cm || 30;
+
+  var needsValgus    = fppaMax > 15;
+  var needsLSI       = lsi < 90;
+  var needsKnee      = knee < 75;
+  var needsPower     = rsi < 0.5 || height < 28;
+  var severeAsym     = asym > 15;
+  var lsiCritical    = lsi < 80;
+
+  // ── Phase 1 : Sem 1–2 (activation + contrôle moteur) ──
+  var p1 = [];
+  p1.push({ key: 'tke',       week: 'Semaines 1–2', tag: 'Activation' });
+  p1.push({ key: 'clamshell', week: 'Semaines 1–2', tag: 'Activation' });
+  if (needsKnee || needsValgus) {
+    p1.push({ key: 'ankMob',  week: 'Semaines 1–2', tag: 'Mobilité' });
+    p1.push({ key: 'deepSquat', week: 'Semaines 1–2', tag: 'Mobilité' });
+  }
+  if (needsValgus || severeAsym) {
+    p1.push({ key: 'lateralWalk', week: 'Semaines 1–2', tag: 'Contrôle' });
+  }
+  if (needsLSI) {
+    p1.push({ key: 'stepUp', week: 'Semaines 1–2', tag: 'Renforcement' });
+  }
+
+  // ── Phase 2 : Sem 3–4 (renforcement unilatéral) ──
+  var p2 = [];
+  p2.push({ key: 'stepUp',   week: 'Semaines 3–4', tag: 'Renforcement' });
+  p2.push({ key: 'lateralWalk', week: 'Semaines 3–4', tag: 'Stabilité' });
+  if (needsLSI) {
+    p2.push({ key: 'pistolAssist', week: 'Semaines 3–4', tag: 'Unilatéral' });
+  }
+  if (needsKnee) {
+    p2.push({ key: 'deepSquat', week: 'Semaines 3–4', tag: 'Mobilité+' });
+    p2.push({ key: 'ankMob',   week: 'Semaines 3–4', tag: 'Mobilité+' });
+  }
+  if (needsPower && !lsiCritical) {
+    p2.push({ key: 'boxJump', week: 'Semaines 3–4', tag: 'Puissance' });
+  }
+  p2.push({ key: 'cmjFeedback', week: 'Semaines 3–4', tag: 'CMJ' });
+
+  // ── Phase 3 : Sem 5–6 (puissance + retour sport) ──
+  var p3 = [];
+  if (lsi >= 90) {
+    p3.push({ key: 'pistolFree', week: 'Semaines 5–6', tag: 'Force max' });
+  } else {
+    p3.push({ key: 'pistolAssist', week: 'Semaines 5–6', tag: 'Unilatéral+' });
+  }
+  p3.push({ key: 'boxJump',     week: 'Semaines 5–6', tag: 'Puissance' });
+  if (!lsiCritical) {
+    p3.push({ key: 'depthJump', week: 'Semaines 5–6', tag: 'Réactivité' });
+  }
+  p3.push({ key: 'cmjFeedback', week: 'Semaines 5–6', tag: 'Validation' });
+  if (needsValgus) {
+    p3.push({ key: 'tke',       week: 'Semaines 5–6', tag: 'Maintenance' });
+  }
+
+  return { p1: p1, p2: p2, p3: p3, profile: {
+    fppaMax: fppaMax, lsi: lsi, knee: knee, rsi: rsi, asym: asym,
+    needsValgus: needsValgus, needsLSI: needsLSI, needsKnee: needsKnee,
+    needsPower: needsPower, lsiCritical: lsiCritical, severeAsym: severeAsym
+  }};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER EXERCISE CARD
+// ─────────────────────────────────────────────────────────────────────────────
+function renderExo(item, index) {
+  var ex = EXERCISE_DB[item.key];
+  if (!ex) return '';
+  return '<div class="exo-card">' +
+    '<div class="exo-num">' + (index + 1) + '</div>' +
+    '<div class="exo-body">' +
+      '<div class="exo-name">' + ex.name + '</div>' +
+      '<div class="exo-desc">' + ex.desc + '</div>' +
+      '<div class="exo-params">' +
+        '<span class="exo-param">× ' + ex.sets + ' séries</span>' +
+        '<span class="exo-param">' + ex.reps + ' rép.</span>' +
+        '<span class="exo-param">Repos ' + ex.rest + '</span>' +
+        '<span class="exo-focus">' + ex.focus + '</span>' +
+        (item.tag ? '<span class="exo-tag-green">' + item.tag + '</span>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER FULL PROGRAM INTO TABS
+// ─────────────────────────────────────────────────────────────────────────────
+function renderProgram(program, profile) {
+  var p = program.profile;
+
+  // ── Tab S1-2 ──
+  var h1 = '<div class="week-header">Phase 1 — Activation &amp; Contrôle moteur</div>';
+  program.p1.forEach(function(item, i) { h1 += renderExo(item, i); });
+  document.getElementById('tab-s12').innerHTML = h1;
+
+  // ── Tab S3-4 ──
+  var h2 = '<div class="week-header">Phase 2 — Renforcement unilatéral</div>';
+  program.p2.forEach(function(item, i) { h2 += renderExo(item, i); });
+  document.getElementById('tab-s34').innerHTML = h2;
+
+  // ── Tab S5-6 ──
+  var h3 = '<div class="week-header">Phase 3 — Puissance &amp; Retour sport</div>';
+  program.p3.forEach(function(item, i) { h3 += renderExo(item, i); });
+  document.getElementById('tab-s56').innerHTML = h3;
+
+  // ── Tab Réévaluation ──
+  var lsiTarget  = Math.min(100, Math.round(p.lsi + 8));
+  var fppaTarget = Math.max(10, Math.round(p.fppaMax - 4));
+  var rsiTarget  = (parseFloat(p.rsi || 0) + 0.15).toFixed(2);
+
+  var h4 = '<div class="reval-card">' +
+    '<div class="reval-title">Réévaluation — Semaine 7</div>' +
+    '<div class="reval-sub">Protocole de réévaluation CMJ + FPPA recommandé 7 jours après la fin du programme</div>' +
+
+    '<div class="reval-section">Tests à refaire</div>' +
+    '<div class="reval-check">' +
+      '<div class="reval-item"><div class="reval-dot"></div>Counter Movement Jump bilatéral (5 répétitions)<span class="reval-thresh">CMJ</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>FPPA vue frontale · caméra à 1 m en face<span class="reval-thresh">≤ 15°</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Squat unipodal · 5 répétitions chaque côté<span class="reval-thresh">LSI</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Flexion genou en charge · goniomètre<span class="reval-thresh">≥ 75°</span></div>' +
+    '</div>' +
+
+    '<div class="reval-section">Objectifs de sortie</div>' +
+    '<div class="reval-score-grid">' +
+      '<div class="reval-score-box">' +
+        '<div class="reval-score-label">LSI cible</div>' +
+        '<div class="reval-score-val" id="rv-lsi">' + lsiTarget + ' %</div>' +
+        '<div class="reval-score-target">Départ : ' + Math.round(p.lsi) + ' %</div>' +
+        '<div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:' + Math.round(p.lsi) + '%"></div></div>' +
+      '</div>' +
+      '<div class="reval-score-box">' +
+        '<div class="reval-score-label">FPPA max cible</div>' +
+        '<div class="reval-score-val" id="rv-fppa">' + fppaTarget + '°</div>' +
+        '<div class="reval-score-target">Départ : ' + Math.round(p.fppaMax) + '°</div>' +
+      '</div>' +
+      '<div class="reval-score-box">' +
+        '<div class="reval-score-label">RSI cible</div>' +
+        '<div class="reval-score-val" id="rv-rsi">' + rsiTarget + '</div>' +
+        '<div class="reval-score-target">Départ : ' + (parseFloat(p.rsi || 0)).toFixed(2) + '</div>' +
+      '</div>' +
+      '<div class="reval-score-box">' +
+        '<div class="reval-score-label">Flexion genou</div>' +
+        '<div class="reval-score-val">&ge; 75°</div>' +
+        '<div class="reval-score-target">Départ : ' + Math.round(p.knee) + '°</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="reval-section">Critères de retour au sport complet</div>' +
+    '<div class="reval-check">' +
+      '<div class="reval-item"><div class="reval-dot"></div>LSI ≥ 90 % sur squat unipodal<span class="reval-thresh">Kyritsis 2016</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>FPPA ≤ 15° en réception CMJ<span class="reval-thresh">Hewett 2005</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Absence de douleur &gt; 2/10 EVA à l\'effort<span class="reval-thresh">Clinique</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Approbation du staff médical<span class="reval-thresh">Obligatoire</span></div>' +
+    '</div>' +
+  '</div>';
+
+  document.getElementById('tab-reval').innerHTML = h4;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ALERT CHIPS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildAlerts(profile, p) {
+  var chips = [];
+  if (p.needsValgus)  chips.push({ cls: 'danger', text: 'FPPA ' + Math.round(p.fppaMax) + '° — valgus dynamique' });
+  if (p.lsiCritical)  chips.push({ cls: 'danger', text: 'LSI ' + Math.round(p.lsi) + '% — asymétrie critique' });
+  else if (p.needsLSI) chips.push({ cls: 'warn', text: 'LSI ' + Math.round(p.lsi) + '% — asymétrie modérée' });
+  if (p.needsKnee)    chips.push({ cls: 'warn', text: 'Flexion genou ' + Math.round(p.knee) + '° — mobilité réduite' });
+  if (p.needsPower)   chips.push({ cls: 'warn', text: 'RSI ' + (parseFloat(p.rsi || 0)).toFixed(2) + ' — puissance à améliorer' });
+  if (p.severeAsym)   chips.push({ cls: 'danger', text: 'Asym. ' + Math.round(p.asym) + '% — rééquilibrage prioritaire' });
+  if (!p.needsValgus && !p.lsiCritical) chips.push({ cls: 'ok', text: 'Profil favorable au retour sport' });
+
+  var el = document.getElementById('vt-alerts-row');
+  el.innerHTML = chips.map(function(c) {
+    return '<div class="alert-chip ' + c.cls + '">' +
+      '<div class="chip-dot"></div>' + c.text +
+    '</div>';
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAB SWITCH
+// ─────────────────────────────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b)   { b.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DEMO PROFILE
+// ─────────────────────────────────────────────────────────────────────────────
+var DEMO_PROFILE = {
+  fppa_left:        14.2,
+  fppa_right:       17.8,
+  lsi:              88,
+  knee_flexion:     68,
+  jump_height_cm:   32,
+  rsi_modified:     0.51,
+  asymmetry_score:  13.4,
+  name:             'Athlète Démo',
+  email:            'demo@vertextrack.io'
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+(async function init() {
+  var today = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+  document.getElementById('pg-date').textContent = today;
+
+  var profile = null;
+
+  // 1. Try localStorage vt_last_results
+  try {
+    var raw = localStorage.getItem('vt_last_results');
+    if (raw) profile = JSON.parse(raw);
+  } catch(e) {}
+
+  // 2. Try Supabase (athlete_id from URL param)
+  if (!profile) {
+    var params  = new URLSearchParams(window.location.search);
+    var athId   = params.get('athlete') || params.get('athlete_id');
+    if (athId) {
+      try {
+        var sb = supabase.createClient(
+          'https://kygrhqgyqqrylsxnshny.supabase.co',
+          'sb_publishable_xEGDhI4c53TSQZOYrygUuA_4YTRjlNf'
+        );
+        var res = await sb
+          .from('analyses')
+          .select('results,created_at')
+          .eq('athlete_id', athId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (res.data && res.data.results) {
+          profile = res.data.results;
+          profile._athId = athId;
+        }
+      } catch(e) { console.warn('Supabase fetch error', e); }
+    }
+  }
+
+  // 3. Fallback to demo
+  if (!profile) profile = DEMO_PROFILE;
+
+  // Set athlete header
+  var name = profile.name || profile.athlete_name ||
+             localStorage.getItem('vt_user_name') || 'Athlète';
+  var words = name.trim().split(/\s+/);
+  var initials = words.length >= 2
+    ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
+    : name.substring(0, 2).toUpperCase();
+
+  document.getElementById('pg-avatar').textContent = initials;
+  document.getElementById('pg-name').textContent   = name;
+
+  var sport = profile.sport || profile.poste || '';
+  document.getElementById('pg-sub').textContent =
+    'Programme personnalisé · 6 semaines' + (sport ? ' · ' + sport : '');
+
+  // Generate & render
+  var program = generateProgram(profile);
+  buildAlerts(profile, program.profile);
+  renderProgram(program, profile);
+})();
+</script>
+</body>
+</html>
