@@ -389,12 +389,107 @@
 
     /* ── Print ───────────────────────────────────────────────── */
     @media print {
-      nav, .btn-back, .btn-save, .action-bar { display: none !important; }
-      body { background: white !important; color: #111 !important; }
-      .section-card { background: #f8f9fa !important; border: 1px solid #ddd !important; }
-      .athlete-header { background: #eef !important; border: 1px solid #cce !important; }
-      .section-title { color: #000 !important; }
-      .section-title::before { background: #00c8ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      /* Fond blanc général */
+      body {
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+      }
+
+      /* Masquer éléments non imprimables */
+      nav,
+      .btn-back,
+      #btn-retour,
+      #btn-sauvegarder,
+      button,
+      .nav-actions,
+      footer {
+        display: none !important;
+      }
+
+      /* Cards sur fond blanc */
+      .section-card,
+      [class*="section-card"],
+      div[style*="background: rgba(255,255,255,0.04)"],
+      div[style*="background:rgba(255,255,255,0.04)"],
+      div[style*="background: rgba(255,255,255,0.03)"],
+      div[style*="background:rgba(255,255,255,0.03)"] {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+      }
+
+      /* Titres de section en sombre */
+      .section-title,
+      h1, h2, h3, h4 {
+        color: #1a1a2e !important;
+      }
+
+      /* Texte général */
+      p, td, th, li, span {
+        color: #2d3748 !important;
+      }
+
+      /* Valeurs mono */
+      .mono,
+      [style*="JetBrains Mono"] {
+        color: #1a1a2e !important;
+      }
+
+      /* Badges — garder les couleurs mais fond plus clair */
+      [style*="background:rgba(33,195,84"] {
+        background: #d4edda !important;
+        color: #155724 !important;
+        border-color: #c3e6cb !important;
+      }
+      [style*="background:rgba(255,165,0"] {
+        background: #fff3cd !important;
+        color: #856404 !important;
+        border-color: #ffeeba !important;
+      }
+      [style*="background:rgba(255,68,68"] {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+        border-color: #f5c6cb !important;
+      }
+
+      /* Header athlète */
+      [style*="background: rgba(0,200,255"],
+      [style*="background:rgba(0,200,255"] {
+        background: #e8f4f8 !important;
+        border-color: #b8d4e8 !important;
+      }
+
+      /* Jauge SVG — adapter stroke */
+      svg circle {
+        stroke-opacity: 1 !important;
+      }
+
+      /* Éviter coupure de page dans les sections */
+      .section-card,
+      div[style*="border-radius: 16px"],
+      div[style*="border-radius:16px"] {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      /* Titre page imprimée */
+      body::before {
+        content: "VERTEXTRACK — Rapport Diagnostic Neuromusculaire";
+        display: block;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 24px;
+        font-weight: 900;
+        color: #0090b8;
+        text-align: center;
+        padding: 20px 0 10px 0;
+        border-bottom: 2px solid #0090b8;
+        margin-bottom: 24px;
+      }
+
+      /* Marges impression */
+      @page {
+        margin: 15mm 12mm;
+      }
     }
   </style>
 </head>
@@ -541,6 +636,11 @@
             <th>Côté G</th>
             <th>Côté D</th>
             <th>LSI %</th>
+            <th style="padding:12px 16px; text-align:left; font-family:'Barlow Condensed',sans-serif;
+                       font-size:12px; font-weight:600; color:#6b8499; text-transform:uppercase;
+                       letter-spacing:1px;">
+              NORME
+            </th>
             <th>Statut</th>
           </tr>
         </thead>
@@ -550,11 +650,20 @@
             <td style="padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">LSI MOYEN GLOBAL</td>
             <td colspan="2" style="padding:14px 16px;color:#6b8499;font-size:13px;">Composite des 5 variables</td>
             <td style="padding:14px 16px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:16px;" id="lsi-total-value">—</td>
+            <td style="padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#6b8499;">
+              ≥ 90%
+              <br><span style="font-size:10px; color:#4a6070;">Kyritsis 2016</span>
+            </td>
             <td style="padding:14px 16px;" id="lsi-total-badge"></td>
           </tr>
         </tfoot>
       </table>
     </div>
+    <p style="font-size:11px; color:#4a6070; font-style:italic; margin-top:12px; padding:0 4px;">
+      Références : Hewett et al. 2005 (AJSM) · Thomee et al. 2011 (KSSTA) ·
+      Dingenen et al. 2015 (Gait & Posture) · Kyritsis et al. 2016 (BJSM) ·
+      Zazulak et al. 2007 (JOSPT)
+    </p>
   </div>
 
   <!-- SECTION 5 — COURBE TEMPORELLE FPPA -->
@@ -575,6 +684,24 @@
     <div class="section-title">Interprétation clinique</div>
     <div class="section-sub">Générée automatiquement selon les seuils de la littérature biomécanique</div>
     <div id="alerts-container"></div>
+  </div>
+
+  <div class="section-card" id="section-recommandations">
+    <div class="section-title">RECOMMANDATIONS PERSONNALISÉES</div>
+    <p style="font-size:13px; color:#6b8499; margin-bottom:24px; font-style:italic;">
+      Exercices ciblés selon les déficits neuromusculaires identifiés.
+      Programme à valider avec le staff médical et préparateur physique.
+    </p>
+    <div id="reco-container" style="display:flex; flex-direction:column; gap:16px;">
+      <!-- Généré dynamiquement par JS -->
+    </div>
+    <div style="margin-top:24px; padding:16px; background:rgba(0,200,255,0.04);
+                border:1px solid rgba(0,200,255,0.1); border-radius:8px;">
+      <p style="font-size:12px; color:#4a6070; margin:0; text-align:center;">
+        ⚕️ Ces recommandations sont générées algorithmiquement à partir du profil biomécanique.
+        Elles ne remplacent pas un avis médical ou kinésithérapeutique.
+      </p>
+    </div>
   </div>
 
   <!-- SECTION 7 — BARRE D'ACTIONS -->
@@ -699,15 +826,15 @@ function animateGauge(score) {
 function buildLSITable(data) {
   var rows = [
     { label:'FPPA',            g:data.fppa_gauche.toFixed(1)+'°', d:data.fppa_droite.toFixed(1)+'°',
-      lsi:data.lsi_fppa, unit:'%' },
+      lsi:data.lsi_fppa, unit:'%', norme: '≤ 15°<br><span style="font-size:10px; color:#4a6070;">Hewett 2005</span>' },
     { label:'Flexion genou',   g:data.flexion_genou_g.toFixed(1)+'°', d:data.flexion_genou_d.toFixed(1)+'°',
-      lsi:data.lsi_flexion, unit:'%' },
+      lsi:data.lsi_flexion, unit:'%', norme: '≥ 90°<br><span style="font-size:10px; color:#4a6070;">Dingenen 2015</span>' },
     { label:'ROM hanche',      g:data.rom_hanche_g.toFixed(1)+'°', d:data.rom_hanche_d.toFixed(1)+'°',
-      lsi:data.lsi_rom_hanche, unit:'%' },
+      lsi:data.lsi_rom_hanche, unit:'%', norme: '≥ 40°<br><span style="font-size:10px; color:#4a6070;">Zazulak 2007</span>' },
     { label:'Vélocité genou',  g:data.velo_genou_g+' °/s',  d:data.velo_genou_d+' °/s',
-      lsi:data.lsi_velo_genou, unit:'%' },
+      lsi:data.lsi_velo_genou, unit:'%', norme: 'LSI ≥ 90%<br><span style="font-size:10px; color:#4a6070;">Thomee 2011</span>' },
     { label:'Vélocité hanche', g:data.velo_hanche_g+' °/s', d:data.velo_hanche_d+' °/s',
-      lsi:data.lsi_velo_hanche, unit:'%' }
+      lsi:data.lsi_velo_hanche, unit:'%', norme: 'LSI ≥ 90%<br><span style="font-size:10px; color:#4a6070;">Thomee 2011</span>' }
   ];
 
   var tbody = document.getElementById('lsi-tbody');
@@ -727,6 +854,7 @@ function buildLSITable(data) {
       + '<td class="val-mono" style="color:#00c8ff;">' + r.g + '</td>'
       + '<td class="val-mono" style="color:#ffa500;">' + r.d + '</td>'
       + '<td class="val-mono" style="font-weight:600;">' + r.lsi + ' %</td>'
+      + '<td style="padding:14px 16px; font-family:\'JetBrains Mono\',monospace; font-size:13px; color:#6b8499;">' + r.norme + '</td>'
       + '<td><span class="status-badge ' + cls + '">' + txt + '</span></td>'
       + '</tr>';
   }).join('');
@@ -1126,6 +1254,170 @@ function saveToSupabase() {
 
   // Courbe FPPA
   buildFPPAChart(data);
+
+  // Recommandations personnalisées
+  generateRecommandations(data);
+})();
+
+function generateRecommandations(data) {
+  const container = document.getElementById('reco-container');
+  if (!container) return;
+
+  const recos = [];
+
+  // RÈGLE 1 : FPPA > 15° (valgus dynamique)
+  if (data.fppa_gauche > 15 || data.fppa_droite > 15) {
+    recos.push({
+      priorite: 'HAUTE',
+      couleur: '#ff4444',
+      icon: '🦵',
+      titre: 'Renforcement des abducteurs et rotateurs externes de hanche',
+      exercices: [
+        'Clamshell avec élastique — 3×15 reps · focus activation fessier moyen',
+        'Side-lying hip abduction — 3×20 reps · progression avec poids de cheville',
+        'Monster walk élastique — 3×10m A/R · contrôle du valgus à chaque pas',
+        'Single-leg squat devant miroir — 3×10 reps · feedback visuel alignement genou'
+      ],
+      ref: 'Hewett et al. 2005 · Myer et al. 2008'
+    });
+  }
+
+  // RÈGLE 2 : LSI flexion genou < 85%
+  if (data.lsi_flexion < 85) {
+    recos.push({
+      priorite: 'HAUTE',
+      couleur: '#ff4444',
+      icon: '⚡',
+      titre: 'Travail excentrique quadriceps — rééquilibrage inter-membres',
+      exercices: [
+        'Single-leg press excentrique — 4×8 reps · phase descente 4 secondes',
+        'Nordic hamstring curl — 3×6 reps · phase excentrique contrôlée',
+        'Step-down unilatéral — 3×12 reps · contrôle fémoro-patellaire',
+        'Wall sit unilatéral progressif — 3×30s · côté déficitaire prioritaire'
+      ],
+      ref: 'Thomee et al. 2011 · Kyritsis et al. 2016'
+    });
+  }
+
+  // RÈGLE 3 : LSI vélocité genou < 85%
+  if (data.lsi_velo_genou < 85) {
+    recos.push({
+      priorite: 'MOYENNE',
+      couleur: '#ffa500',
+      icon: '🏃',
+      titre: 'Pliométrie unilatérale — rééducation de la décélération',
+      exercices: [
+        'Box step-down unilatéral — 3×10 reps · atterrissage contrôlé',
+        'Single-leg hop & stick — 3×8 reps · stabilisation 3 secondes',
+        'Lateral bound — 3×10 reps A/R · focus absorption choc',
+        'Drop landing unilatéral — 3×6 reps · progression hauteur 20→35cm'
+      ],
+      ref: 'Myer et al. 2006 · Dingenen et al. 2015'
+    });
+  }
+
+  // RÈGLE 4 : LSI FPPA < 80%
+  if (data.lsi_fppa < 80) {
+    recos.push({
+      priorite: 'HAUTE',
+      couleur: '#ff4444',
+      icon: '⚖️',
+      titre: 'Rééquilibrage proprioceptif et contrôle postural frontal',
+      exercices: [
+        'Équilibre unipodal sur surface instable — 3×45s · yeux ouverts puis fermés',
+        'Y-Balance Test en entraînement — 3 directions · mesure progression hebdo',
+        'Perturbation latérale en stance — partenaire ou élastique · 3×10 reps',
+        'Travail sur plateau instable + reach — 3×8 reps par côté'
+      ],
+      ref: 'Zazulak et al. 2007 · Plisky et al. 2009'
+    });
+  }
+
+  // RÈGLE 5 : LSI ROM hanche < 85%
+  if (data.lsi_rom_hanche < 85) {
+    recos.push({
+      priorite: 'MOYENNE',
+      couleur: '#ffa500',
+      icon: '🔄',
+      titre: 'Mobilité hanche et flexibilité ischio-jambiers',
+      exercices: [
+        'Hip flexor stretch unilatéral — 3×45s · position chevalier servant',
+        'Pigeon pose progressif — 3×60s · rotation interne/externe',
+        'Foam roller TFL et fessiers — 2×60s par côté',
+        'Dynamic leg swing — 3×15 reps · plan sagittal et frontal'
+      ],
+      ref: 'Dingenen et al. 2015 · Zazulak et al. 2007'
+    });
+  }
+
+  // RÈGLE 6 : Tout normal
+  if (recos.length === 0) {
+    recos.push({
+      priorite: 'MAINTIEN',
+      couleur: '#21c354',
+      icon: '✅',
+      titre: 'Profil neuromusculaire équilibré — programme de maintien',
+      exercices: [
+        'Pliométrie bilatérale et unilatérale — 2 séances/semaine',
+        'Renforcement préventif fessiers et ischio-jambiers — 2×/semaine',
+        'Proprioception en fin de séance — 10 min · surface instable',
+        'Réévaluation biomécanique recommandée dans 6–8 semaines'
+      ],
+      ref: 'Myer et al. 2008 · Programme FIFA 11+'
+    });
+  }
+
+  // RENDU HTML
+  container.innerHTML = recos.map((r, i) => `
+    <div style="
+      border-left: 4px solid ${r.couleur};
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 20px 24px;
+      animation: fadeInUp 0.4s ease ${i * 0.1}s both;
+    ">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span style="font-size:22px;">${r.icon}</span>
+        <div>
+          <span style="
+            background: ${r.couleur}22;
+            color: ${r.couleur};
+            border: 1px solid ${r.couleur}66;
+            border-radius: 4px;
+            font-size:10px;
+            font-weight:700;
+            padding: 2px 8px;
+            font-family:'Barlow Condensed',sans-serif;
+            letter-spacing:1px;
+            margin-right:8px;
+          ">PRIORITÉ ${r.priorite}</span>
+        </div>
+      </div>
+      <h4 style="
+        font-family:'Barlow Condensed',sans-serif;
+        font-size:18px;
+        font-weight:700;
+        color:#fff;
+        margin:0 0 14px 0;
+      ">${r.titre}</h4>
+      <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px;">
+        ${r.exercices.map(ex => `
+          <li style="
+            font-size:14px;
+            color:#aac0d0;
+            line-height:1.5;
+          ">${ex}</li>
+        `).join('')}
+      </ul>
+      <p style="
+        font-size:11px;
+        color:#4a6070;
+        font-style:italic;
+        margin:14px 0 0 0;
+      ">Réf. : ${r.ref}</p>
+    </div>
+  `).join('');
+}
 })();
 </script>
 </body>
