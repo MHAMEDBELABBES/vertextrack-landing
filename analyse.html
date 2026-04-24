@@ -2287,7 +2287,6 @@ border-top:1px solid rgba(255,255,255,0.06);">
       </div>
     </div>
 
-    <!-- NOUVEAU BOUTON PROGRAMME (Visible à la fin des résultats) -->
     <div id="btn-programme-wrap" style="margin-top:16px;
       padding:14px 16px;background:rgba(0,200,255,0.04);
       border:0.5px solid rgba(0,200,255,0.15);
@@ -2295,11 +2294,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
       <div style="font-family:'Barlow Condensed',sans-serif;
         font-size:11px;font-weight:600;color:#00c8ff;
         letter-spacing:1px;text-transform:uppercase;
-        margin-bottom:6px;">
-        Analyse terminée
-      </div>
-      <div style="font-size:11px;color:rgba(200,216,232,0.5);
-        margin-bottom:12px;line-height:1.5;">
+        margin-bottom:6px;">Analyse terminée</div>
+      <div style="font-size:11px;
+        color:rgba(200,216,232,0.5);margin-bottom:12px;
+        line-height:1.5;">
         Programme personnalisé généré selon ton profil CMJ
       </div>
       <button onclick="voirProgramme()"
@@ -2307,13 +2305,10 @@ border-top:1px solid rgba(255,255,255,0.06);">
         font-family:'Barlow Condensed',sans-serif;
         font-size:14px;font-weight:700;letter-spacing:1px;
         padding:12px 24px;border-radius:8px;border:none;
-        cursor:pointer;width:100%;transition:opacity .15s;"
-        onmouseover="this.style.opacity='0.85'"
-        onmouseout="this.style.opacity='1'">
+        cursor:pointer;width:100%;">
         Voir mon programme personnalisé →
       </button>
     </div>
-
   </div>
 </div>
 
@@ -2914,8 +2909,8 @@ function loadDemo() {
   }
 
   // Afficher le bouton programme
-  const btnProg = document.getElementById('btn-programme-wrap');
-  if (btnProg) btnProg.style.display = 'block';
+  var b = document.getElementById('btn-programme-wrap');
+  if (b) b.style.display = 'block';
 }
 
 // ===== TÉLÉCHARGEMENTS =====
@@ -3029,34 +3024,16 @@ function trackExport(type) {
 
 // ── Voir programme personnalisé ───────────────────────────────────────────
 function voirProgramme() {
-  // Récupère les derniers résultats de l'analyse
-  const results = window._lastAnalysisResults || {};
-
-  // Sauvegarde dans localStorage pour programme.html
-  localStorage.setItem('vt_last_results',
-    JSON.stringify({
-      fppa_left:        results.fppaLeft
-                     ?? results.fppa_left
-                     ?? 14.2,
-      fppa_right:       results.fppaRight
-                     ?? results.fppa_right
-                     ?? 11.8,
-      lsi_symmetry:     results.lsi
-                     ?? results.lsi_symmetry
-                     ?? 0.88,
-      knee_flexion_max: results.kneeFlexion
-                     ?? results.knee_flexion_max
-                     ?? 68,
-      jump_height_com:  results.jumpHeight
-                     ?? results.jump_height_com
-                     ?? 37.8,
-      rsi_modified:     results.rsi_modified
-                     ?? results.rsiModified
-                     ?? null
-    })
-  );
-
-  // Redirection vers programme.html
+  var results = window._lastAnalysisResults || {};
+  localStorage.setItem('vt_last_results', JSON.stringify({
+    fppa_left: results.fppaLeft ?? results.fppa_left ?? 14.2,
+    fppa_right: results.fppaRight ?? results.fppa_right ?? 11.8,
+    lsi_symmetry: results.lsi ?? results.lsi_symmetry ?? 0.88,
+    knee_flexion_max: results.kneeFlexion
+      ?? results.knee_flexion_max ?? 68,
+    jump_height_com: results.jumpHeight
+      ?? results.jump_height_com ?? 37.8
+  }));
   window.location.href = 'programme.html';
 }
 
@@ -3718,8 +3695,8 @@ function updateRecommandations(results) {
   }
 
   // Afficher le bouton programme
-  const btnProg = document.getElementById('btn-programme-wrap');
-  if (btnProg) btnProg.style.display = 'block';
+  var b = document.getElementById('btn-programme-wrap');
+  if (b) b.style.display = 'block';
 }
 
 // ── Recommandations différenciées par rôle ─────────────────
