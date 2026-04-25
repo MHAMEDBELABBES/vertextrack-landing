@@ -600,79 +600,7 @@
 
 
   <!-- SECTION PRÉVENTION LCA -->
-<div id="section-prevention">
-
-  <div class="pv-sep">
-    <div class="pv-sep-line"></div>
-    <span class="pv-sep-label">Prévention LCA</span>
-    <div class="pv-sep-line"></div>
-  </div>
-
-  <div id="pv-risk-card" style="background:#060e1a;
-    border:0.5px solid rgba(226,75,74,0.2);
-    border-radius:10px;padding:14px 16px;
-    margin-bottom:14px;display:none;">
-    <div style="display:flex;align-items:center;
-      gap:10px;margin-bottom:10px;">
-      <div style="position:relative;width:52px;
-        height:52px;flex-shrink:0;">
-        <svg viewBox="0 0 52 52" width="52" height="52">
-          <circle cx="26" cy="26" r="20" fill="none"
-            stroke="rgba(226,75,74,0.12)"
-            stroke-width="5"/>
-          <circle cx="26" cy="26" r="20" fill="none"
-            id="pv-arc" stroke="#e24b4a"
-            stroke-width="5"
-            stroke-dasharray="125.7"
-            stroke-dashoffset="125.7"
-            stroke-linecap="round"
-            transform="rotate(-90 26 26)"/>
-        </svg>
-        <div style="position:absolute;inset:0;
-          display:flex;flex-direction:column;
-          align-items:center;justify-content:center;
-          font-family:'JetBrains Mono',monospace;
-          font-size:12px;font-weight:500;
-          color:#c8d8e8;line-height:1;">
-          <span id="pv-pct">—</span>
-          <span style="font-size:8px;
-            color:rgba(200,216,232,0.4);">risque</span>
-        </div>
-      </div>
-      <div>
-        <div id="pv-risk-title" style="
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:13px;font-weight:700;color:#fff;
-          margin-bottom:2px;">
-          Profil biomécanique
-        </div>
-        <div id="pv-shap-bars"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="pv-section-title" style="
-    font-family:'Barlow Condensed',sans-serif;
-    font-size:14px;font-weight:700;color:#fff;
-    letter-spacing:0.5px;margin-bottom:12px;">
-    Exercices de prévention personnalisés
-  </div>
-
-  <div id="pv-exo-container"></div>
-
-  <div style="background:rgba(226,75,74,0.04);
-    border:0.5px solid rgba(226,75,74,0.12);
-    border-radius:8px;padding:10px 14px;
-    margin-top:14px;font-size:10px;
-    color:rgba(200,216,232,0.3);
-    line-height:1.6;font-style:italic;">
-    Ces exercices sont adaptés à votre profil biomécanique.
-    Ils ne remplacent pas l'avis d'un médecin du sport
-    ou d'un kinésithérapeute.
-  </div>
-
-</div>
-<!-- FIN SECTION PRÉVENTION LCA -->
+ SECTION PRÉVENTION LCA -->
 
 </div><!-- end .page -->
 
@@ -1271,20 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ── PRÉVENTION LCA ─────────────────────────────────────
-function renderPreventionSection(profile) {
-  const fppaL = profile.fppa_left ?? 10;
-  const fppaR = profile.fppa_right ?? 10;
-  const lsi   = profile.lsi_symmetry ?? profile.lsi ?? 0.95;
-  const knee  = profile.knee_flexion_max ?? profile.knee_flexion ?? 80;
-  const h     = profile.jump_height_com ?? profile.jump_height_cm ?? 42;
-
-  // Score risque
-  let risk = 0.3;
-  if (fppaL >= 15 || fppaR >= 15) risk += 0.25;
-  else if (fppaL >= 12 || fppaR >= 12) risk += 0.12;
-  
-  const lsiVal = lsi > 1 ? lsi / 100 : lsi;
-  if (lsiVal < 0.80) risk += 0.25;
+< 0.80) risk += 0.25;
   else if (lsiVal < 0.90) risk += 0.12;
   
   if (knee < 70) risk += 0.08;
@@ -1449,5 +1364,19 @@ function renderPreventionSection(profile) {
 }
 
 </script>
+
+  <!-- SECTION PRÃ‰VENTION LCA -->
+  <div id="section-prevention" style="margin-top:28px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);white-space:nowrap;">PrÃ©vention LCA</span>
+      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
+    </div>
+    <div id="pv-section-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prÃ©vention personnalisÃ©s</div>
+    <div id="pv-exo-container" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
+    <div style="background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;padding:10px 14px;font-size:10px;color:rgba(200,216,232,0.3);line-height:1.6;font-style:italic;">Ces exercices sont adaptÃ©s Ã  votre profil biomÃ©canique. Ils ne remplacent pas l'avis d'un mÃ©decin du sport ou d'un kinÃ©sithÃ©rapeute.</div>
+  </div>
+  <!-- FIN SECTION PRÃ‰VENTION LCA -->
+
 </body>
 </html>
