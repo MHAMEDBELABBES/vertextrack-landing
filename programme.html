@@ -452,6 +452,18 @@
 .exo-target{font-size:11px;line-height:1.4;margin-bottom:2px;}
 .exo-ref{font-size:10px;color:rgba(200,216,232,0.28);font-style:italic;margin-top:4px;}
 
+
+.pv-sep-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+}
+#section-prevention {
+  margin-top: 32px;
+  padding-top: 4px;
+}
+
 </style>
 
 </head>
@@ -1183,7 +1195,7 @@ function pvRender(p){
     'Course + renforcement + etirements dynamiques. Reduit le risque LCA de 50%. Adapter basket : sauts avec controle atterrissage.'
   );
   var t=document.getElementById('pv-title');
-  if(t)t.textContent=ex.length+' exercices de prevention personnalises';
+  if(t)t.textContent=ex.length+' exercices de prévention personnalisés';
   var g=document.getElementById('pv-grid');
   if(!g)return;
   g.innerHTML=ex.map(function(e){
@@ -1197,7 +1209,7 @@ function pvRender(p){
       return '<span class="exo-param">'+d+'</span>';
     }).join('')
     +'</div>'
-    +(e.desc?'<div class="exo-desc" style="margin-top:10px;">'+e.desc+'</div>':'')
+    +(e.desc?'<div class="exo-desc" style="margin-top:10px;border-left-color:'+e.c+'55;">'+e.desc+'</div>':'')
     +'<div class="exo-ref">'+e.rf+'</div>'
     +'</div>'
     +'</div>';
@@ -1219,11 +1231,12 @@ function pvRender(p){
       var lbl = document.createElement('label');
       lbl.className = 'vt-exo-check-label';
       lbl.setAttribute('for', 'pv-cb-' + idx);
-      lbl.textContent = 'Marquer comme realise';
+      lbl.textContent = 'Marquer comme réalisé';
 
       cb.addEventListener('change', function() {
-        lbl.textContent = this.checked ? 'Realise' : 'Marquer comme realise';
+        lbl.textContent = this.checked ? 'Réalisé ✓' : 'Marquer comme réalisé';
         card.style.opacity = this.checked ? '0.55' : '1';
+        updatePvRing();
       });
 
       var chips = card.querySelectorAll('.exo-param');
@@ -1282,6 +1295,24 @@ function pvRender(p){
         }, 1000);
       });
 
+
+      function updatePvRing() {
+        var cbs = document.querySelectorAll('#pv-grid .vt-exo-checkbox');
+        var total = cbs.length;
+        var checked = Array.from(cbs).filter(function(c){return c.checked;}).length;
+        var pct = total > 0 ? Math.round(checked / total * 100) : 0;
+        var circ = 157;
+        var offset = circ - (pct / 100 * circ);
+        var fill = document.getElementById('pv-ring-fill');
+        var sub  = document.getElementById('pv-ring-sub');
+        var done = document.getElementById('pv-ring-done');
+        if (fill) {
+          fill.style.strokeDashoffset = offset;
+          fill.style.stroke = pct >= 100 ? '#21c354' : pct >= 50 ? '#ffa500' : '#e24b4a';
+        }
+        if (sub) sub.textContent = checked + '/' + total + ' exercices complétés';
+        if (done) done.style.display = pct >= 100 ? 'block' : 'none';
+      }
       wrap.appendChild(cb);
       wrap.appendChild(lbl);
       wrap.appendChild(timerBtn);
@@ -1316,7 +1347,21 @@ document.addEventListener('DOMContentLoaded',function(){
     <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);">Prévention LCA</span>
     <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
   </div>
-  <p id="pv-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
+  <div id="pv-ring-wrap" style="display:flex;align-items:center;gap:16px;background:#060e1a;border:0.5px solid rgba(226,75,74,0.15);border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+  <svg viewBox="0 0 64 64" width="64" height="64" style="flex-shrink:0;">
+    <circle cx="32" cy="32" r="25" fill="none" stroke="rgba(226,75,74,0.1)" stroke-width="5"/>
+    <circle cx="32" cy="32" r="25" fill="none" id="pv-ring-fill"
+      stroke="#e24b4a" stroke-width="5"
+      stroke-dasharray="157" stroke-dashoffset="157"
+      stroke-linecap="round" transform="rotate(-90 32 32)"/>
+  </svg>
+  <div style="flex:1;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;" id="pv-ring-title">Prévention LCA</div>
+    <div style="font-size:11px;color:rgba(200,216,232,0.45);" id="pv-ring-sub">Cochez les exercices réalisés</div>
+    <div style="font-size:11px;color:#21c354;margin-top:4px;font-weight:500;display:none;" id="pv-ring-done">Séance de prévention complétée !</div>
+  </div>
+</div>
+<p id="pv-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
   <div id="pv-grid" style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;"></div>
   <p style="font-size:10px;color:rgba(200,216,232,0.3);font-style:italic;line-height:1.6;padding:10px 14px;background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;">Ces exercices sont adaptés à votre profil biomécanique. Ils ne remplacent pas l'avis d'un médecin du sport ou d'un kinésithérapeute.</p>
 </div>
