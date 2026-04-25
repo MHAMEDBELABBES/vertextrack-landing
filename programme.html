@@ -379,54 +379,92 @@
     .vt-timer-progress.visible { display: block; }
   
 .pv-desc {
-  font-size: 11px;
-  color: rgba(200,216,232,0.55);
-  line-height: 1.5;
-  margin: 8px 0;
-  padding: 8px 10px;
-  background: rgba(0,200,255,0.03);
-  border-left: 2px solid rgba(0,200,255,0.2);
-  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: rgba(200,216,232,0.65);
+  line-height: 1.6;
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: rgba(0,200,255,0.04);
+  border-left: 2px solid rgba(0,200,255,0.25);
+  border-radius: 0 8px 8px 0;
 }
 .pv-timer-btn {
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 5px;
-  border: 0.5px solid rgba(0,200,255,0.25);
-  background: rgba(0,200,255,0.06);
-  color: rgba(0,200,255,0.7);
+  font-size: 11px;
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 0.5px solid rgba(0,200,255,0.3);
+  background: rgba(0,200,255,0.08);
+  color: #00c8ff;
   cursor: pointer;
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  margin-top: 8px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  margin-top: 10px;
   transition: all .15s;
   display: block;
   width: 100%;
+  text-align: center;
 }
-.pv-timer-btn:hover { background: rgba(0,200,255,0.12); color: #00c8ff; }
-.pv-timer-btn.running { background: rgba(255,165,0,0.1); border-color: rgba(255,165,0,0.4); color: #ffa500; }
-.pv-timer-btn.done { background: rgba(33,195,84,0.12); border-color: rgba(33,195,84,0.4); color: #21c354; }
+.pv-timer-btn:hover {
+  background: rgba(0,200,255,0.15);
+  border-color: rgba(0,200,255,0.55);
+}
+.pv-timer-btn.running {
+  background: rgba(255,165,0,0.12);
+  border-color: rgba(255,165,0,0.5);
+  color: #ffa500;
+  font-size: 14px;
+}
+.pv-timer-btn.done {
+  background: rgba(33,195,84,0.12);
+  border-color: rgba(33,195,84,0.5);
+  color: #21c354;
+  animation: pvFlash 0.4s ease 3;
+}
+@keyframes pvFlash {
+  0%,100% { opacity:1; }
+  50% { opacity:0.3; }
+}
 .pv-check-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-top: 8px; padding-top: 8px;
-  border-top: 0.5px solid rgba(0,200,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 0.5px solid rgba(0,200,255,0.1);
 }
 .pv-checkbox {
-  width: 16px; height: 16px; border-radius: 4px;
-  border: 1.5px solid rgba(0,200,255,0.3);
-  background: transparent; cursor: pointer;
-  appearance: none; -webkit-appearance: none;
-  flex-shrink: 0; position: relative; transition: all .15s;
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(0,200,255,0.35);
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  transition: all .15s;
 }
-.pv-checkbox:checked { background: #00c8ff; border-color: #00c8ff; }
+.pv-checkbox:checked {
+  background: #00c8ff;
+  border-color: #00c8ff;
+}
 .pv-checkbox:checked::after {
-  content: ''; position: absolute; top: 1px; left: 4px;
-  width: 4px; height: 8px;
-  border: 2px solid #03080f; border-top: none; border-left: none;
+  content: '';
+  position: absolute;
+  top: 2px; left: 5px;
+  width: 5px; height: 9px;
+  border: 2px solid #03080f;
+  border-top: none;
+  border-left: none;
   transform: rotate(45deg);
 }
-.pv-check-label { font-size: 11px; color: rgba(200,216,232,0.45); cursor: pointer; }
+.pv-check-label {
+  font-size: 12px;
+  color: rgba(200,216,232,0.5);
+  cursor: pointer;
+  user-select: none;
+}
 
 </style>
 
@@ -1172,23 +1210,23 @@ document.addEventListener('DOMContentLoaded',function(){
 // Descriptions des exercices de prevention
 var PV_DESCS = {
   'Proprioception plateau instable':
-    'Debout sur coussin ou BOSU. Progression : yeux ouverts puis fermes puis avec ballon. Jambe la plus faible en priorite.',
+    'Debout sur coussin ou BOSU. Progression : yeux ouverts → fermés → avec ballon. Jambe la plus faible en priorité.',
   'Y-Balance Training':
-    'En appui unipodal, atteindre 3 directions : anterieure, postero-mediale, postero-laterale. Mesurer la distance chaque cote.',
+    'En appui unipodal, atteindre 3 directions : antérieure, postéro-médiale, postéro-latérale. Mesurer la distance pour chaque côté.',
   'Drop jump landing':
-    'Descente boite 30cm, atterrissage bilateral controle. Genoux alignes sur orteils. Feedback miroir recommande.',
-  'Step-down unilateral':
-    'Debout sur marche, descendre lentement le pied libre. Genou aligne sur 2e orteil. Priorite cote FPPA eleve.',
+    'Descente boîte 30 cm, atterrissage bilatéral contrôlé. Genoux alignés sur les orteils. Feedback miroir ou caméra VERTEXTRACK recommandé.',
+  'Step-down unilatéral':
+    'Debout sur marche, descendre lentement le pied libre (3 s). Genou aligné sur 2e orteil. Priorité côté FPPA élevé.',
   'Copenhagen plank':
-    'Planche laterale, pied superieur sur chaise. Corps aligne. Progression vers version dynamique semaine 3.',
+    'Planche latérale, pied supérieur sur chaise. Corps aligné de la tête aux pieds. Progression vers version dynamique semaine 3.',
   'Nordic Hamstring progressif':
-    'A genoux avec elastique, partenaire tient les chevilles. Descente lente (3-4s). Contraction maximale ischio-jambiers.',
+    'À genoux avec élastique, partenaire tient les chevilles. Descente lente (3–4 s). Contraction maximale des ischio-jambiers.',
   'Nordic Hamstring':
-    'A genoux, partenaire tient les chevilles. Descente lente en avant 3-4s. Contraction maximale des ischio-jambiers.',
-  'Pont fessier unilateral':
-    'Allonge, soulever le bassin sur une jambe. Pause 2s en haut. Priorite cote asymetrique (LSI < 0.90).',
-  'FIFA 11+ adapte':
-    'Course + renforcement + etirements dynamiques. Reduit le risque LCA de 50%. Adapte basket : ajouter sauts controles.'
+    'À genoux, partenaire tient les chevilles. Descente lente en avant (3–4 s). Effort maximal des ischio-jambiers. Séance complète.',
+  'Pont fessier unilatéral':
+    'Allongé sur le dos, soulever le bassin sur une jambe. Pause 2 s en haut. Priorité côté asymétrique (LSI < 0.90).',
+  'FIFA 11+ adapté':
+    'Course + renforcement + étirements dynamiques. Réduit le risque LCA de 50 %. Adapté basket : ajouter sauts avec contrôle à l’atterrissage.'
 };
 
 var PV_REST = {
@@ -1248,9 +1286,81 @@ function enrichPvCards() {
   if (!grid) return;
   var cards = grid.querySelectorAll('div[style*="border-radius:8px"]');
   if (cards.length === 0) {
-    setTimeout(enrichPvCards, 300);
+    setTimeout(enrichPvCards, 400);
     return;
   }
+  cards.forEach(function(card, idx) {
+    if (card.querySelector('.pv-desc')) return;
+    var nameEl = card.querySelector('div[style*="font-weight:500"]') ||
+                 card.querySelector('div[style*="font-weight:600"]');
+    if (!nameEl) return;
+    var name = nameEl.textContent.trim();
+
+    // Description
+    var desc = PV_DESCS[name] || '';
+    if (desc) {
+      var descDiv = document.createElement('div');
+      descDiv.className = 'pv-desc';
+      descDiv.textContent = desc;
+      if (nameEl.nextSibling) {
+        nameEl.parentNode.insertBefore(descDiv, nameEl.nextSibling);
+      } else {
+        nameEl.parentNode.appendChild(descDiv);
+      }
+    }
+
+    // Agrandir les chips existants
+    var chips = card.querySelectorAll('span[style*="font-size:9px"]');
+    chips.forEach(function(chip) {
+      chip.style.fontSize = '11px';
+      chip.style.padding = '4px 10px';
+      chip.style.fontFamily = "'JetBrains Mono', monospace";
+    });
+
+    // Agrandir le texte target
+    var targetEl = card.querySelectorAll('div[style*="font-size:10px"]')[0];
+    if (targetEl) {
+      targetEl.style.fontSize = '12px';
+      targetEl.style.marginBottom = '10px';
+      targetEl.style.marginTop = '4px';
+    }
+
+    // Minuterie
+    var rest = (PV_REST[name] !== undefined) ? PV_REST[name] : 45;
+    if (rest > 0) {
+      var timerBtn = document.createElement('button');
+      timerBtn.className = 'pv-timer-btn';
+      var label = 'Repos ' + rest + 's';
+      timerBtn.textContent = label;
+      timerBtn.dataset.orig = label;
+      timerBtn.dataset.secs = rest;
+      timerBtn.addEventListener('click', function() {
+        startPvTimer(this, parseInt(this.dataset.secs));
+      });
+      card.appendChild(timerBtn);
+    }
+
+    // Case a cocher
+    var checkRow = document.createElement('div');
+    checkRow.className = 'pv-check-row';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'pv-checkbox';
+    cb.id = 'pv-cb-' + idx;
+    var lbl = document.createElement('label');
+    lbl.className = 'pv-check-label';
+    lbl.setAttribute('for', 'pv-cb-' + idx);
+    lbl.textContent = 'Marquer comme réalisé';
+    cb.addEventListener('change', function() {
+      lbl.textContent = this.checked ? 'Réalisé ✓' : 'Marquer comme réalisé';
+      card.style.opacity = this.checked ? '0.55' : '1';
+      card.style.borderColor = this.checked ? 'rgba(33,195,84,0.3)' : 'rgba(0,200,255,0.1)';
+    });
+    checkRow.appendChild(cb);
+    checkRow.appendChild(lbl);
+    card.appendChild(checkRow);
+  });
+}
   cards.forEach(function(card, idx) {
     if (card.querySelector('.pv-desc')) return;
     var nameEl = card.querySelector('div[style*="font-weight:500"]') ||
