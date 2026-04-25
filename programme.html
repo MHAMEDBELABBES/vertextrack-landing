@@ -1115,66 +1115,97 @@ function pvRender(p){
   var fL=p.fppa_left||10,fR=p.fppa_right||10,
       ls=p.lsi_symmetry||0.95,kn=p.knee_flexion_max||80;
   var ex=[],n=1;
-  function add(c,nm,tg,ds,rf){
-    ex.push({c:c,n:n++,nm:nm,tg:tg,ds:ds,rf:rf});
+  function add(c,nm,tg,ds,rf,desc){
+    ex.push({c:c,n:n++,nm:nm,tg:tg,ds:ds,rf:rf,desc:desc||''});
   }
-  add('#00c8ff','Proprioception plateau instable',
-    'Contrôle neuromusculaire · Stabilité',
+  add('#00c8ff',
+    'Proprioception plateau instable',
+    'Controle neuromusculaire - Stabilite',
     ['3x45s','Chaque jambe','3x/sem'],
-    'Myklebust 2003 BJSM');
-  add('#00c8ff','Y-Balance Training',
-    'Équilibre dynamique · Asymétries',
+    'Myklebust 2003 BJSM',
+    'Debout sur coussin ou BOSU. Yeux ouverts puis fermes puis avec ballon. Jambe la plus faible en priorite.'
+  );
+  add('#00c8ff',
+    'Y-Balance Training',
+    'Equilibre dynamique - Asymetries',
     ['3x5 dir.','Chaque jambe','2x/sem'],
-    'Plisky 2009 J Athl Train');
+    'Plisky 2009 J Athl Train',
+    'En appui unipodal, atteindre 3 directions. Mesurer la distance atteinte pour chaque cote.'
+  );
   if(fL>=12||fR>=12){
-    add('#e24b4a','Drop jump landing',
-      'Contrôle valgus · FPPA',
+    add('#e24b4a',
+      'Drop jump landing',
+      'Controle valgus dynamique - FPPA',
       ['4x5','Repos 90s','2x/sem'],
-      'Hewett 2005 AJSM');
-    add('#ffa500','Step-down unilatéral',
-      'VMO · Contrôle valgus',
+      'Hewett 2005 AJSM',
+      'Descente boite 30cm, atterrissage bilateral controle. Genoux alignes sur les orteils. Feedback miroir recommande.'
+    );
+    add('#ffa500',
+      'Step-down unilateral',
+      'VMO - Controle valgus',
       ['3x12','Repos 60s','3x/sem'],
-      'Hewett 2005');
-    add('#ffa500','Copenhagen plank',
-      'Adducteurs hanche · Stabilité médiale',
+      'Hewett 2005',
+      'Debout sur marche, descendre lentement le pied libre en 3s. Genou aligne sur 2e orteil.'
+    );
+    add('#ffa500',
+      'Copenhagen plank',
+      'Adducteurs hanche - Stabilite mediale',
       ['3x20s','Repos 45s','3x/sem'],
-      'Serner 2019 BJSM');
+      'Serner 2019 BJSM',
+      'Planche laterale, pied superieur sur chaise. Corps aligne. Progression vers version dynamique semaine 3.'
+    );
   }
   if(ls<0.90){
     add('#e24b4a',
-      ls<0.80?'Nordic Hamstring':
-      'Nordic Hamstring progressif',
+      ls<0.80?'Nordic Hamstring':'Nordic Hamstring progressif',
       'Renforcement excentrique ischio-jambiers',
-      ls<0.80?['3x6','Repos 2min','3x/sem']:
-      ['3x4','Repos 2min','2x/sem'],
-      'Petersen 2011 AJSM');
+      ls<0.80?['3x6','Repos 2min','3x/sem']:['3x4','Repos 2min','2x/sem'],
+      'Petersen 2011 AJSM',
+      'A genoux, partenaire tient les chevilles. Descente lente en avant (3-4s). Contraction maximale des ischio-jambiers.'
+    );
   }
-  add('#21c354','Pont fessier unilatéral',
-    'Fessiers · Contrôle hanche · Symétrie',
-    ['3x15','Chaque côté','3x/sem'],
-    'Kyritsis 2016 BJSM');
-  add('#21c354','FIFA 11+ adapté',
-    'Protocole prévention LCA validé · -50% risque',
-    ['20min','Avant entraînement','Quotidien'],
-    'Soligard 2008 BMJ');
+  add('#21c354',
+    'Pont fessier unilateral',
+    'Fessiers - Controle hanche - Symetrie',
+    ['3x15','Chaque cote','3x/sem'],
+    'Kyritsis 2016 BJSM',
+    'Allonge sur le dos, soulever le bassin sur une jambe. Pause 2s en haut. Cote asymetrique en priorite.'
+  );
+  add('#21c354',
+    'FIFA 11+ adapte',
+    'Protocole prevention LCA - 50% risque reduit',
+    ['20min','Avant entrainement','Quotidien'],
+    'Soligard 2008 BMJ',
+    'Course + renforcement + etirements dynamiques. Reduit le risque LCA de 50%. Adapter basket : sauts avec controle atterrissage.'
+  );
   var t=document.getElementById('pv-title');
-  if(t)t.textContent=ex.length+
-    ' exercices de prévention personnalisés';
+  if(t)t.textContent=ex.length+' exercices de prevention personnalises';
   var g=document.getElementById('pv-grid');
   if(!g)return;
   g.innerHTML=ex.map(function(e){
-    return '<div style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">'
-    +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">'
-    +'<div style="width:20px;height:20px;border-radius:50%;background:'+e.c+'22;color:'+e.c+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">'+e.n+'</div>'
-    +'<div style="font-size:12px;font-weight:500;color:#c8d8e8;line-height:1.3;">'+e.nm+'</div></div>'
-    +'<div style="font-size:10px;color:rgba(200,216,232,0.4);margin-bottom:6px;">'+e.tg+'</div>'
-    +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">'
+    return '<div class="exo-card" style="margin-bottom:0;">'
+    +'<div class="exo-header">'
+    +'<div class="exo-num" style="background:'+e.c+'22;color:'+e.c+';">'+e.n+'</div>'
+    +'<div><div class="exo-name">'+e.nm+'</div>'
+    +'<div class="exo-target" style="color:'+e.c+'44;">'+e.tg+'</div>'
+    +'</div></div>'
+    +'<div class="exo-params">'
     +e.ds.map(function(d){
-      return '<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);">'+d+'</span>';
+      return '<span class="exo-param">'+d+'</span>';
     }).join('')
-    +'</div><div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;">'+e.rf+'</div></div>';
+    +'</div>'
+    +'<div class="exo-body">'
+    +(e.desc?'<div class="exo-desc">'+e.desc+'</div>':'')
+    +'<div class="exo-ref">'+e.rf+'</div>'
+    +'</div>'
+    +'</div>';
   }).join('');
+  setTimeout(function(){
+    if(typeof addCheckboxesToExos==='function') addCheckboxesToExos();
+    if(typeof addTimerButtons==='function') addTimerButtons();
+  },150);
 }
+
 document.addEventListener('DOMContentLoaded',function(){
   setTimeout(function(){
     var s=localStorage.getItem('vt_last_results'),p={};
@@ -1198,7 +1229,7 @@ document.addEventListener('DOMContentLoaded',function(){
     <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
   </div>
   <p id="pv-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
-  <div id="pv-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
+  <div id="pv-grid" style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;"></div>
   <p style="font-size:10px;color:rgba(200,216,232,0.3);font-style:italic;line-height:1.6;padding:10px 14px;background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;">Ces exercices sont adaptés à votre profil biomécanique. Ils ne remplacent pas l'avis d'un médecin du sport ou d'un kinésithérapeute.</p>
 </div>
 </body>
