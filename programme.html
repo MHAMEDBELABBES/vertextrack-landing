@@ -600,73 +600,79 @@
 
 
   <!-- SECTION PRÉVENTION LCA -->
-  <div id="section-prevention">
+<div id="section-prevention">
 
-    <div class="pv-sep">
-      <div class="pv-sep-line"></div>
-      <span class="pv-sep-label">Prévention LCA — Module 3</span>
-      <div class="pv-sep-line"></div>
-    </div>
-
-    <!-- Score de risque RF + SHAP -->
-    <div class="pv-risk-card">
-      <div class="pv-risk-header">
-        <div class="pv-risk-arc">
-          <svg viewBox="0 0 64 64" width="64" height="64">
-            <circle cx="32" cy="32" r="26" fill="none"
-              stroke="rgba(226,75,74,0.12)"
-              stroke-width="6"/>
-            <circle cx="32" cy="32" r="26" fill="none"
-              id="pv-risk-arc-fill"
-              stroke="#e24b4a" stroke-width="6"
-              stroke-dasharray="163.4"
-              stroke-dashoffset="163.4"
-              stroke-linecap="round"
-              transform="rotate(-90 32 32)"/>
-          </svg>
-          <div class="pv-risk-num">
-            <span id="pv-risk-pct">—</span>
-            <span class="pv-risk-sublabel">risque</span>
-          </div>
-        </div>
-        <div class="pv-risk-info">
-          <div class="pv-risk-title"
-            id="pv-risk-title">
-            Profil de risque LCA
-          </div>
-          <div class="pv-risk-sub">
-            Random Forest · 38 features CMJ/SJ/DVJ<br>
-            Interprétabilité SHAP (Lundberg & Lee 2017)
-          </div>
-        </div>
-      </div>
-
-      <div class="pv-shap-section-title">
-        Facteurs contributifs (SHAP)
-      </div>
-      <div id="pv-shap-bars">
-        <!-- Généré par JS -->
-      </div>
-    </div>
-
-    <!-- Exercices préventifs personnalisés -->
-    <div class="pv-section-subtitle"
-      id="pv-exo-title">
-      Exercices de prévention personnalisés
-    </div>
-    <div id="pv-exo-container">
-      <!-- Généré par JS -->
-    </div>
-
-    <div class="pv-disclaimer" id="pv-disclaimer">
-      Ce programme de prévention est généré automatiquement
-      à partir du profil biomécanique et du score de risque ML.
-      Il ne remplace pas l'avis d'un médecin du sport ou d'un
-      kinésithérapeute. — VERTEXTRACK · Module 3 · Random Forest
-    </div>
-
+  <div class="pv-sep">
+    <div class="pv-sep-line"></div>
+    <span class="pv-sep-label">Prévention LCA</span>
+    <div class="pv-sep-line"></div>
   </div>
-  <!-- FIN SECTION PRÉVENTION LCA -->
+
+  <div id="pv-risk-card" style="background:#060e1a;
+    border:0.5px solid rgba(226,75,74,0.2);
+    border-radius:10px;padding:14px 16px;
+    margin-bottom:14px;display:none;">
+    <div style="display:flex;align-items:center;
+      gap:10px;margin-bottom:10px;">
+      <div style="position:relative;width:52px;
+        height:52px;flex-shrink:0;">
+        <svg viewBox="0 0 52 52" width="52" height="52">
+          <circle cx="26" cy="26" r="20" fill="none"
+            stroke="rgba(226,75,74,0.12)"
+            stroke-width="5"/>
+          <circle cx="26" cy="26" r="20" fill="none"
+            id="pv-arc" stroke="#e24b4a"
+            stroke-width="5"
+            stroke-dasharray="125.7"
+            stroke-dashoffset="125.7"
+            stroke-linecap="round"
+            transform="rotate(-90 26 26)"/>
+        </svg>
+        <div style="position:absolute;inset:0;
+          display:flex;flex-direction:column;
+          align-items:center;justify-content:center;
+          font-family:'JetBrains Mono',monospace;
+          font-size:12px;font-weight:500;
+          color:#c8d8e8;line-height:1;">
+          <span id="pv-pct">—</span>
+          <span style="font-size:8px;
+            color:rgba(200,216,232,0.4);">risque</span>
+        </div>
+      </div>
+      <div>
+        <div id="pv-risk-title" style="
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:13px;font-weight:700;color:#fff;
+          margin-bottom:2px;">
+          Profil biomécanique
+        </div>
+        <div id="pv-shap-bars"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pv-section-title" style="
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:14px;font-weight:700;color:#fff;
+    letter-spacing:0.5px;margin-bottom:12px;">
+    Exercices de prévention personnalisés
+  </div>
+
+  <div id="pv-exo-container"></div>
+
+  <div style="background:rgba(226,75,74,0.04);
+    border:0.5px solid rgba(226,75,74,0.12);
+    border-radius:8px;padding:10px 14px;
+    margin-top:14px;font-size:10px;
+    color:rgba(200,216,232,0.3);
+    line-height:1.6;font-style:italic;">
+    Ces exercices sont adaptés à votre profil biomécanique.
+    Ils ne remplacent pas l'avis d'un médecin du sport
+    ou d'un kinésithérapeute.
+  </div>
+
+</div>
+<!-- FIN SECTION PRÉVENTION LCA -->
 
 </div><!-- end .page -->
 
@@ -1263,370 +1269,182 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
-// ── BASE D'EXERCICES PRÉVENTIFS LCA ───────────────────
 
-const PREVENTION_DB = {
-
-  // Catégorie 1 : Renforcement excentrique
-  nordic: {
-    name: 'Nordic Hamstring',
-    target: 'Renforcement excentrique ischio-jambiers · Prévention LCA directe',
-    doses: ['3 × 6 rép.', 'Repos 2 min', '3×/semaine'],
-    desc: 'À genoux, partenaire tient les chevilles. '
-      + 'Descente lente en avant (3-4s). '
-      + 'Contraction maximale des ischio-jambiers.',
-    ref: 'Petersen et al. 2011 · Am J Sports Med',
-    priority: 'high', color: '#e24b4a',
-    tags: ['lsi_low', 'high_risk', 'fppa_high']
-  },
-  nordicProg: {
-    name: 'Nordic Hamstring progressif',
-    target: 'Renforcement excentrique · Phase débutant',
-    doses: ['3 × 4 rép.', 'Repos 2 min', '2×/semaine'],
-    desc: 'Version assistée avec élastique. '
-      + 'Même mouvement que Nordic classique, '
-      + 'l\'élastique réduit la charge excentrique.',
-    ref: 'Petersen et al. 2011 · Am J Sports Med',
-    priority: 'medium', color: '#ffa500',
-    tags: ['moderate_risk', 'lsi_low']
-  },
-
-  // Catégorie 2 : Contrôle valgus / FPPA
-  dropJump: {
-    name: 'Drop jump landing avec feedback',
-    target: 'Contrôle valgus dynamique à l\'atterrissage · FPPA',
-    doses: ['4 × 5 rép.', 'Repos 90s', '2×/semaine'],
-    desc: 'Descente de la boîte (30cm), atterrissage '
-      + 'bilatéral contrôlé. Miroir ou caméra VERTEXTRACK '
-      + 'pour feedback FPPA en temps réel.',
-    ref: 'Hewett et al. 2005 · Am J Sports Med',
-    priority: 'high', color: '#e24b4a',
-    tags: ['fppa_high', 'high_risk']
-  },
-  stepDown: {
-    name: 'Step-down unilatéral avec miroir',
-    target: 'Contrôle neuromusculaire valgus · VMO',
-    doses: ['3 × 12 rép.', 'Repos 60s', '3×/semaine'],
-    desc: 'Debout sur marche, descendre lentement le pied '
-      + 'libre. Genou aligné sur 2e orteil visible dans '
-      + 'le miroir. Priorité côté FPPA élevé.',
-    ref: 'Hewett et al. 2005 · Myklebust 2003',
-    priority: 'high', color: '#ffa500',
-    tags: ['fppa_high', 'moderate_risk']
-  },
-  copenhagenPlank: {
-    name: 'Copenhagen plank',
-    target: 'Adducteurs hanche · Stabilité médiale genou',
-    doses: ['3 × 20s', 'Repos 45s', '3×/semaine'],
-    desc: 'Planche latérale, pied supérieur sur la chaise. '
-      + 'Maintenir le corps aligné. Progression vers '
-      + 'version dynamique semaine 3.',
-    ref: 'Serner et al. 2019 · Br J Sports Med',
-    priority: 'medium', color: '#ffa500',
-    tags: ['fppa_high', 'lsi_low', 'moderate_risk']
-  },
-
-  // Catégorie 3 : Proprioception
-  propioUnilateral: {
-    name: 'Proprioception plateau instable',
-    target: 'Contrôle neuromusculaire · Stabilité dynamique',
-    doses: ['3 × 45s', 'Chaque jambe', '3×/semaine'],
-    desc: 'Debout sur plateau instable (BOSU ou coussin). '
-      + 'Progression : yeux ouverts → fermés → avec ballon. '
-      + 'Jambe faible (LSI < 0.90) en priorité.',
-    ref: 'Myklebust et al. 2003 · Br J Sports Med',
-    priority: 'medium', color: '#00c8ff',
-    tags: ['all', 'lsi_low', 'moderate_risk']
-  },
-  propioYBalance: {
-    name: 'Y-Balance Test & Training',
-    target: 'Équilibre dynamique · Détection asymétries',
-    doses: ['3 × 5 directions', 'Chaque jambe', '2×/semaine'],
-    desc: 'En appui unipodal, atteindre 3 directions '
-      + '(antérieure, postéro-médiale, postéro-latérale). '
-      + 'Mesurer la distance d\'atteinte pour chaque côté.',
-    ref: 'Plisky et al. 2009 · J Athl Train',
-    priority: 'medium', color: '#00c8ff',
-    tags: ['lsi_low', 'all']
-  },
-  propioReactive: {
-    name: 'Agilité réactive avec perturbation',
-    target: 'Proprioception dynamique · Sport-spécifique',
-    doses: ['4 × 30s', 'Repos 60s', '2×/semaine'],
-    desc: 'Déplacements latéraux sur signal visuel avec '
-      + 'changement de direction imprévu. '
-      + 'Intégration neuromusculaire haute vitesse.',
-    ref: 'Myklebust et al. 2003 · Agility protocol',
-    priority: 'medium', color: '#00c8ff',
-    tags: ['moderate_risk', 'high_risk', 'all']
-  },
-
-  // Catégorie 4 : Programme FIFA 11+ / PEP
-  fifaWarmup: {
-    name: 'Échauffement FIFA 11+ (adapté)',
-    target: 'Prévention globale LCA · Protocole validé',
-    doses: ['20 min', 'Avant chaque entraînement', 'Quotidien'],
-    desc: 'Course + renforcement + étirements dynamiques. '
-      + 'Réduit le risque LCA de 50% (Soligard 2008). '
-      + 'Adapté basketball : ajouter sauts avec contrôle.',
-    ref: 'Soligard et al. 2008 · Br Med J · FIFA 11+',
-    priority: 'high', color: '#21c354',
-    tags: ['all', 'high_risk', 'moderate_risk']
-  },
-  pepProgram: {
-    name: 'Programme PEP (Hewett)',
-    target: 'Prévention LCA · Protocole Hewett 2005',
-    doses: ['3×/semaine', 'Saison complète', '20 min'],
-    desc: 'Étirements + renforcement + pliométrie + '
-      + 'agilité. 6 exercices ciblés sur le valgus. '
-      + 'Réduit incidence LCA de 88% (Hewett 2005).',
-    ref: 'Hewett et al. 2005 · Am J Sports Med',
-    priority: 'high', color: '#21c354',
-    tags: ['fppa_high', 'high_risk']
-  },
-
-  // Catégorie 5 : Gainage / Core
-  gainageAnterior: {
-    name: 'Gainage antérieur progressif',
-    target: 'Stabilité lombopelvienne · Transfert force',
-    doses: ['3 × 30s', 'Repos 30s', '3×/semaine'],
-    desc: 'Planche frontale. Progression : standard → '
-      + 'bras alternés → avec ballon sous les pieds. '
-      + 'Maintenir bassin horizontal.',
-    ref: 'Zazulak et al. 2007 · J Athl Train',
-    priority: 'low', color: '#888',
-    tags: ['all']
-  },
-  singleLegBridge: {
-    name: 'Pont fessier unilatéral',
-    target: 'Fessiers · Contrôle hanche · LSI symétrie',
-    doses: ['3 × 15 rép.', 'Chaque côté', '3×/semaine'],
-    desc: 'Allongé, pied sur le sol, soulever le bassin '
-      + 'sur une jambe. Pause 2s en haut. '
-      + 'Priorité côté asymétrique (LSI < 0.90).',
-    ref: 'Kyritsis et al. 2016 · Br J Sports Med',
-    priority: 'medium', color: '#00c8ff',
-    tags: ['lsi_low', 'all']
-  }
-};
-
-// ── LOGIQUE DE SÉLECTION SELON PROFIL ────────────────
-
-function selectPreventionExercises(profile) {
+// ── PRÉVENTION LCA ─────────────────────────────────────
+function renderPreventionSection(profile) {
   const fppaL = profile.fppa_left ?? 10;
   const fppaR = profile.fppa_right ?? 10;
   const lsi   = profile.lsi_symmetry ?? profile.lsi ?? 0.95;
   const knee  = profile.knee_flexion_max ?? profile.knee_flexion ?? 80;
   const h     = profile.jump_height_com ?? profile.jump_height_cm ?? 42;
-  const rsi   = profile.rsi_modified ?? 0.7;
 
-  // Calcul score risque heuristique (si pas de ML)
-  let riskScore = 0.3;
-  if (fppaL >= 15 || fppaR >= 15) riskScore += 0.25;
-  else if (fppaL >= 12 || fppaR >= 12) riskScore += 0.12;
+  // Score risque
+  let risk = 0.3;
+  if (fppaL >= 15 || fppaR >= 15) risk += 0.25;
+  else if (fppaL >= 12 || fppaR >= 12) risk += 0.12;
   
-  const lsiVal = lsi > 1 ? lsi / 100 : lsi; // Normalize LSI just in case it's 88 instead of 0.88
-  if (lsiVal < 0.80) riskScore += 0.25;
-  else if (lsiVal < 0.90) riskScore += 0.12;
+  const lsiVal = lsi > 1 ? lsi / 100 : lsi;
+  if (lsiVal < 0.80) risk += 0.25;
+  else if (lsiVal < 0.90) risk += 0.12;
   
-  if (knee < 70) riskScore += 0.08;
-  if (h < 35) riskScore += 0.05;
-  riskScore = Math.min(riskScore, 0.95);
+  if (knee < 70) risk += 0.08;
+  risk = Math.min(risk, 0.95);
+  const pct = Math.round(risk * 100);
 
-  const hasFPPA = fppaL >= 12 || fppaR >= 12;
-  const hasLSI  = lsiVal < 0.90;
-  const isHigh  = riskScore > 0.55;
-  const isMod   = riskScore >= 0.35 && riskScore <= 0.55;
+  // Mettre à jour l'anneau si données utiles
+  const hasAlerts = fppaL >= 12 || lsiVal < 0.90 || knee < 70 || h < 35;
+  const riskCard = document.getElementById('pv-risk-card');
+  if (riskCard && hasAlerts) {
+    riskCard.style.display = 'block';
+    const arc = document.getElementById('pv-arc');
+    const pctEl = document.getElementById('pv-pct');
+    const titleEl = document.getElementById('pv-risk-title');
+    if (arc) {
+      const c = 2 * Math.PI * 20;
+      arc.style.strokeDasharray = c;
+      arc.style.strokeDashoffset = c - (risk * c);
+      arc.style.stroke = pct > 55 ? '#e24b4a'
+        : pct > 35 ? '#ffa500' : '#21c354';
+    }
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (titleEl) {
+      const lvl = pct > 55 ? 'Risque élevé'
+        : pct > 35 ? 'Risque modéré' : 'Risque faible';
+      titleEl.textContent = lvl;
+      titleEl.style.color = pct > 55 ? '#e24b4a'
+        : pct > 35 ? '#ffa500' : '#21c354';
+    }
+    // Facteurs SHAP simplifiés
+    const shapEl = document.getElementById('pv-shap-bars');
+    if (shapEl) {
+      const items = [];
+      if (fppaL >= 12) items.push(
+        {n:'FPPA gauche',v:fppaL.toFixed(1)+'°',c:'#e24b4a'});
+      if (lsiVal < 0.90) items.push(
+        {n:'LSI symétrie',v:lsiVal.toFixed(2),c:'#ffa500'});
+      if (knee < 70) items.push(
+        {n:'Flexion genou',v:knee+'°',c:'#00c8ff'});
+      shapEl.innerHTML = items.map(it => `
+        <div style="display:flex;align-items:center;
+          gap:6px;margin-bottom:4px;">
+          <span style="font-size:10px;
+            color:rgba(200,216,232,0.5);
+            width:110px;flex-shrink:0;">${it.n}</span>
+          <span style="font-family:'JetBrains Mono',
+            monospace;font-size:11px;font-weight:500;
+            color:${it.c};">${it.v}</span>
+        </div>`).join('');
+    }
+  }
 
-  // Sélection par profil
-  const selected = [];
+  // Sélection exercices
+  const exos = [];
 
-  // TOUJOURS : proprioception + gainage
-  selected.push('propioUnilateral');
-  selected.push('singleLegBridge');
+  // TOUJOURS : proprioception
+  exos.push({
+    num:1, color:'#00c8ff',
+    name: 'Proprioception plateau instable',
+    target: 'Contrôle neuromusculaire · Stabilité dynamique',
+    doses: ['3 × 45s', 'Chaque jambe', '3×/sem'],
+    ref: 'Myklebust et al. 2003 · BJSM'
+  });
+  exos.push({
+    num:2, color:'#00c8ff',
+    name: 'Y-Balance Training',
+    target: 'Équilibre dynamique · Détection asymétries',
+    doses: ['3 × 5 dir.', 'Chaque jambe', '2×/sem'],
+    ref: 'Plisky et al. 2009 · J Athl Train'
+  });
 
-  // FPPA élevé → contrôle valgus
-  if (hasFPPA) {
-    selected.push('dropJump');
-    selected.push('stepDown');
-    selected.push('copenhagenPlank');
+  // FPPA élevé
+  if (fppaL >= 12 || fppaR >= 12) {
+    exos.push({
+      num:3, color:'#e24b4a',
+      name: 'Drop jump landing avec feedback',
+      target: 'Contrôle valgus dynamique · FPPA',
+      doses: ['4 × 5 rép.', 'Repos 90s', '2×/sem'],
+      ref: 'Hewett et al. 2005 · AJSM'
+    });
+    exos.push({
+      num:4, color:'#ffa500',
+      name: 'Step-down unilatéral avec miroir',
+      target: 'Contrôle neuromusculaire VMO',
+      doses: ['3 × 12 rép.', 'Repos 60s', '3×/sem'],
+      ref: 'Hewett et al. 2005'
+    });
   }
 
   // LSI faible → renforcement excentrique
-  if (hasLSI) {
-    selected.push(isHigh ? 'nordic' : 'nordicProg');
-    selected.push('propioYBalance');
+  if (lsiVal < 0.90) {
+    exos.push({
+      num: exos.length+1, color:'#e24b4a',
+      name: lsiVal < 0.80
+        ? 'Nordic Hamstring'
+        : 'Nordic Hamstring progressif',
+      target: 'Renforcement excentrique ischio-jambiers',
+      doses: lsiVal < 0.80
+        ? ['3 × 6 rép.', 'Repos 2 min', '3×/sem']
+        : ['3 × 4 rép.', 'Repos 2 min', '2×/sem'],
+      ref: 'Petersen et al. 2011 · AJSM'
+    });
+    exos.push({
+      num: exos.length+1, color:'#ffa500',
+      name: 'Copenhagen plank',
+      target: 'Adducteurs hanche · Stabilité médiale',
+      doses: ['3 × 20s', 'Repos 45s', '3×/sem'],
+      ref: 'Serner et al. 2019 · BJSM'
+    });
   }
 
-  // Risque élevé → protocole complet FIFA/PEP
-  if (isHigh) {
-    selected.push('pepProgram');
-    selected.push('propioReactive');
-  } else if (isMod) {
-    selected.push('fifaWarmup');
-    selected.push('propioReactive');
-  } else {
-    selected.push('fifaWarmup');
-    selected.push('gainageAnterior');
-  }
-
-  // Dédupliquer et limiter à 8
-  const unique = [...new Set(selected)].slice(0, 8);
-  return { exercises: unique, riskScore };
-}
-
-// ── RENDU HTML PRÉVENTION ─────────────────────────────
-
-function renderPreventionSection(profile) {
-  const { exercises, riskScore } = selectPreventionExercises(profile);
-
-  const fppaL = profile.fppa_left ?? 10;
-  let lsi   = profile.lsi_symmetry ?? profile.lsi ?? 0.95;
-  lsi = lsi > 1 ? lsi / 100 : lsi; // Normalize
-  const knee  = profile.knee_flexion_max ?? profile.knee_flexion ?? 80;
-
-  // Score risque
-  const pct = Math.round(riskScore * 100);
-  const arcEl = document.getElementById('pv-risk-arc-fill');
-  const pctEl = document.getElementById('pv-risk-pct');
-  const titleEl = document.getElementById('pv-risk-title');
-
-  if (arcEl) {
-    const circum = 2 * Math.PI * 26;
-    const offset = circum - (riskScore * circum);
-    arcEl.style.strokeDasharray  = circum;
-    arcEl.style.strokeDashoffset = offset;
-    arcEl.style.stroke = pct > 55 ? '#e24b4a'
-      : pct > 35 ? '#ffa500' : '#21c354';
-  }
-  if (pctEl) pctEl.textContent = pct + '%';
-  if (titleEl) {
-    const level = pct > 55 ? 'Élevé'
-      : pct > 35 ? 'Modéré' : 'Faible';
-    titleEl.textContent =
-      'Profil de risque LCA — ' + level;
-    titleEl.style.color = pct > 55 ? '#e24b4a'
-      : pct > 35 ? '#ffa500' : '#21c354';
-  }
-
-  // SHAP heuristique
-  const shapBarsEl = document.getElementById('pv-shap-bars');
-  if (shapBarsEl) {
-    const factors = [];
-    if (fppaL >= 12) factors.push({
-      name: 'FPPA gauche', val: fppaL,
-      shap: fppaL >= 15 ? 0.22 : 0.10,
-      color: '#e24b4a'
-    });
-    if (lsi < 0.90) factors.push({
-      name: 'LSI symétrie', val: lsi.toFixed(2),
-      shap: lsi < 0.80 ? 0.18 : 0.08,
-      color: '#ffa500'
-    });
-    if (knee < 72) factors.push({
-      name: 'Flexion genou', val: knee + '°',
-      shap: 0.06, color: '#00c8ff'
-    });
-    if (factors.length === 0) factors.push({
-      name: 'Profil équilibré', val: '—',
-      shap: -0.05, color: '#21c354'
-    });
-
-    const maxShap = Math.max(...factors.map(f => Math.abs(f.shap)));
-    shapBarsEl.innerHTML = factors.map(f => {
-      const pctBar = Math.abs(f.shap) / maxShap * 100;
-      const sign = f.shap > 0 ? '+' : '';
-      return `
-      <div class="pv-shap-bar">
-        <span class="pv-shap-name">${f.name}</span>
-        <div class="pv-shap-track">
-          <div class="pv-shap-fill"
-            style="width:${pctBar.toFixed(0)}%;
-            background:${f.color};"></div>
-        </div>
-        <span class="pv-shap-val"
-          style="color:${f.color};">
-          ${sign}${f.shap.toFixed(2)}
-        </span>
-      </div>`;
-    }).join('');
-  }
-
-  // Exercices
-  const exoContainer = document.getElementById('pv-exo-container');
-  const exoTitle = document.getElementById('pv-exo-title');
-  if (!exoContainer) return;
-
-  const count = exercises.length;
-  if (exoTitle)
-    exoTitle.textContent = count + ' exercices préventifs · Profil personnalisé';
-
-  // Grouper par catégorie
-  const categories = [
-    {
-      label: 'Renforcement & contrôle valgus',
-      color: '#e24b4a',
-      keys: ['nordic','nordicProg','dropJump',
-             'stepDown','copenhagenPlank']
-    },
-    {
-      label: 'Proprioception & équilibre',
-      color: '#00c8ff',
-      keys: ['propioUnilateral','propioYBalance',
-             'propioReactive']
-    },
-    {
-      label: 'Gainage & stabilité',
-      color: '#21c354',
-      keys: ['gainageAnterior','singleLegBridge']
-    },
-    {
-      label: 'Protocoles préventifs validés',
-      color: '#ffa500',
-      keys: ['fifaWarmup','pepProgram']
-    }
-  ];
-
-  let html = '';
-  categories.forEach(cat => {
-    const catExos = exercises.filter(k => cat.keys.includes(k));
-    if (catExos.length === 0) return;
-
-    html += `<div class="pv-category-label"
-      style="background:${cat.color}18;
-      color:${cat.color};
-      border:0.5px solid ${cat.color}44;
-      margin-bottom:8px;">
-      ${cat.label}
-    </div>`;
-    html += '<div class="pv-exo-grid">';
-    catExos.forEach((key, idx) => {
-      const ex = PREVENTION_DB[key];
-      if (!ex) return;
-      const dotColor = ex.color || '#00c8ff';
-      html += `
-      <div class="pv-exo">
-        <div class="pv-exo-header">
-          <div class="pv-exo-num"
-            style="background:${dotColor}18;
-            color:${dotColor};">${idx + 1}</div>
-          <div class="pv-exo-name">${ex.name}</div>
-        </div>
-        <div class="pv-exo-target">${ex.target}</div>
-        <div class="pv-exo-dose">
-          ${ex.doses.map(d => `<span class="pv-chip">${d}</span>`).join('')}
-        </div>
-        <div class="pv-exo-ref">${ex.ref}</div>
-      </div>`;
-    });
-    html += '</div>';
+  // Pont fessier unilatéral toujours
+  exos.push({
+    num: exos.length+1, color:'#21c354',
+    name: 'Pont fessier unilatéral',
+    target: 'Fessiers · Contrôle hanche · Symétrie',
+    doses: ['3 × 15 rép.', 'Chaque côté', '3×/sem'],
+    ref: 'Kyritsis et al. 2016 · BJSM'
   });
 
-  exoContainer.innerHTML = html || `
-    <div style="font-size:12px;
-      color:rgba(33,195,84,0.7);
-      padding:12px 0;text-align:center;">
-      Profil dans les normes — programme de maintien préventif.
+  // FIFA 11+ ou PEP selon niveau
+  exos.push({
+    num: exos.length+1, color:'#21c354',
+    name: risk > 0.5
+      ? 'Programme PEP (Hewett)'
+      : 'Échauffement FIFA 11+ adapté',
+    target: 'Protocole prévention LCA validé · -50% risque',
+    doses: ['20 min', 'Avant entraînement', 'Quotidien'],
+    ref: risk > 0.5
+      ? 'Hewett et al. 2005 · AJSM'
+      : 'Soligard et al. 2008 · BMJ'
+  });
+
+  // Rendu
+  const container = document.getElementById('pv-exo-container');
+  if (!container) return;
+
+  const titleEl = document.getElementById('pv-section-title');
+  if (titleEl) titleEl.textContent = exos.length + ' exercices de prévention personnalisés';
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${exos.map(ex => `
+      <div class="pv-exo" style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:${ex.color}18;color:${ex.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;">
+            ${ex.num}
+          </div>
+          <div class="pv-exo-name" style="font-size:12px;font-weight:500;color:#c8d8e8;line-height:1.3;flex:1;">
+            ${ex.name}
+          </div>
+        </div>
+        <div style="font-size:10px;color:rgba(200,216,232,0.45);margin-bottom:6px;line-height:1.4;">
+          ${ex.target}
+        </div>
+        <div class="pv-exo-dose" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;">
+          ${ex.doses.map(d => `<span class="pv-chip" style="font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);font-family:'JetBrains Mono',monospace;">${d}</span>`).join('')}
+        </div>
+        <div style="font-size:9px;color:rgba(200,216,232,0.25);font-style:italic;">${ex.ref}</div>
+      </div>`).join('')}
     </div>`;
 }
 
