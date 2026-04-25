@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Programme personnalisé · VERTEXTRACK</title>
+  <title>Programme personnalis├® ┬À VERTEXTRACK</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
@@ -31,7 +31,7 @@
       min-height: 100vh;
     }
 
-    /* ── NAV ── */
+    /* ÔöÇÔöÇ NAV ÔöÇÔöÇ */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: rgba(3,8,15,0.92);
@@ -65,10 +65,10 @@
     }
     .nav-btn-print:hover { background: rgba(33,195,84,0.22); border-color: var(--green); }
 
-    /* ── LAYOUT ── */
+    /* ÔöÇÔöÇ LAYOUT ÔöÇÔöÇ */
     .page { max-width: 760px; margin: 0 auto; padding: 24px 16px 60px; }
 
-    /* ── ATHLETE ROW ── */
+    /* ÔöÇÔöÇ ATHLETE ROW ÔöÇÔöÇ */
     .athlete-row {
       display: flex; align-items: center; gap: 14px;
       background: var(--card);
@@ -97,7 +97,7 @@
     }
     .athlete-meta strong { color: var(--text); display: block; font-size: 13px; }
 
-    /* ── ALERT CHIPS ── */
+    /* ÔöÇÔöÇ ALERT CHIPS ÔöÇÔöÇ */
     .alerts-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
     .alert-chip {
       display: flex; align-items: center; gap: 6px;
@@ -110,7 +110,7 @@
     .alert-chip.ok     { border-color: rgba(33,195,84,0.35); color: var(--green); }
     .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-    /* ── TABS ── */
+    /* ÔöÇÔöÇ TABS ÔöÇÔöÇ */
     .tabs { display: flex; gap: 4px; margin-bottom: 16px; overflow-x: auto; }
     .tab-btn {
       background: var(--card); border: 1px solid var(--border);
@@ -126,7 +126,7 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── WEEK HEADER ── */
+    /* ÔöÇÔöÇ WEEK HEADER ÔöÇÔöÇ */
     .week-header {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
@@ -135,7 +135,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    /* ── EXERCISE CARD ── */
+    /* ÔöÇÔöÇ EXERCISE CARD ÔöÇÔöÇ */
     .exo-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; padding: 14px 16px;
@@ -174,7 +174,7 @@
       font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--green);
     }
 
-    /* ── REVAL BLOCK ── */
+    /* ÔöÇÔöÇ REVAL BLOCK ÔöÇÔöÇ */
     .reval-card {
       background: var(--card); border: 1px solid rgba(0,200,255,0.15);
       border-radius: 12px; padding: 20px;
@@ -223,7 +223,7 @@
       font-size: 10px; color: var(--muted); margin-top: 3px;
     }
 
-    /* ── PROGRESS BAR ── */
+    /* ÔöÇÔöÇ PROGRESS BAR ÔöÇÔöÇ */
     .prog-bar-wrap {
       background: rgba(0,200,255,0.06); border-radius: 10px;
       height: 5px; margin-top: 6px; overflow: hidden;
@@ -234,13 +234,13 @@
       transition: width .6s ease;
     }
 
-    /* ── EMPTY STATE ── */
+    /* ÔöÇÔöÇ EMPTY STATE ÔöÇÔöÇ */
     .vt-empty {
       text-align: center; color: var(--muted);
       padding: 40px 20px; font-size: 13px;
     }
 
-    /* ── PRINT ── */
+    /* ÔöÇÔöÇ PRINT ÔöÇÔöÇ */
     @media print {
       nav, .nav-right, .tabs, .tab-btn { display: none !important; }
       .tab-panel { display: block !important; page-break-inside: avoid; }
@@ -256,7 +256,7 @@
       .exo-param, .exo-focus, .exo-tag-green { background: #eee !important; border-color: #ccc !important; color: #003a5c !important; }
     }
 
-    /* ── Progression ── */
+    /* ÔöÇÔöÇ Progression ÔöÇÔöÇ */
     .vt-progress-ring-wrap {
       display: flex; align-items: center; gap: 16px;
       background: #060e1a;
@@ -331,7 +331,7 @@
     }
     .exo-card.done .exo-name { text-decoration: line-through; }
     
-    /* ── Minuterie ── */
+    /* ÔöÇÔöÇ Minuterie ÔöÇÔöÇ */
     .vt-timer-btn {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 11px; font-weight: 600;
@@ -377,157 +377,7 @@
       transition: width 1s linear;
     }
     .vt-timer-progress.visible { display: block; }
-
-    /* ── Prévention LCA ── */
-    .pv-sep {
-      display: flex; align-items: center; gap: 12px;
-      margin: 28px 0 18px;
-    }
-    .pv-sep-line {
-      flex: 1; height: 0.5px;
-      background: rgba(226,75,74,0.2);
-    }
-    .pv-sep-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      color: rgba(226,75,74,0.7); white-space: nowrap;
-    }
-    .pv-risk-card {
-      background: #060e1a;
-      border: 0.5px solid rgba(226,75,74,0.2);
-      border-radius: 10px; padding: 16px;
-      margin-bottom: 14px;
-    }
-    .pv-risk-header {
-      display: flex; align-items: center;
-      gap: 14px; margin-bottom: 14px;
-    }
-    .pv-risk-arc {
-      position: relative; width: 64px;
-      height: 64px; flex-shrink: 0;
-    }
-    .pv-risk-num {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px; font-weight: 500;
-      color: #c8d8e8; line-height: 1;
-    }
-    .pv-risk-sublabel {
-      font-size: 9px; color: rgba(200,216,232,0.4);
-      font-family: 'Barlow', sans-serif;
-    }
-    .pv-risk-info { flex: 1; }
-    .pv-risk-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px; font-weight: 700;
-      color: #fff; margin-bottom: 3px;
-    }
-    .pv-risk-sub {
-      font-size: 11px; color: rgba(200,216,232,0.45);
-      line-height: 1.5;
-    }
-    .pv-shap-section-title {
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase;
-      color: rgba(200,216,232,0.4); margin-bottom: 8px;
-    }
-    .pv-shap-bar {
-      display: flex; align-items: center;
-      gap: 8px; margin-bottom: 7px;
-    }
-    .pv-shap-name {
-      font-size: 11px; color: rgba(200,216,232,0.65);
-      width: 140px; flex-shrink: 0;
-      overflow: hidden; text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .pv-shap-track {
-      flex: 1; height: 7px;
-      background: rgba(200,216,232,0.08);
-      border-radius: 4px; overflow: hidden;
-    }
-    .pv-shap-fill {
-      height: 100%; border-radius: 4px;
-      transition: width 0.8s ease;
-    }
-    .pv-shap-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px; font-weight: 500;
-      width: 40px; text-align: right;
-    }
-    .pv-section-subtitle {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px; font-weight: 700;
-      color: #fff; letter-spacing: 0.5px;
-      margin-bottom: 10px; margin-top: 4px;
-    }
-    .pv-category-label {
-      font-size: 9px; font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase;
-      margin-bottom: 8px; padding: 3px 10px;
-      border-radius: 4px; display: inline-block;
-    }
-    .pv-exo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px; margin-bottom: 12px;
-    }
-    @media (max-width: 600px) {
-      .pv-exo-grid { grid-template-columns: 1fr; }
-    }
-    .pv-exo {
-      background: #060e1a;
-      border: 0.5px solid rgba(0,200,255,0.1);
-      border-radius: 8px; padding: 12px;
-    }
-    .pv-exo-header {
-      display: flex; align-items: flex-start;
-      gap: 8px; margin-bottom: 6px;
-    }
-    .pv-exo-num {
-      width: 20px; height: 20px; border-radius: 50%;
-      display: flex; align-items: center;
-      justify-content: center; font-size: 9px;
-      font-weight: 700; flex-shrink: 0;
-      font-family: 'Barlow Condensed', sans-serif;
-    }
-    .pv-exo-name {
-      font-size: 12px; font-weight: 500;
-      color: #c8d8e8; line-height: 1.3; flex: 1;
-    }
-    .pv-exo-target {
-      font-size: 10px; color: rgba(200,216,232,0.45);
-      margin-bottom: 6px; line-height: 1.4;
-    }
-    .pv-exo-dose {
-      display: flex; gap: 5px;
-      flex-wrap: wrap; margin-bottom: 5px;
-    }
-    .pv-chip {
-      font-size: 9px; padding: 2px 6px;
-      border-radius: 3px;
-      background: rgba(0,200,255,0.06);
-      border: 0.5px solid rgba(0,200,255,0.15);
-      color: rgba(0,200,255,0.6);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .pv-exo-ref {
-      font-size: 9px; color: rgba(200,216,232,0.25);
-      font-style: italic;
-    }
-    .pv-disclaimer {
-      background: rgba(226,75,74,0.04);
-      border: 0.5px solid rgba(226,75,74,0.15);
-      border-radius: 8px; padding: 10px 14px;
-      margin-top: 16px; font-size: 10px;
-      color: rgba(200,216,232,0.35);
-      line-height: 1.6; font-style: italic;
-    }
   </style>
-
 
 </head>
 <body>
@@ -546,8 +396,8 @@
   <a class="nav-brand" href="index.html">VERTEXTRACK</a>
   <span class="nav-badge">PROGRAMME</span>
   <div class="nav-right">
-    <button class="nav-btn" onclick="history.back()">← Retour</button>
-    <button class="nav-btn nav-btn-print" onclick="window.print()">🖨 Imprimer</button>
+    <button class="nav-btn" onclick="history.back()">ÔåÉ Retour</button>
+    <button class="nav-btn nav-btn-print" onclick="window.print()">­ƒû¿ Imprimer</button>
   </div>
 </nav>
 
@@ -562,9 +412,9 @@
       <text class="vt-ring-text-pct" x="32" y="35" text-anchor="middle" id="ring-pct">0%</text>
     </svg>
     <div class="vt-progress-info">
-      <div class="vt-progress-info-title" id="ring-title">Semaines 1–2</div>
-      <div class="vt-progress-info-sub" id="ring-sub">Cochez les exercices réalisés</div>
-      <div class="vt-progress-info-done" id="ring-done">Semaine complétée — Passez à la phase suivante</div>
+      <div class="vt-progress-info-title" id="ring-title">Semaines 1ÔÇô2</div>
+      <div class="vt-progress-info-sub" id="ring-sub">Cochez les exercices r├®alis├®s</div>
+      <div class="vt-progress-info-done" id="ring-done">Semaine compl├®t├®e ÔÇö Passez ├á la phase suivante</div>
     </div>
   </div>
   
@@ -572,12 +422,12 @@
   <div class="athlete-row">
     <div class="athlete-avatar" id="pg-avatar">--</div>
     <div class="athlete-info">
-      <div class="athlete-name" id="pg-name">Chargement…</div>
-      <div class="athlete-sub" id="pg-sub">Programme personnalisé · 6 semaines</div>
+      <div class="athlete-name" id="pg-name">ChargementÔÇª</div>
+      <div class="athlete-sub" id="pg-sub">Programme personnalis├® ┬À 6 semaines</div>
     </div>
     <div class="athlete-meta" id="pg-meta">
       <strong id="pg-date">--</strong>
-      Généré le
+      G├®n├®r├® le
     </div>
   </div>
 
@@ -586,10 +436,10 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('s12', this)">Sem 1–2</button>
-    <button class="tab-btn" onclick="switchTab('s34', this)">Sem 3–4</button>
-    <button class="tab-btn" onclick="switchTab('s56', this)">Sem 5–6</button>
-    <button class="tab-btn" onclick="switchTab('reval', this)">Réévaluation</button>
+    <button class="tab-btn active" onclick="switchTab('s12', this)">Sem 1ÔÇô2</button>
+    <button class="tab-btn" onclick="switchTab('s34', this)">Sem 3ÔÇô4</button>
+    <button class="tab-btn" onclick="switchTab('s56', this)">Sem 5ÔÇô6</button>
+    <button class="tab-btn" onclick="switchTab('reval', this)">R├®├®valuation</button>
   </div>
 
   <!-- Tab panels -->
@@ -598,102 +448,86 @@
   <div id="tab-s56" class="tab-panel"></div>
   <div id="tab-reval" class="tab-panel"></div>
 
-
-  <!-- SECTION PRÉVENTION LCA -->
- SECTION PRÉVENTION LCA -->
-
-  <!-- SECTION PRÉVENTION LCA -->
-  <div id="section-prevention" style="margin-top:28px;padding:0 24px 28px;">
-    <div style="display:flex;align-items:center;gap:12px;margin:0 0 16px;">
-      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);">Prévention LCA</span>
-      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
-    </div>
-    <p id="pv-section-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
-    <div id="pv-exo-container" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
-    <p style="font-size:10px;color:rgba(200,216,232,0.3);font-style:italic;line-height:1.6;padding:10px 14px;background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;">Ces exercices sont adaptés à votre profil biomécanique. Ils ne remplacent pas l'avis d'un médecin du sport ou d'un kinésithérapeute.</p>
-  </div>
-  <!-- FIN SECTION PRÉVENTION LCA -->
 </div><!-- end .page -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // EXERCISE DATABASE
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 var EXERCISE_DB = {
   tke: {
     name: 'Terminal Knee Extension (TKE)',
-    desc: 'Renforcement terminal du quadriceps avec élastique. Genou à 20–30° de flexion. Contrôle du valgus dynamique en charge partielle.',
+    desc: 'Renforcement terminal du quadriceps avec ├®lastique. Genou ├á 20ÔÇô30┬░ de flexion. Contr├┤le du valgus dynamique en charge partielle.',
     sets: '3', reps: '15', rest: '45 s',
-    focus: 'Quadriceps / Contrôle valgus'
+    focus: 'Quadriceps / Contr├┤le valgus'
   },
   clamshell: {
-    name: 'Clamshell + résistance',
-    desc: 'Décubitus latéral, hanche à 45°. Abduction contrôlée sans rotation lombaire. Priorité côté déficitaire.',
+    name: 'Clamshell + r├®sistance',
+    desc: 'D├®cubitus lat├®ral, hanche ├á 45┬░. Abduction contr├┤l├®e sans rotation lombaire. Priorit├® c├┤t├® d├®ficitaire.',
     sets: '3', reps: '20', rest: '30 s',
-    focus: 'Moyen fessier / Stabilité hanche'
+    focus: 'Moyen fessier / Stabilit├® hanche'
   },
   lateralWalk: {
     name: 'Lateral Band Walk',
-    desc: 'Marche latérale avec élastique aux chevilles. Maintien d\'une légère flexion de hanche et genou. Éviter l\'effondrement du tronc.',
-    sets: '3', reps: '12 pas/côté', rest: '45 s',
-    focus: 'Abducteurs / Kinesthésie genou'
+    desc: 'Marche lat├®rale avec ├®lastique aux chevilles. Maintien d\'une l├®g├¿re flexion de hanche et genou. ├ëviter l\'effondrement du tronc.',
+    sets: '3', reps: '12 pas/c├┤t├®', rest: '45 s',
+    focus: 'Abducteurs / Kinesth├®sie genou'
   },
   stepUp: {
-    name: 'Step-up unilatéral',
-    desc: 'Montée lente (2 s) sur marche 20 cm. Contrôle excentrique de la descente (3 s). Genou aligné sur 2e orteil.',
-    sets: '4', reps: '10/côté', rest: '60 s',
-    focus: 'Quadriceps / Contrôle valgus'
+    name: 'Step-up unilat├®ral',
+    desc: 'Mont├®e lente (2 s) sur marche 20 cm. Contr├┤le excentrique de la descente (3 s). Genou align├® sur 2e orteil.',
+    sets: '4', reps: '10/c├┤t├®', rest: '60 s',
+    focus: 'Quadriceps / Contr├┤le valgus'
   },
   pistolAssist: {
-    name: 'Pistol Squat assisté (TRX)',
-    desc: 'Squat unipodal avec support TRX ou anneau. Descente lente jusqu\'à 90° de flexion. Progression vers version libre.',
-    sets: '3', reps: '8/côté', rest: '60 s',
-    focus: 'Force unilatérale / LSI'
+    name: 'Pistol Squat assist├® (TRX)',
+    desc: 'Squat unipodal avec support TRX ou anneau. Descente lente jusqu\'├á 90┬░ de flexion. Progression vers version libre.',
+    sets: '3', reps: '8/c├┤t├®', rest: '60 s',
+    focus: 'Force unilat├®rale / LSI'
   },
   pistolFree: {
     name: 'Pistol Squat libre',
-    desc: 'Squat unipodal sans appui. Contrôle du valgus en phase de descente et montée. Charge additionnelle si LSI ≥ 95 %.',
-    sets: '4', reps: '6/côté', rest: '75 s',
-    focus: 'Force unilatérale / LSI'
+    desc: 'Squat unipodal sans appui. Contr├┤le du valgus en phase de descente et mont├®e. Charge additionnelle si LSI ÔëÑ 95 %.',
+    sets: '4', reps: '6/c├┤t├®', rest: '75 s',
+    focus: 'Force unilat├®rale / LSI'
   },
   ankMob: {
-    name: 'Mobilité cheville (wall drill)',
-    desc: 'Genou contre le mur, avancer progressivement le pied. 3 × 30 oscillations par côté. Améliore la dorsiflexion et réduit le valgus.',
-    sets: '3', reps: '30 osc./côté', rest: '20 s',
+    name: 'Mobilit├® cheville (wall drill)',
+    desc: 'Genou contre le mur, avancer progressivement le pied. 3 ├ù 30 oscillations par c├┤t├®. Am├®liore la dorsiflexion et r├®duit le valgus.',
+    sets: '3', reps: '30 osc./c├┤t├®', rest: '20 s',
     focus: 'Dorsiflexion / Valgus'
   },
   deepSquat: {
-    name: 'Deep Squat avec bâton',
-    desc: 'Squat profond bras levés avec bâton overhead. Talon surélevé si besoin. Progresser vers squat complet plat pied.',
+    name: 'Deep Squat avec b├óton',
+    desc: 'Squat profond bras lev├®s avec b├óton overhead. Talon sur├®lev├® si besoin. Progresser vers squat complet plat pied.',
     sets: '3', reps: '12', rest: '45 s',
-    focus: 'Flexion genou / Mobilité'
+    focus: 'Flexion genou / Mobilit├®'
   },
   boxJump: {
     name: 'Box Jump',
-    desc: 'Saut sur boîte 40 cm, réception stable en flexion. Contrôle du valgus en réception. Progression de la hauteur en sem 5–6.',
+    desc: 'Saut sur bo├«te 40 cm, r├®ception stable en flexion. Contr├┤le du valgus en r├®ception. Progression de la hauteur en sem 5ÔÇô6.',
     sets: '4', reps: '6', rest: '90 s',
     focus: 'Puissance / RSI'
   },
   depthJump: {
     name: 'Depth Jump',
-    desc: 'Chute depuis boîte 30 cm, rebond explosif immédiat. Minimiser le temps de contact au sol. Réservé si LSI ≥ 90 %.',
+    desc: 'Chute depuis bo├«te 30 cm, rebond explosif imm├®diat. Minimiser le temps de contact au sol. R├®serv├® si LSI ÔëÑ 90 %.',
     sets: '4', reps: '5', rest: '90 s',
-    focus: 'RSI / Réactivité'
+    focus: 'RSI / R├®activit├®'
   },
   cmjFeedback: {
     name: 'CMJ avec feedback visuel',
-    desc: 'Counter movement jump avec retour vidéo. Analyser l\'alignement genou-pied en réception. Mémoriser la sensation proprioceptive.',
+    desc: 'Counter movement jump avec retour vid├®o. Analyser l\'alignement genou-pied en r├®ception. M├®moriser la sensation proprioceptive.',
     sets: '3', reps: '5', rest: '60 s',
     focus: 'CMJ / FPPA feedback'
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // GENERATE PROGRAM
 // profile: { fppa_left, fppa_right, lsi, knee_flexion, jump_height_cm, rsi_modified, asymmetry_score }
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function generateProgram(profile) {
   var fppaMax  = Math.max(profile.fppa_left || 0, profile.fppa_right || 0);
   var lsi      = profile.lsi || profile.lsi_mean || 88;
@@ -709,51 +543,51 @@ function generateProgram(profile) {
   var severeAsym     = asym > 15;
   var lsiCritical    = lsi < 80;
 
-  // ── Phase 1 : Sem 1–2 (activation + contrôle moteur) ──
+  // ÔöÇÔöÇ Phase 1 : Sem 1ÔÇô2 (activation + contr├┤le moteur) ÔöÇÔöÇ
   var p1 = [];
-  p1.push({ key: 'tke',       week: 'Semaines 1–2', tag: 'Activation' });
-  p1.push({ key: 'clamshell', week: 'Semaines 1–2', tag: 'Activation' });
+  p1.push({ key: 'tke',       week: 'Semaines 1ÔÇô2', tag: 'Activation' });
+  p1.push({ key: 'clamshell', week: 'Semaines 1ÔÇô2', tag: 'Activation' });
   if (needsKnee || needsValgus) {
-    p1.push({ key: 'ankMob',  week: 'Semaines 1–2', tag: 'Mobilité' });
-    p1.push({ key: 'deepSquat', week: 'Semaines 1–2', tag: 'Mobilité' });
+    p1.push({ key: 'ankMob',  week: 'Semaines 1ÔÇô2', tag: 'Mobilit├®' });
+    p1.push({ key: 'deepSquat', week: 'Semaines 1ÔÇô2', tag: 'Mobilit├®' });
   }
   if (needsValgus || severeAsym) {
-    p1.push({ key: 'lateralWalk', week: 'Semaines 1–2', tag: 'Contrôle' });
+    p1.push({ key: 'lateralWalk', week: 'Semaines 1ÔÇô2', tag: 'Contr├┤le' });
   }
   if (needsLSI) {
-    p1.push({ key: 'stepUp', week: 'Semaines 1–2', tag: 'Renforcement' });
+    p1.push({ key: 'stepUp', week: 'Semaines 1ÔÇô2', tag: 'Renforcement' });
   }
 
-  // ── Phase 2 : Sem 3–4 (renforcement unilatéral) ──
+  // ÔöÇÔöÇ Phase 2 : Sem 3ÔÇô4 (renforcement unilat├®ral) ÔöÇÔöÇ
   var p2 = [];
-  p2.push({ key: 'stepUp',   week: 'Semaines 3–4', tag: 'Renforcement' });
-  p2.push({ key: 'lateralWalk', week: 'Semaines 3–4', tag: 'Stabilité' });
+  p2.push({ key: 'stepUp',   week: 'Semaines 3ÔÇô4', tag: 'Renforcement' });
+  p2.push({ key: 'lateralWalk', week: 'Semaines 3ÔÇô4', tag: 'Stabilit├®' });
   if (needsLSI) {
-    p2.push({ key: 'pistolAssist', week: 'Semaines 3–4', tag: 'Unilatéral' });
+    p2.push({ key: 'pistolAssist', week: 'Semaines 3ÔÇô4', tag: 'Unilat├®ral' });
   }
   if (needsKnee) {
-    p2.push({ key: 'deepSquat', week: 'Semaines 3–4', tag: 'Mobilité+' });
-    p2.push({ key: 'ankMob',   week: 'Semaines 3–4', tag: 'Mobilité+' });
+    p2.push({ key: 'deepSquat', week: 'Semaines 3ÔÇô4', tag: 'Mobilit├®+' });
+    p2.push({ key: 'ankMob',   week: 'Semaines 3ÔÇô4', tag: 'Mobilit├®+' });
   }
   if (needsPower && !lsiCritical) {
-    p2.push({ key: 'boxJump', week: 'Semaines 3–4', tag: 'Puissance' });
+    p2.push({ key: 'boxJump', week: 'Semaines 3ÔÇô4', tag: 'Puissance' });
   }
-  p2.push({ key: 'cmjFeedback', week: 'Semaines 3–4', tag: 'CMJ' });
+  p2.push({ key: 'cmjFeedback', week: 'Semaines 3ÔÇô4', tag: 'CMJ' });
 
-  // ── Phase 3 : Sem 5–6 (puissance + retour sport) ──
+  // ÔöÇÔöÇ Phase 3 : Sem 5ÔÇô6 (puissance + retour sport) ÔöÇÔöÇ
   var p3 = [];
   if (lsi >= 90) {
-    p3.push({ key: 'pistolFree', week: 'Semaines 5–6', tag: 'Force max' });
+    p3.push({ key: 'pistolFree', week: 'Semaines 5ÔÇô6', tag: 'Force max' });
   } else {
-    p3.push({ key: 'pistolAssist', week: 'Semaines 5–6', tag: 'Unilatéral+' });
+    p3.push({ key: 'pistolAssist', week: 'Semaines 5ÔÇô6', tag: 'Unilat├®ral+' });
   }
-  p3.push({ key: 'boxJump',     week: 'Semaines 5–6', tag: 'Puissance' });
+  p3.push({ key: 'boxJump',     week: 'Semaines 5ÔÇô6', tag: 'Puissance' });
   if (!lsiCritical) {
-    p3.push({ key: 'depthJump', week: 'Semaines 5–6', tag: 'Réactivité' });
+    p3.push({ key: 'depthJump', week: 'Semaines 5ÔÇô6', tag: 'R├®activit├®' });
   }
-  p3.push({ key: 'cmjFeedback', week: 'Semaines 5–6', tag: 'Validation' });
+  p3.push({ key: 'cmjFeedback', week: 'Semaines 5ÔÇô6', tag: 'Validation' });
   if (needsValgus) {
-    p3.push({ key: 'tke',       week: 'Semaines 5–6', tag: 'Maintenance' });
+    p3.push({ key: 'tke',       week: 'Semaines 5ÔÇô6', tag: 'Maintenance' });
   }
 
   return { p1: p1, p2: p2, p3: p3, profile: {
@@ -763,9 +597,9 @@ function generateProgram(profile) {
   }};
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // RENDER EXERCISE CARD
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function renderExo(item, index) {
   var ex = EXERCISE_DB[item.key];
   if (!ex) return '';
@@ -775,8 +609,8 @@ function renderExo(item, index) {
       '<div class="exo-name">' + ex.name + '</div>' +
       '<div class="exo-desc">' + ex.desc + '</div>' +
       '<div class="exo-params">' +
-        '<span class="exo-param">× ' + ex.sets + ' séries</span>' +
-        '<span class="exo-param">' + ex.reps + ' rép.</span>' +
+        '<span class="exo-param">├ù ' + ex.sets + ' s├®ries</span>' +
+        '<span class="exo-param">' + ex.reps + ' r├®p.</span>' +
         '<span class="exo-param">Repos ' + ex.rest + '</span>' +
         '<span class="exo-focus">' + ex.focus + '</span>' +
         (item.tag ? '<span class="exo-tag-green">' + item.tag + '</span>' : '') +
@@ -785,42 +619,42 @@ function renderExo(item, index) {
   '</div>';
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // RENDER FULL PROGRAM INTO TABS
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function renderProgram(program, profile) {
   var p = program.profile;
 
-  // ── Tab S1-2 ──
-  var h1 = '<div class="week-header">Phase 1 — Activation &amp; Contrôle moteur</div>';
+  // ÔöÇÔöÇ Tab S1-2 ÔöÇÔöÇ
+  var h1 = '<div class="week-header">Phase 1 ÔÇö Activation &amp; Contr├┤le moteur</div>';
   program.p1.forEach(function(item, i) { h1 += renderExo(item, i); });
   document.getElementById('tab-s12').innerHTML = h1;
 
-  // ── Tab S3-4 ──
-  var h2 = '<div class="week-header">Phase 2 — Renforcement unilatéral</div>';
+  // ÔöÇÔöÇ Tab S3-4 ÔöÇÔöÇ
+  var h2 = '<div class="week-header">Phase 2 ÔÇö Renforcement unilat├®ral</div>';
   program.p2.forEach(function(item, i) { h2 += renderExo(item, i); });
   document.getElementById('tab-s34').innerHTML = h2;
 
-  // ── Tab S5-6 ──
-  var h3 = '<div class="week-header">Phase 3 — Puissance &amp; Retour sport</div>';
+  // ÔöÇÔöÇ Tab S5-6 ÔöÇÔöÇ
+  var h3 = '<div class="week-header">Phase 3 ÔÇö Puissance &amp; Retour sport</div>';
   program.p3.forEach(function(item, i) { h3 += renderExo(item, i); });
   document.getElementById('tab-s56').innerHTML = h3;
 
-  // ── Tab Réévaluation ──
+  // ÔöÇÔöÇ Tab R├®├®valuation ÔöÇÔöÇ
   var lsiTarget  = Math.min(100, Math.round(p.lsi + 8));
   var fppaTarget = Math.max(10, Math.round(p.fppaMax - 4));
   var rsiTarget  = (parseFloat(p.rsi || 0) + 0.15).toFixed(2);
 
   var h4 = '<div class="reval-card">' +
-    '<div class="reval-title">Réévaluation — Semaine 7</div>' +
-    '<div class="reval-sub">Protocole de réévaluation CMJ + FPPA recommandé 7 jours après la fin du programme</div>' +
+    '<div class="reval-title">R├®├®valuation ÔÇö Semaine 7</div>' +
+    '<div class="reval-sub">Protocole de r├®├®valuation CMJ + FPPA recommand├® 7 jours apr├¿s la fin du programme</div>' +
 
-    '<div class="reval-section">Tests à refaire</div>' +
+    '<div class="reval-section">Tests ├á refaire</div>' +
     '<div class="reval-check">' +
-      '<div class="reval-item"><div class="reval-dot"></div>Counter Movement Jump bilatéral (5 répétitions)<span class="reval-thresh">CMJ</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>FPPA vue frontale · caméra à 1 m en face<span class="reval-thresh">≤ 15°</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>Squat unipodal · 5 répétitions chaque côté<span class="reval-thresh">LSI</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>Flexion genou en charge · goniomètre<span class="reval-thresh">≥ 75°</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Counter Movement Jump bilat├®ral (5 r├®p├®titions)<span class="reval-thresh">CMJ</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>FPPA vue frontale ┬À cam├®ra ├á 1 m en face<span class="reval-thresh">Ôëñ 15┬░</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Squat unipodal ┬À 5 r├®p├®titions chaque c├┤t├®<span class="reval-thresh">LSI</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Flexion genou en charge ┬À goniom├¿tre<span class="reval-thresh">ÔëÑ 75┬░</span></div>' +
     '</div>' +
 
     '<div class="reval-section">Objectifs de sortie</div>' +
@@ -828,49 +662,49 @@ function renderProgram(program, profile) {
       '<div class="reval-score-box">' +
         '<div class="reval-score-label">LSI cible</div>' +
         '<div class="reval-score-val" id="rv-lsi">' + lsiTarget + ' %</div>' +
-        '<div class="reval-score-target">Départ : ' + Math.round(p.lsi) + ' %</div>' +
+        '<div class="reval-score-target">D├®part : ' + Math.round(p.lsi) + ' %</div>' +
         '<div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:' + Math.round(p.lsi) + '%"></div></div>' +
       '</div>' +
       '<div class="reval-score-box">' +
         '<div class="reval-score-label">FPPA max cible</div>' +
-        '<div class="reval-score-val" id="rv-fppa">' + fppaTarget + '°</div>' +
-        '<div class="reval-score-target">Départ : ' + Math.round(p.fppaMax) + '°</div>' +
+        '<div class="reval-score-val" id="rv-fppa">' + fppaTarget + '┬░</div>' +
+        '<div class="reval-score-target">D├®part : ' + Math.round(p.fppaMax) + '┬░</div>' +
       '</div>' +
       '<div class="reval-score-box">' +
         '<div class="reval-score-label">RSI cible</div>' +
         '<div class="reval-score-val" id="rv-rsi">' + rsiTarget + '</div>' +
-        '<div class="reval-score-target">Départ : ' + (parseFloat(p.rsi || 0)).toFixed(2) + '</div>' +
+        '<div class="reval-score-target">D├®part : ' + (parseFloat(p.rsi || 0)).toFixed(2) + '</div>' +
       '</div>' +
       '<div class="reval-score-box">' +
         '<div class="reval-score-label">Flexion genou</div>' +
-        '<div class="reval-score-val">&ge; 75°</div>' +
-        '<div class="reval-score-target">Départ : ' + Math.round(p.knee) + '°</div>' +
+        '<div class="reval-score-val">&ge; 75┬░</div>' +
+        '<div class="reval-score-target">D├®part : ' + Math.round(p.knee) + '┬░</div>' +
       '</div>' +
     '</div>' +
 
-    '<div class="reval-section">Critères de retour au sport complet</div>' +
+    '<div class="reval-section">Crit├¿res de retour au sport complet</div>' +
     '<div class="reval-check">' +
-      '<div class="reval-item"><div class="reval-dot"></div>LSI ≥ 90 % sur squat unipodal<span class="reval-thresh">Kyritsis 2016</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>FPPA ≤ 15° en réception CMJ<span class="reval-thresh">Hewett 2005</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>Absence de douleur &gt; 2/10 EVA à l\'effort<span class="reval-thresh">Clinique</span></div>' +
-      '<div class="reval-item"><div class="reval-dot"></div>Approbation du staff médical<span class="reval-thresh">Obligatoire</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>LSI ÔëÑ 90 % sur squat unipodal<span class="reval-thresh">Kyritsis 2016</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>FPPA Ôëñ 15┬░ en r├®ception CMJ<span class="reval-thresh">Hewett 2005</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Absence de douleur &gt; 2/10 EVA ├á l\'effort<span class="reval-thresh">Clinique</span></div>' +
+      '<div class="reval-item"><div class="reval-dot"></div>Approbation du staff m├®dical<span class="reval-thresh">Obligatoire</span></div>' +
     '</div>' +
   '</div>';
 
   document.getElementById('tab-reval').innerHTML = h4;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // ALERT CHIPS
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function buildAlerts(profile, p) {
   var chips = [];
-  if (p.needsValgus)  chips.push({ cls: 'danger', text: 'FPPA ' + Math.round(p.fppaMax) + '° — valgus dynamique' });
-  if (p.lsiCritical)  chips.push({ cls: 'danger', text: 'LSI ' + Math.round(p.lsi) + '% — asymétrie critique' });
-  else if (p.needsLSI) chips.push({ cls: 'warn', text: 'LSI ' + Math.round(p.lsi) + '% — asymétrie modérée' });
-  if (p.needsKnee)    chips.push({ cls: 'warn', text: 'Flexion genou ' + Math.round(p.knee) + '° — mobilité réduite' });
-  if (p.needsPower)   chips.push({ cls: 'warn', text: 'RSI ' + (parseFloat(p.rsi || 0)).toFixed(2) + ' — puissance à améliorer' });
-  if (p.severeAsym)   chips.push({ cls: 'danger', text: 'Asym. ' + Math.round(p.asym) + '% — rééquilibrage prioritaire' });
+  if (p.needsValgus)  chips.push({ cls: 'danger', text: 'FPPA ' + Math.round(p.fppaMax) + '┬░ ÔÇö valgus dynamique' });
+  if (p.lsiCritical)  chips.push({ cls: 'danger', text: 'LSI ' + Math.round(p.lsi) + '% ÔÇö asym├®trie critique' });
+  else if (p.needsLSI) chips.push({ cls: 'warn', text: 'LSI ' + Math.round(p.lsi) + '% ÔÇö asym├®trie mod├®r├®e' });
+  if (p.needsKnee)    chips.push({ cls: 'warn', text: 'Flexion genou ' + Math.round(p.knee) + '┬░ ÔÇö mobilit├® r├®duite' });
+  if (p.needsPower)   chips.push({ cls: 'warn', text: 'RSI ' + (parseFloat(p.rsi || 0)).toFixed(2) + ' ÔÇö puissance ├á am├®liorer' });
+  if (p.severeAsym)   chips.push({ cls: 'danger', text: 'Asym. ' + Math.round(p.asym) + '% ÔÇö r├®├®quilibrage prioritaire' });
   if (!p.needsValgus && !p.lsiCritical) chips.push({ cls: 'ok', text: 'Profil favorable au retour sport' });
 
   var el = document.getElementById('vt-alerts-row');
@@ -881,9 +715,9 @@ function buildAlerts(profile, p) {
   }).join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // TAB SWITCH
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.tab-btn').forEach(function(b)   { b.classList.remove('active'); });
@@ -891,9 +725,9 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // DEMO PROFILE
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 var DEMO_PROFILE = {
   fppa_left:        14.2,
   fppa_right:       17.8,
@@ -902,13 +736,13 @@ var DEMO_PROFILE = {
   jump_height_cm:   32,
   rsi_modified:     0.51,
   asymmetry_score:  13.4,
-  name:             'Athlète Démo',
+  name:             'Athl├¿te D├®mo',
   email:            'demo@vertextrack.io'
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 // INIT
-// ─────────────────────────────────────────────────────────────────────────────
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 (async function init() {
   var today = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
   document.getElementById('pg-date').textContent = today;
@@ -951,7 +785,7 @@ var DEMO_PROFILE = {
 
   // Set athlete header
   var name = profile.name || profile.athlete_name ||
-             localStorage.getItem('vt_user_name') || 'Athlète';
+             localStorage.getItem('vt_user_name') || 'Athl├¿te';
   var words = name.trim().split(/\s+/);
   var initials = words.length >= 2
     ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
@@ -962,16 +796,15 @@ var DEMO_PROFILE = {
 
   var sport = profile.sport || profile.poste || '';
   document.getElementById('pg-sub').textContent =
-    'Programme personnalisé · 6 semaines' + (sport ? ' · ' + sport : '');
+    'Programme personnalis├® ┬À 6 semaines' + (sport ? ' ┬À ' + sport : '');
 
   // Generate & render
   var program = generateProgram(profile);
   buildAlerts(profile, program.profile);
   renderProgram(program, profile);
-  renderPreventionSection(program.profile);
 })();
 
-// ── SYSTÈME DE PROGRESSION ─────────────────────────────
+// ÔöÇÔöÇ SYST├êME DE PROGRESSION ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 function getStorageKey() {
   const athleteId = localStorage.getItem('vt_last_athlete_id') || 'guest';
@@ -1014,13 +847,13 @@ function updateProgressRing() {
   const ringDone  = document.getElementById('ring-done');
   
   if (ringTitle && activeBtn) ringTitle.textContent = activeBtn.textContent.trim();
-  if (ringSub) ringSub.textContent = checked + '/' + total + ' exercices complétés cette semaine';
+  if (ringSub) ringSub.textContent = checked + '/' + total + ' exercices compl├®t├®s cette semaine';
   if (ringDone) ringDone.style.display = pct >= 100 ? 'block' : 'none';
 }
 
 function addCheckboxesToExos() {
   const state = loadCheckedState();
-  const exos = document.querySelectorAll('.tab-panel.active .exo-card, #section-prevention .pv-exo');
+  const exos = document.querySelectorAll('.tab-panel.active .exo-card');
 
   exos.forEach((exo, index) => {
     if (exo.querySelector('.vt-exo-checkbox')) return;
@@ -1040,14 +873,14 @@ function addCheckboxesToExos() {
     const label = document.createElement('label');
     label.className = 'vt-exo-check-label';
     label.setAttribute('for', 'cb_' + index);
-    label.textContent = isChecked ? 'Réalisé' : 'Marquer comme réalisé';
+    label.textContent = isChecked ? 'R├®alis├®' : 'Marquer comme r├®alis├®';
 
     cb.addEventListener('change', function() {
       const s = loadCheckedState();
       s[exoId] = this.checked;
       saveCheckedState(s);
       exo.classList.toggle('done', this.checked);
-      label.textContent = this.checked ? 'Réalisé' : 'Marquer comme réalisé';
+      label.textContent = this.checked ? 'R├®alis├®' : 'Marquer comme r├®alis├®';
       updateProgressRing();
     });
 
@@ -1063,12 +896,12 @@ function addCheckboxesToExos() {
 }
 
 
-// ── MINUTERIE DE REPOS ─────────────────────────────────
+// ÔöÇÔöÇ MINUTERIE DE REPOS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 let _activeTimer = null;
 
 function parseRestTime(exo) {
-  const chips = exo.querySelectorAll('.exo-param, .pv-chip');
+  const chips = exo.querySelectorAll('.exo-param');
   for (const chip of chips) {
     const text = chip.textContent.trim().toLowerCase();
     const match = text.match(/repos\s*(\d+)\s*s/);
@@ -1115,7 +948,7 @@ function startRestTimer(btn, seconds, progressBar) {
 
   _activeTimer = setInterval(function() {
     remaining--;
-    btn.textContent = remaining > 0 ? remaining + 's' : 'Repos terminé';
+    btn.textContent = remaining > 0 ? remaining + 's' : 'Repos termin├®';
 
     if (progressBar) {
       const pct = (remaining / seconds * 100).toFixed(1);
@@ -1143,7 +976,7 @@ function startRestTimer(btn, seconds, progressBar) {
 }
 
 function addTimerButtons() {
-  const exos = document.querySelectorAll('.tab-panel.active .exo-card, #section-prevention .pv-exo');
+  const exos = document.querySelectorAll('.tab-panel.active .exo-card');
 
   exos.forEach(function(exo) {
     if (exo.querySelector('.vt-timer-btn')) return;
@@ -1179,7 +1012,7 @@ function addTimerButtons() {
     if (checkWrap) {
       checkWrap.appendChild(timerBtn);
     } else {
-      const dose = exo.querySelector('.exo-params') || exo.querySelector('.pv-exo-dose');
+      const dose = exo.querySelector('.exo-params');
       if (dose) dose.appendChild(timerBtn);
     }
     
@@ -1209,214 +1042,59 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
-
-// ── PRÉVENTION LCA ─────────────────────────────────────
-< 0.80) risk += 0.25;
-  else if (lsiVal < 0.90) risk += 0.12;
-  
-  if (knee < 70) risk += 0.08;
-  risk = Math.min(risk, 0.95);
-  const pct = Math.round(risk * 100);
-
-  // Mettre à jour l'anneau si données utiles
-  const hasAlerts = fppaL >= 12 || lsiVal < 0.90 || knee < 70 || h < 35;
-  const riskCard = document.getElementById('pv-risk-card');
-  if (riskCard && hasAlerts) {
-    riskCard.style.display = 'block';
-    const arc = document.getElementById('pv-arc');
-    const pctEl = document.getElementById('pv-pct');
-    const titleEl = document.getElementById('pv-risk-title');
-    if (arc) {
-      const c = 2 * Math.PI * 20;
-      arc.style.strokeDasharray = c;
-      arc.style.strokeDashoffset = c - (risk * c);
-      arc.style.stroke = pct > 55 ? '#e24b4a'
-        : pct > 35 ? '#ffa500' : '#21c354';
-    }
-    if (pctEl) pctEl.textContent = pct + '%';
-    if (titleEl) {
-      const lvl = pct > 55 ? 'Risque élevé'
-        : pct > 35 ? 'Risque modéré' : 'Risque faible';
-      titleEl.textContent = lvl;
-      titleEl.style.color = pct > 55 ? '#e24b4a'
-        : pct > 35 ? '#ffa500' : '#21c354';
-    }
-    // Facteurs SHAP simplifiés
-    const shapEl = document.getElementById('pv-shap-bars');
-    if (shapEl) {
-      const items = [];
-      if (fppaL >= 12) items.push(
-        {n:'FPPA gauche',v:fppaL.toFixed(1)+'°',c:'#e24b4a'});
-      if (lsiVal < 0.90) items.push(
-        {n:'LSI symétrie',v:lsiVal.toFixed(2),c:'#ffa500'});
-      if (knee < 70) items.push(
-        {n:'Flexion genou',v:knee+'°',c:'#00c8ff'});
-      shapEl.innerHTML = items.map(it => `
-        <div style="display:flex;align-items:center;
-          gap:6px;margin-bottom:4px;">
-          <span style="font-size:10px;
-            color:rgba(200,216,232,0.5);
-            width:110px;flex-shrink:0;">${it.n}</span>
-          <span style="font-family:'JetBrains Mono',
-            monospace;font-size:11px;font-weight:500;
-            color:${it.c};">${it.v}</span>
-        </div>`).join('');
-    }
+function pvRender(p){
+  var fL=p.fppa_left||p.fppaLeft||10,fR=p.fppa_right||p.fppaRight||10,
+      ls=p.lsi_symmetry||p.lsi||0.95,kn=p.knee_flexion_max||p.kneeFlexion||80;
+  var ex=[],n=1;
+  function add(c,nm,tg,ds,rf){ex.push({c:c,n:n++,nm:nm,tg:tg,ds:ds,rf:rf});}
+  add('#00c8ff','Proprioception plateau instable','Contr\u00f4le neuromusculaire \u00b7 Stabilit\u00e9',['3x45s','Chaque jambe','3x/sem'],'Myklebust 2003');
+  add('#00c8ff','Y-Balance Training','\u00c9quilibre dynamique \u00b7 Asym\u00e9tries',['3x5 dir.','Chaque jambe','2x/sem'],'Plisky 2009');
+  if(fL>=12||fR>=12){
+    add('#e24b4a','Drop jump landing','Contr\u00f4le valgus \u00b7 FPPA',['4x5 r\u00e9p.','Repos 90s','2x/sem'],'Hewett 2005');
+    add('#ffa500','Step-down unilat\u00e9ral','VMO \u00b7 Contr\u00f4le valgus',['3x12','Repos 60s','3x/sem'],'Hewett 2005');
+    add('#ffa500','Copenhagen plank','Adducteurs hanche \u00b7 Stabilit\u00e9 m\u00e9diale',['3x20s','Repos 45s','3x/sem'],'Serner 2019');
   }
-
-  // Sélection exercices
-  const exos = [];
-
-  // TOUJOURS : proprioception
-  exos.push({
-    num:1, color:'#00c8ff',
-    name: 'Proprioception plateau instable',
-    target: 'Contrôle neuromusculaire · Stabilité dynamique',
-    doses: ['3 × 45s', 'Chaque jambe', '3×/sem'],
-    ref: 'Myklebust et al. 2003 · BJSM'
-  });
-  exos.push({
-    num:2, color:'#00c8ff',
-    name: 'Y-Balance Training',
-    target: 'Équilibre dynamique · Détection asymétries',
-    doses: ['3 × 5 dir.', 'Chaque jambe', '2×/sem'],
-    ref: 'Plisky et al. 2009 · J Athl Train'
-  });
-
-  // FPPA élevé
-  if (fppaL >= 12 || fppaR >= 12) {
-    exos.push({
-      num:3, color:'#e24b4a',
-      name: 'Drop jump landing avec feedback',
-      target: 'Contrôle valgus dynamique · FPPA',
-      doses: ['4 × 5 rép.', 'Repos 90s', '2×/sem'],
-      ref: 'Hewett et al. 2005 · AJSM'
-    });
-    exos.push({
-      num:4, color:'#ffa500',
-      name: 'Step-down unilatéral avec miroir',
-      target: 'Contrôle neuromusculaire VMO',
-      doses: ['3 × 12 rép.', 'Repos 60s', '3×/sem'],
-      ref: 'Hewett et al. 2005'
-    });
+  if(ls<0.90){
+    add('#e24b4a',ls<0.80?'Nordic Hamstring':'Nordic Hamstring progressif','Renforcement excentrique ischio-jambiers',ls<0.80?['3x6','Repos 2min','3x/sem']:['3x4','Repos 2min','2x/sem'],'Petersen 2011');
   }
-
-  // LSI faible → renforcement excentrique
-  if (lsiVal < 0.90) {
-    exos.push({
-      num: exos.length+1, color:'#e24b4a',
-      name: lsiVal < 0.80
-        ? 'Nordic Hamstring'
-        : 'Nordic Hamstring progressif',
-      target: 'Renforcement excentrique ischio-jambiers',
-      doses: lsiVal < 0.80
-        ? ['3 × 6 rép.', 'Repos 2 min', '3×/sem']
-        : ['3 × 4 rép.', 'Repos 2 min', '2×/sem'],
-      ref: 'Petersen et al. 2011 · AJSM'
-    });
-    exos.push({
-      num: exos.length+1, color:'#ffa500',
-      name: 'Copenhagen plank',
-      target: 'Adducteurs hanche · Stabilité médiale',
-      doses: ['3 × 20s', 'Repos 45s', '3×/sem'],
-      ref: 'Serner et al. 2019 · BJSM'
-    });
-  }
-
-  // Pont fessier unilatéral toujours
-  exos.push({
-    num: exos.length+1, color:'#21c354',
-    name: 'Pont fessier unilatéral',
-    target: 'Fessiers · Contrôle hanche · Symétrie',
-    doses: ['3 × 15 rép.', 'Chaque côté', '3×/sem'],
-    ref: 'Kyritsis et al. 2016 · BJSM'
-  });
-
-  // FIFA 11+ ou PEP selon niveau
-  exos.push({
-    num: exos.length+1, color:'#21c354',
-    name: risk > 0.5
-      ? 'Programme PEP (Hewett)'
-      : 'Échauffement FIFA 11+ adapté',
-    target: 'Protocole prévention LCA validé · -50% risque',
-    doses: ['20 min', 'Avant entraînement', 'Quotidien'],
-    ref: risk > 0.5
-      ? 'Hewett et al. 2005 · AJSM'
-      : 'Soligard et al. 2008 · BMJ'
-  });
-
-  // Rendu
-  const container = document.getElementById('pv-exo-container');
-  if (!container) return;
-
-  const titleEl = document.getElementById('pv-section-title');
-  if (titleEl) titleEl.textContent = exos.length + ' exercices de prévention personnalisés';
-
-  container.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      ${exos.map(ex => `
-      <div class="pv-exo" style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">
-        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
-          <div style="width:20px;height:20px;border-radius:50%;background:${ex.color}18;color:${ex.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;">
-            ${ex.num}
-          </div>
-          <div class="pv-exo-name" style="font-size:12px;font-weight:500;color:#c8d8e8;line-height:1.3;flex:1;">
-            ${ex.name}
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(200,216,232,0.45);margin-bottom:6px;line-height:1.4;">
-          ${ex.target}
-        </div>
-        <div class="pv-exo-dose" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;">
-          ${ex.doses.map(d => `<span class="pv-chip" style="font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);font-family:'JetBrains Mono',monospace;">${d}</span>`).join('')}
-        </div>
-        <div style="font-size:9px;color:rgba(200,216,232,0.25);font-style:italic;">${ex.ref}</div>
-      </div>`).join('')}
-    </div>`;
-}
-
-
-function renderPreventionSection(profile) {
-  var fppaL = profile.fppa_left || profile.fppaLeft || 10;
-  var fppaR = profile.fppa_right || profile.fppaRight || 10;
-  var lsi = profile.lsi_symmetry || profile.lsi || 0.95;
-  var knee = profile.knee_flexion_max || profile.kneeFlexion || 80;
-  var exos = [];
-  var n = 1;
-  exos.push({num:n++,color:'#00c8ff',name:'Proprioception plateau instable',target:'Contrôle neuromusculaire · Stabilité dynamique',doses:['3x45s','Chaque jambe','3x/sem'],ref:'Myklebust 2003 BJSM'});
-  exos.push({num:n++,color:'#00c8ff',name:'Y-Balance Training',target:'Équilibre dynamique · Détection asymétries',doses:['3x5 dir.','Chaque jambe','2x/sem'],ref:'Plisky 2009 J Athl Train'});
-  if (fppaL >= 12 || fppaR >= 12) {
-    exos.push({num:n++,color:'#e24b4a',name:'Drop jump landing',target:'Contrôle valgus dynamique · FPPA',doses:['4x5','Repos 90s','2x/sem'],ref:'Hewett 2005 AJSM'});
-    exos.push({num:n++,color:'#ffa500',name:'Step-down unilatéral',target:'Contrôle neuromusculaire VMO',doses:['3x12','Repos 60s','3x/sem'],ref:'Hewett 2005'});
-  }
-  if (lsi < 0.90) {
-    exos.push({num:n++,color:'#e24b4a',name:lsi<0.80?'Nordic Hamstring':'Nordic Hamstring progressif',target:'Renforcement excentrique ischio-jambiers',doses:lsi<0.80?['3x6','Repos 2min','3x/sem']:['3x4','Repos 2min','2x/sem'],ref:'Petersen 2011 AJSM'});
-    exos.push({num:n++,color:'#ffa500',name:'Copenhagen plank',target:'Adducteurs hanche · Stabilité médiale',doses:['3x20s','Repos 45s','3x/sem'],ref:'Serner 2019 BJSM'});
-  }
-  exos.push({num:n++,color:'#21c354',name:'Pont fessier unilatéral',target:'Fessiers · Contrôle hanche',doses:['3x15','Chaque côté','3x/sem'],ref:'Kyritsis 2016 BJSM'});
-  exos.push({num:n++,color:'#21c354',name:'Échauffement FIFA 11+',target:'Protocole prévention LCA · -50% risque',doses:['20min','Avant entraînement','Quotidien'],ref:'Soligard 2008 BMJ'});
-  var t = document.getElementById('pv-section-title');
-  if(t) t.textContent = exos.length + ' exercices de prévention personnalisés';
-  var c = document.getElementById('pv-exo-container');
-  if(!c) return;
-  c.innerHTML = exos.map(function(e){
-    return '<div style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">' +
-    '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">' +
-    '<div style="width:20px;height:20px;border-radius:50%;background:'+e.color+'22;color:'+e.color+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">'+e.num+'</div>' +
-    '<div style="font-size:12px;font-weight:500;color:#c8d8e8;">'+e.name+'</div></div>' +
-    '<div style="font-size:10px;color:rgba(200,216,232,0.4);margin-bottom:6px;">'+e.target+'</div>' +
-    '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">' +
-    e.doses.map(function(d){return '<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);">'+d+'</span>';}).join('')+
-    '</div><div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;">'+e.ref+'</div></div>';
+  add('#21c354','Pont fessier unilat\u00e9ral','Fessiers \u00b7 Contr\u00f4le hanche \u00b7 Sym\u00e9trie',['3x15','Chaque c\u00f4t\u00e9','3x/sem'],'Kyritsis 2016');
+  add('#21c354','FIFA 11+ adapt\u00e9','Protocole pr\u00e9vention LCA valid\u00e9 \u00b7 -50% risque',['20min','Avant entra\u00eenement','Quotidien'],'Soligard 2008');
+  var t=document.getElementById('pv-title');
+  if(t)t.textContent=ex.length+' exercices de pr\u00e9vention personnalis\u00e9s';
+  var g=document.getElementById('pv-grid');
+  if(!g)return;
+  g.innerHTML=ex.map(function(e){
+    return '<div style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">'
+    +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">'
+    +'<div style="width:20px;height:20px;border-radius:50%;background:'+e.c+'22;color:'+e.c+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">'+e.n+'</div>'
+    +'<div style="font-size:12px;font-weight:500;color:#c8d8e8;line-height:1.3;">'+e.nm+'</div></div>'
+    +'<div style="font-size:10px;color:rgba(200,216,232,0.4);margin-bottom:6px;">'+e.tg+'</div>'
+    +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">'
+    +e.ds.map(function(d){return '<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);">'+d+'</span>';}).join('')
+    +'</div><div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;">'+e.rf+'</div></div>';
   }).join('');
 }
+document.addEventListener('DOMContentLoaded',function(){
+  setTimeout(function(){
+    var s=localStorage.getItem('vt_last_results'),p={};
+    if(s)try{p=JSON.parse(s);}catch(e){}
+    if(!p.fppa_left)p={fppa_left:14.2,fppa_right:11.8,lsi_symmetry:0.88,knee_flexion_max:68,jump_height_com:37.8};
+    pvRender(p);
+  },600);
+});
 
 </script>
 
-  <!-- SECTION PRÃ‰VENTION LCA -->
-  
+<div id="section-prevention" style="max-width:860px;margin:28px auto 0;padding:0 24px 32px;">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+    <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);">Prévention LCA</span>
+    <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
   </div>
-  <!-- FIN SECTION PRÃ‰VENTION LCA -->
+  <p id="pv-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
+  <div id="pv-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
+  <p style="font-size:10px;color:rgba(200,216,232,0.3);font-style:italic;line-height:1.6;padding:10px 14px;background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;">Ces exercices sont adaptés à votre profil biomécanique. Ils ne remplacent pas l'avis d'un médecin du sport ou d'un kinésithérapeute.</p>
+</div>
 
 </body>
 </html>
