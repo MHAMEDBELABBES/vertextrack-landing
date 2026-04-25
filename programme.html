@@ -448,6 +448,10 @@
   font-size: 12px !important;
 }
 
+
+.exo-target{font-size:11px;line-height:1.4;margin-bottom:2px;}
+.exo-ref{font-size:10px;color:rgba(200,216,232,0.28);font-style:italic;margin-top:4px;}
+
 </style>
 
 </head>
@@ -1183,19 +1187,17 @@ function pvRender(p){
   var g=document.getElementById('pv-grid');
   if(!g)return;
   g.innerHTML=ex.map(function(e){
-    return '<div class="exo-card" style="margin-bottom:0;">'
-    +'<div class="exo-header">'
+    return '<div class="exo-card">'
     +'<div class="exo-num" style="background:'+e.c+'22;color:'+e.c+';">'+e.n+'</div>'
-    +'<div><div class="exo-name">'+e.nm+'</div>'
-    +'<div class="exo-target" style="color:'+e.c+'44;">'+e.tg+'</div>'
-    +'</div></div>'
-    +'<div class="exo-params">'
+    +'<div class="exo-body">'
+    +'<div class="exo-name">'+e.nm+'</div>'
+    +'<div class="exo-target" style="color:'+e.c+';">'+e.tg+'</div>'
+    +'<div class="exo-params" style="margin-top:8px;">'
     +e.ds.map(function(d){
       return '<span class="exo-param">'+d+'</span>';
     }).join('')
     +'</div>'
-    +'<div class="exo-body">'
-    +(e.desc?'<div class="exo-desc">'+e.desc+'</div>':'')
+    +(e.desc?'<div class="exo-desc" style="margin-top:10px;">'+e.desc+'</div>':'')
     +'<div class="exo-ref">'+e.rf+'</div>'
     +'</div>'
     +'</div>';
@@ -1203,7 +1205,7 @@ function pvRender(p){
   setTimeout(function(){
     if(typeof addCheckboxesToExos==='function') addCheckboxesToExos();
     if(typeof addTimerButtons==='function') addTimerButtons();
-  },150);
+  },200);
 }
 
 document.addEventListener('DOMContentLoaded',function(){
