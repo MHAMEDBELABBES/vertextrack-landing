@@ -602,6 +602,18 @@
   <!-- SECTION PRÉVENTION LCA -->
  SECTION PRÉVENTION LCA -->
 
+  <!-- SECTION PRÉVENTION LCA -->
+  <div id="section-prevention" style="margin-top:28px;padding:0 24px 28px;">
+    <div style="display:flex;align-items:center;gap:12px;margin:0 0 16px;">
+      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);">Prévention LCA</span>
+      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
+    </div>
+    <p id="pv-section-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prévention personnalisés</p>
+    <div id="pv-exo-container" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
+    <p style="font-size:10px;color:rgba(200,216,232,0.3);font-style:italic;line-height:1.6;padding:10px 14px;background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;">Ces exercices sont adaptés à votre profil biomécanique. Ils ne remplacent pas l'avis d'un médecin du sport ou d'un kinésithérapeute.</p>
+  </div>
+  <!-- FIN SECTION PRÉVENTION LCA -->
 </div><!-- end .page -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1363,18 +1375,46 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>`;
 }
 
+
+function renderPreventionSection(profile) {
+  var fppaL = profile.fppa_left || profile.fppaLeft || 10;
+  var fppaR = profile.fppa_right || profile.fppaRight || 10;
+  var lsi = profile.lsi_symmetry || profile.lsi || 0.95;
+  var knee = profile.knee_flexion_max || profile.kneeFlexion || 80;
+  var exos = [];
+  var n = 1;
+  exos.push({num:n++,color:'#00c8ff',name:'Proprioception plateau instable',target:'Contrôle neuromusculaire · Stabilité dynamique',doses:['3x45s','Chaque jambe','3x/sem'],ref:'Myklebust 2003 BJSM'});
+  exos.push({num:n++,color:'#00c8ff',name:'Y-Balance Training',target:'Équilibre dynamique · Détection asymétries',doses:['3x5 dir.','Chaque jambe','2x/sem'],ref:'Plisky 2009 J Athl Train'});
+  if (fppaL >= 12 || fppaR >= 12) {
+    exos.push({num:n++,color:'#e24b4a',name:'Drop jump landing',target:'Contrôle valgus dynamique · FPPA',doses:['4x5','Repos 90s','2x/sem'],ref:'Hewett 2005 AJSM'});
+    exos.push({num:n++,color:'#ffa500',name:'Step-down unilatéral',target:'Contrôle neuromusculaire VMO',doses:['3x12','Repos 60s','3x/sem'],ref:'Hewett 2005'});
+  }
+  if (lsi < 0.90) {
+    exos.push({num:n++,color:'#e24b4a',name:lsi<0.80?'Nordic Hamstring':'Nordic Hamstring progressif',target:'Renforcement excentrique ischio-jambiers',doses:lsi<0.80?['3x6','Repos 2min','3x/sem']:['3x4','Repos 2min','2x/sem'],ref:'Petersen 2011 AJSM'});
+    exos.push({num:n++,color:'#ffa500',name:'Copenhagen plank',target:'Adducteurs hanche · Stabilité médiale',doses:['3x20s','Repos 45s','3x/sem'],ref:'Serner 2019 BJSM'});
+  }
+  exos.push({num:n++,color:'#21c354',name:'Pont fessier unilatéral',target:'Fessiers · Contrôle hanche',doses:['3x15','Chaque côté','3x/sem'],ref:'Kyritsis 2016 BJSM'});
+  exos.push({num:n++,color:'#21c354',name:'Échauffement FIFA 11+',target:'Protocole prévention LCA · -50% risque',doses:['20min','Avant entraînement','Quotidien'],ref:'Soligard 2008 BMJ'});
+  var t = document.getElementById('pv-section-title');
+  if(t) t.textContent = exos.length + ' exercices de prévention personnalisés';
+  var c = document.getElementById('pv-exo-container');
+  if(!c) return;
+  c.innerHTML = exos.map(function(e){
+    return '<div style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">' +
+    '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">' +
+    '<div style="width:20px;height:20px;border-radius:50%;background:'+e.color+'22;color:'+e.color+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">'+e.num+'</div>' +
+    '<div style="font-size:12px;font-weight:500;color:#c8d8e8;">'+e.name+'</div></div>' +
+    '<div style="font-size:10px;color:rgba(200,216,232,0.4);margin-bottom:6px;">'+e.target+'</div>' +
+    '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">' +
+    e.doses.map(function(d){return '<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);">'+d+'</span>';}).join('')+
+    '</div><div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;">'+e.ref+'</div></div>';
+  }).join('');
+}
+
 </script>
 
   <!-- SECTION PRÃ‰VENTION LCA -->
-  <div id="section-prevention" style="margin-top:28px;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(226,75,74,0.7);white-space:nowrap;">PrÃ©vention LCA</span>
-      <div style="flex:1;height:0.5px;background:rgba(226,75,74,0.2);"></div>
-    </div>
-    <div id="pv-section-title" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;">Exercices de prÃ©vention personnalisÃ©s</div>
-    <div id="pv-exo-container" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
-    <div style="background:rgba(226,75,74,0.04);border:0.5px solid rgba(226,75,74,0.12);border-radius:8px;padding:10px 14px;font-size:10px;color:rgba(200,216,232,0.3);line-height:1.6;font-style:italic;">Ces exercices sont adaptÃ©s Ã  votre profil biomÃ©canique. Ils ne remplacent pas l'avis d'un mÃ©decin du sport ou d'un kinÃ©sithÃ©rapeute.</div>
+  
   </div>
   <!-- FIN SECTION PRÃ‰VENTION LCA -->
 
