@@ -255,7 +255,130 @@
       .exo-desc, .athlete-sub, .week-header { color: #444 !important; }
       .exo-param, .exo-focus, .exo-tag-green { background: #eee !important; border-color: #ccc !important; color: #003a5c !important; }
     }
+
+    /* ── Progression ── */
+    .vt-progress-ring-wrap {
+      display: flex; align-items: center; gap: 16px;
+      background: #060e1a;
+      border: 0.5px solid rgba(0,200,255,0.15);
+      border-radius: 10px; padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+    .vt-ring-svg { flex-shrink: 0; }
+    .vt-ring-bg { fill: none; stroke: rgba(0,200,255,0.1); stroke-width: 5; }
+    .vt-ring-fill {
+      fill: none; stroke: #00c8ff; stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 157; stroke-dashoffset: 157;
+      transform: rotate(-90deg); transform-origin: 32px 32px;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+    .vt-ring-text-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; font-weight: 500; fill: #c8d8e8;
+    }
+    .vt-ring-text-label {
+      font-size: 9px; fill: rgba(200,216,232,0.4);
+      font-family: 'Barlow', sans-serif;
+    }
+    .vt-progress-info { flex: 1; }
+    .vt-progress-info-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 700; color: #fff;
+      letter-spacing: 0.5px; margin-bottom: 3px;
+    }
+    .vt-progress-info-sub {
+      font-size: 11px; color: rgba(200,216,232,0.45);
+      line-height: 1.5;
+    }
+    .vt-progress-info-done {
+      font-size: 11px; color: #21c354; margin-top: 5px;
+      font-weight: 500; display: none;
+    }
+    .vt-exo-check-wrap {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 0.5px solid rgba(0,200,255,0.08);
+      width: 100%;
+    }
+    .vt-exo-checkbox {
+      width: 18px; height: 18px; border-radius: 4px;
+      border: 1.5px solid rgba(0,200,255,0.3);
+      background: transparent; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      flex-shrink: 0; transition: all .15s;
+      position: relative;
+    }
+    .vt-exo-checkbox:checked {
+      background: #00c8ff;
+      border-color: #00c8ff;
+    }
+    .vt-exo-checkbox:checked::after {
+      content: '';
+      position: absolute; top: 2px; left: 5px;
+      width: 5px; height: 9px;
+      border: 2px solid #03080f;
+      border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+    .vt-exo-check-label {
+      font-size: 12px; color: rgba(200,216,232,0.5);
+      cursor: pointer; user-select: none;
+    }
+    .exo-card.done {
+      opacity: 0.6;
+      border-color: rgba(33,195,84,0.25);
+    }
+    .exo-card.done .exo-name { text-decoration: line-through; }
+    
+    /* ── Minuterie ── */
+    .vt-timer-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.8px; padding: 5px 12px;
+      border-radius: 6px; cursor: pointer;
+      border: 0.5px solid rgba(0,200,255,0.25);
+      background: rgba(0,200,255,0.06);
+      color: rgba(0,200,255,0.7);
+      transition: all .15s; margin-left: auto;
+      white-space: nowrap;
+    }
+    .vt-timer-btn:hover {
+      background: rgba(0,200,255,0.12);
+      border-color: rgba(0,200,255,0.5);
+      color: #00c8ff;
+    }
+    .vt-timer-btn.running {
+      background: rgba(255,165,0,0.1);
+      border-color: rgba(255,165,0,0.4);
+      color: #ffa500;
+      font-size: 13px;
+    }
+    .vt-timer-btn.done-flash {
+      background: rgba(33,195,84,0.15);
+      border-color: rgba(33,195,84,0.4);
+      color: #21c354;
+      animation: vt-flash 0.4s ease 3;
+    }
+    @keyframes vt-flash {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .vt-timer-progress {
+      height: 3px; border-radius: 2px;
+      background: rgba(200,216,232,0.08);
+      margin-top: 8px; overflow: hidden;
+      display: none;
+      width: 100%;
+    }
+    .vt-timer-progress-fill {
+      height: 100%; border-radius: 2px;
+      background: #ffa500;
+      transition: width 1s linear;
+    }
+    .vt-timer-progress.visible { display: block; }
   </style>
+
 </head>
 <body>
 
@@ -281,6 +404,20 @@
 <!-- PAGE -->
 <div class="page">
 
+
+  <div class="vt-progress-ring-wrap" id="prog-ring-wrap">
+    <svg class="vt-ring-svg" viewBox="0 0 64 64" width="64" height="64">
+      <circle class="vt-ring-bg" cx="32" cy="32" r="25"/>
+      <circle class="vt-ring-fill" id="ring-fill" cx="32" cy="32" r="25"/>
+      <text class="vt-ring-text-pct" x="32" y="35" text-anchor="middle" id="ring-pct">0%</text>
+    </svg>
+    <div class="vt-progress-info">
+      <div class="vt-progress-info-title" id="ring-title">Semaines 1–2</div>
+      <div class="vt-progress-info-sub" id="ring-sub">Cochez les exercices réalisés</div>
+      <div class="vt-progress-info-done" id="ring-done">Semaine complétée — Passez à la phase suivante</div>
+    </div>
+  </div>
+  
   <!-- Athlete row -->
   <div class="athlete-row">
     <div class="athlete-avatar" id="pg-avatar">--</div>
@@ -666,6 +803,244 @@ var DEMO_PROFILE = {
   buildAlerts(profile, program.profile);
   renderProgram(program, profile);
 })();
+
+// ── SYSTÈME DE PROGRESSION ─────────────────────────────
+
+function getStorageKey() {
+  const athleteId = localStorage.getItem('vt_last_athlete_id') || 'guest';
+  const week = document.querySelector('.tab-btn.active')?.textContent?.trim() || 'sem12';
+  return 'vt_prog_' + athleteId + '_' + week.replace(/\s/g,'');
+}
+
+function loadCheckedState() {
+  try {
+    const key = getStorageKey();
+    return JSON.parse(localStorage.getItem(key) || '{}');
+  } catch(e) { return {}; }
+}
+
+function saveCheckedState(state) {
+  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+}
+
+function updateProgressRing() {
+  const checkboxes = document.querySelectorAll('.tab-panel.active .vt-exo-checkbox');
+  const total = checkboxes.length;
+  const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+  const pct = total > 0 ? Math.round(checked / total * 100) : 0;
+
+  const circumference = 2 * Math.PI * 25;
+  const offset = circumference - (pct / 100 * circumference);
+  const fill = document.getElementById('ring-fill');
+  const pctEl = document.getElementById('ring-pct');
+  
+  if (fill) {
+    fill.style.strokeDasharray  = circumference;
+    fill.style.strokeDashoffset = offset;
+    fill.style.stroke = pct >= 100 ? '#21c354' : pct >= 50 ? '#00c8ff' : '#ffa500';
+  }
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  const activeBtn = document.querySelector('.tab-btn.active');
+  const ringTitle = document.getElementById('ring-title');
+  const ringSub   = document.getElementById('ring-sub');
+  const ringDone  = document.getElementById('ring-done');
+  
+  if (ringTitle && activeBtn) ringTitle.textContent = activeBtn.textContent.trim();
+  if (ringSub) ringSub.textContent = checked + '/' + total + ' exercices complétés cette semaine';
+  if (ringDone) ringDone.style.display = pct >= 100 ? 'block' : 'none';
+}
+
+function addCheckboxesToExos() {
+  const state = loadCheckedState();
+  const exos = document.querySelectorAll('.tab-panel.active .exo-card');
+
+  exos.forEach((exo, index) => {
+    if (exo.querySelector('.vt-exo-checkbox')) return;
+    const exoId = 'exo_' + index;
+    const isChecked = !!state[exoId];
+    const nameEl = exo.querySelector('.exo-name');
+    const name = nameEl?.textContent?.trim() || ('Exercice ' + (index + 1));
+
+    const wrap = document.createElement('div');
+    wrap.className = 'vt-exo-check-wrap';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'vt-exo-checkbox';
+    cb.id = 'cb_' + index;
+    cb.checked = isChecked;
+
+    const label = document.createElement('label');
+    label.className = 'vt-exo-check-label';
+    label.setAttribute('for', 'cb_' + index);
+    label.textContent = isChecked ? 'Réalisé' : 'Marquer comme réalisé';
+
+    cb.addEventListener('change', function() {
+      const s = loadCheckedState();
+      s[exoId] = this.checked;
+      saveCheckedState(s);
+      exo.classList.toggle('done', this.checked);
+      label.textContent = this.checked ? 'Réalisé' : 'Marquer comme réalisé';
+      updateProgressRing();
+    });
+
+    if (isChecked) exo.classList.add('done');
+    wrap.appendChild(cb);
+    wrap.appendChild(label);
+    
+    const body = exo.querySelector('.exo-body');
+    if(body) body.appendChild(wrap);
+    else exo.appendChild(wrap);
+  });
+  updateProgressRing();
+}
+
+
+// ── MINUTERIE DE REPOS ─────────────────────────────────
+
+let _activeTimer = null;
+
+function parseRestTime(exo) {
+  const chips = exo.querySelectorAll('.exo-param');
+  for (const chip of chips) {
+    const text = chip.textContent.trim().toLowerCase();
+    const match = text.match(/repos\s*(\d+)\s*s/);
+    if (match) return parseInt(match[1]);
+    if (text.includes('1 min')) return 60;
+    if (text.includes('2 min')) return 120;
+  }
+  return 45;
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+function startRestTimer(btn, seconds, progressBar) {
+  if (_activeTimer) {
+    clearInterval(_activeTimer);
+    _activeTimer = null;
+  }
+
+  let remaining = seconds;
+  const originalText = btn.dataset.originalText;
+  btn.classList.add('running');
+  btn.classList.remove('done-flash');
+
+  if (progressBar) {
+    progressBar.classList.add('visible');
+    progressBar.querySelector('.vt-timer-progress-fill').style.width = '100%';
+  }
+
+  btn.textContent = remaining + 's';
+
+  _activeTimer = setInterval(function() {
+    remaining--;
+    btn.textContent = remaining > 0 ? remaining + 's' : 'Repos terminé';
+
+    if (progressBar) {
+      const pct = (remaining / seconds * 100).toFixed(1);
+      progressBar.querySelector('.vt-timer-progress-fill').style.width = pct + '%';
+    }
+
+    if (remaining <= 0) {
+      clearInterval(_activeTimer);
+      _activeTimer = null;
+      btn.classList.remove('running');
+      btn.classList.add('done-flash');
+      btn.textContent = 'Reprendre';
+      playBeep();
+      if (navigator.vibrate) navigator.vibrate([200,100,200]);
+      if (progressBar) {
+        progressBar.querySelector('.vt-timer-progress-fill').style.width = '0%';
+      }
+      setTimeout(function() {
+        btn.classList.remove('done-flash');
+        btn.textContent = originalText;
+        if (progressBar) progressBar.classList.remove('visible');
+      }, 3000);
+    }
+  }, 1000);
+}
+
+function addTimerButtons() {
+  const exos = document.querySelectorAll('.tab-panel.active .exo-card');
+
+  exos.forEach(function(exo) {
+    if (exo.querySelector('.vt-timer-btn')) return;
+    const seconds = parseRestTime(exo);
+    const label = 'Repos ' + seconds + 's';
+
+    const timerBtn = document.createElement('button');
+    timerBtn.className = 'vt-timer-btn';
+    timerBtn.textContent = label;
+    timerBtn.dataset.originalText = label;
+    timerBtn.dataset.seconds = seconds;
+
+    const progressBar = document.createElement('div');
+    progressBar.className = 'vt-timer-progress';
+    const progressFill = document.createElement('div');
+    progressFill.className = 'vt-timer-progress-fill';
+    progressBar.appendChild(progressFill);
+
+    timerBtn.addEventListener('click', function() {
+      if (this.classList.contains('running')) {
+        clearInterval(_activeTimer);
+        _activeTimer = null;
+        this.classList.remove('running');
+        this.textContent = this.dataset.originalText;
+        progressBar.classList.remove('visible');
+        progressFill.style.width = '100%';
+        return;
+      }
+      startRestTimer(this, parseInt(this.dataset.seconds), progressBar);
+    });
+
+    const checkWrap = exo.querySelector('.vt-exo-check-wrap');
+    if (checkWrap) {
+      checkWrap.appendChild(timerBtn);
+    } else {
+      const dose = exo.querySelector('.exo-params');
+      if (dose) dose.appendChild(timerBtn);
+    }
+    
+    const body = exo.querySelector('.exo-body');
+    if(body) body.appendChild(progressBar);
+    else exo.appendChild(progressBar);
+  });
+}
+
+// Hook showWeek (switchTab)
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(id, btn) {
+  if (_origSwitchTab) _origSwitchTab(id, btn);
+  setTimeout(function() {
+    addCheckboxesToExos();
+    addTimerButtons();
+  }, 60);
+};
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    addCheckboxesToExos();
+    addTimerButtons();
+  }, 400);
+});
+</script>
+
 </script>
 </body>
 </html>
