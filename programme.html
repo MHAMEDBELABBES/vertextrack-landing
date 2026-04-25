@@ -1044,81 +1044,65 @@ function pvRender(p){
   var fL=p.fppa_left||10,fR=p.fppa_right||10,
       ls=p.lsi_symmetry||0.95,kn=p.knee_flexion_max||80;
   var ex=[],n=1;
-  function add(c,nm,tg,ds,rf,desc){
-    ex.push({c:c,n:n++,nm:nm,tg:tg,ds:ds,rf:rf,desc:desc||''});
+  function add(c,nm,tg,ds,rf){
+    ex.push({c:c,n:n++,nm:nm,tg:tg,ds:ds,rf:rf});
   }
   add('#00c8ff','Proprioception plateau instable',
     'Contrôle neuromusculaire · Stabilité',
     ['3x45s','Chaque jambe','3x/sem'],
-    'Myklebust 2003 BJSM',
-    'Debout sur plateau instable ou coussin. Progression : yeux ouverts → fermés → avec ballon. Jambe la plus faible en priorité.');
+    'Myklebust 2003 BJSM');
   add('#00c8ff','Y-Balance Training',
     'Équilibre dynamique · Asymétries',
     ['3x5 dir.','Chaque jambe','2x/sem'],
-    'Plisky 2009 J Athl Train',
-    'En appui unipodal, atteindre 3 directions. Mesurer la distance d'atteinte pour chaque côté et comparer.');
+    'Plisky 2009 J Athl Train');
   if(fL>=12||fR>=12){
     add('#e24b4a','Drop jump landing',
       'Contrôle valgus · FPPA',
       ['4x5','Repos 90s','2x/sem'],
-      'Hewett 2005 AJSM',
-      'Descente de la boîte 30 cm, atterrissage bilatéral contrôlé. Genoux alignés sur les orteils. Feedback caméra recommandé.');
+      'Hewett 2005 AJSM');
     add('#ffa500','Step-down unilatéral',
       'VMO · Contrôle valgus',
       ['3x12','Repos 60s','3x/sem'],
-      'Hewett 2005',
-      'Debout sur marche, descendre lentement le pied libre. Genou aligné sur 2ᵉ orteil. Priorité côté FPPA élevé.');
+      'Hewett 2005');
     add('#ffa500','Copenhagen plank',
       'Adducteurs hanche · Stabilité médiale',
       ['3x20s','Repos 45s','3x/sem'],
-      'Serner 2019 BJSM',
-      'Planche latérale, pied supérieur sur chaise. Maintenir corps aligné. Progresser vers version dynamique à la semaine 3.');
+      'Serner 2019 BJSM');
   }
   if(ls<0.90){
     add('#e24b4a',
-      ls<0.80?'Nordic Hamstring':'Nordic Hamstring progressif',
+      ls<0.80?'Nordic Hamstring':
+      'Nordic Hamstring progressif',
       'Renforcement excentrique ischio-jambiers',
-      ls<0.80?['3x6','Repos 2min','3x/sem']:['3x4','Repos 2min','2x/sem'],
-      'Petersen 2011 AJSM',
-      ls<0.80?
-      'À genoux, partenaire tient les chevilles. Descente lente en avant (3-4 s). Contraction maximale des ischio-jambiers.':
-      'Version assistée avec élastique. Même mouvement, l'élastique réduit la charge excentrique. Progresser vers version libre.');
+      ls<0.80?['3x6','Repos 2min','3x/sem']:
+      ['3x4','Repos 2min','2x/sem'],
+      'Petersen 2011 AJSM');
   }
   add('#21c354','Pont fessier unilatéral',
     'Fessiers · Contrôle hanche · Symétrie',
     ['3x15','Chaque côté','3x/sem'],
-    'Kyritsis 2016 BJSM',
-    'Allongé sur le dos, soulever le bassin sur une jambe. Pause 2 s en haut. Priorité côté asymétrique (LSI < 0.90).');
+    'Kyritsis 2016 BJSM');
   add('#21c354','FIFA 11+ adapté',
-    'Protocole prévention LCA validé · −50 % risque',
-    ['20 min','Avant entraînement','Quotidien'],
-    'Soligard 2008 BMJ',
-    'Course + renforcement + étirements dynamiques. Réduit le risque LCA de 50 %. Adapté basket : ajouter sauts avec contrôle à l’atterrissage.');
+    'Protocole prévention LCA validé · -50% risque',
+    ['20min','Avant entraînement','Quotidien'],
+    'Soligard 2008 BMJ');
   var t=document.getElementById('pv-title');
-  if(t)t.textContent=ex.length+' exercices de prévention personnalisés';
+  if(t)t.textContent=ex.length+
+    ' exercices de prévention personnalisés';
   var g=document.getElementById('pv-grid');
   if(!g)return;
   g.innerHTML=ex.map(function(e){
-    return '<div class="exo-card" style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">'
+    return '<div style="background:#060e1a;border:0.5px solid rgba(0,200,255,0.1);border-radius:8px;padding:12px;">'
     +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">'
-    +'<div style="width:22px;height:22px;border-radius:50%;background:'+e.c+'22;color:'+e.c+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">'+e.n+'</div>'
-    +'<div class="exo-name" style="font-size:13px;font-weight:600;color:#c8d8e8;line-height:1.3;">'+e.nm+'</div></div>'
-    +'<div style="font-size:10px;color:rgba(200,216,232,0.45);margin-bottom:8px;line-height:1.4;">'+e.tg+'</div>'
-    +'<div class="exo-params" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">'
+    +'<div style="width:20px;height:20px;border-radius:50%;background:'+e.c+'22;color:'+e.c+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">'+e.n+'</div>'
+    +'<div style="font-size:12px;font-weight:500;color:#c8d8e8;line-height:1.3;">'+e.nm+'</div></div>'
+    +'<div style="font-size:10px;color:rgba(200,216,232,0.4);margin-bottom:6px;">'+e.tg+'</div>'
+    +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;">'
     +e.ds.map(function(d){
-      return '<span class="exo-param" style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.7);font-family:monospace;">'+d+'</span>';
+      return '<span style="font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(0,200,255,0.06);border:0.5px solid rgba(0,200,255,0.15);color:rgba(0,200,255,0.6);">'+d+'</span>';
     }).join('')
-    +'</div>'
-    +(e.desc?'<div style="font-size:11px;color:rgba(200,216,232,0.55);line-height:1.5;margin-bottom:8px;padding:8px 10px;background:rgba(0,200,255,0.03);border-radius:6px;border-left:2px solid '+e.c+'44;">'+e.desc+'</div>':'')
-    +'<div class="exo-body">'
-    +'<div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;margin-bottom:4px;">'+e.rf+'</div>'
-    +'</div>'
-    +'</div>';
+    +'</div><div style="font-size:9px;color:rgba(200,216,232,0.22);font-style:italic;">'+e.rf+'</div></div>';
   }).join('');
-  setTimeout(function(){
-    addCheckboxesToExos();
-    addTimerButtons();
-  },100);
 }
 document.addEventListener('DOMContentLoaded',function(){
   setTimeout(function(){
