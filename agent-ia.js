@@ -12,43 +12,59 @@ var VT_AGENT = {
 };
 
 function buildSystemPrompt(profile, role) {
+  var base = "Tu es Dr. VERTEX, expert en biomecanique sportive et prevention LCA integre dans VERTEXTRACK. Tu combines l expertise d un coach professionnel de haut niveau (basketball et football) et d un kinesitherapeute specialise LCA avec 15 ans d experience. Tu maitrises : Hewett 2005 AJSM (valgus dynamique et risque LCA), Kyritsis 2016 BJSM (criteres retour sport), Dingenen 2015 Knee (flexion genou optimale), Bosco 1983 (methode temps de vol CMJ), Ebben & Petushek 2010 (RSI modifie), Petersen 2011 AJSM (Nordic Hamstring), Soligard 2008 BMJ (FIFA 11+ efficacite -50% LCA), Myklebust 2003 BJSM (proprioception et LCA). Tu connais et appliques : PEP Program, FIFA 11+, protocole retour sport progressif Grindem 2016, RSI training, Neuromuscular Training (NMT).";
+
   var roleCtx = {
-    athlete: 'Tu parles a un athlete. Utilise un langage simple et encourageant. Pas de jargon medical. Donne des conseils pratiques et motivants.',
-    coach: 'Tu parles a un coach sportif. Langage oriente entrainement. Propose des exercices, progressions et adaptations tactiques.',
-    medecin: 'Tu parles a un medecin du sport ou kinesitherapeute. Utilise le vocabulaire clinique. Cite les references scientifiques (Hewett 2005, Kyritsis 2016, Dingenen 2015).'
+    athlete: "Tu parles a un athlete. Langage simple, direct et motivant. Pas de jargon medical. Tu donnes des exercices precis avec series x reps x frequence par semaine. Tu expliques pourquoi chaque exercice aide. Tu felicites les bons resultats. Ton : coach qui connait personnellement l athlete.",
+    coach: "Tu parles a un coach sportif professionnel. Langage technique oriente performance. Tu proposes des exercices collectifs, parles de periodisation et charge d entrainement. Tu donnes des criteres objectifs de retour sport. Tu cites les references pour justifier tes recommandations. Ton : expert a expert, concis et factuel.",
+    medecin: "Tu parles a un medecin du sport ou kinesitherapeute. Vocabulaire clinique complet et precis. Tu cites systematiquement les references scientifiques avec auteur+annee+journal. Tu analyses les mecanismes biocaniques en profondeur. Tu proposes des protocoles de reeducation progressifs avec criteres d evaluation. Tu mentionnes les contre-indications. Ton : collegue professionnel de sante."
   };
 
-  var profileCtx = '';
+  var profileCtx = "";
   if (profile) {
-    var fppaL = profile.fppa_left || profile.fppaLeft;
-    var fppaR = profile.fppa_right || profile.fppaRight;
-    var lsi   = profile.lsi_symmetry || profile.lsi;
-    var knee  = profile.knee_flexion_max || profile.kneeFlexion;
-    var h     = profile.jump_height_com || profile.jumpHeight;
-    var rsi   = profile.rsi_modified;
+    var fppaL = profile.fppa_left || profile.fppaLeft || 0;
+    var fppaR = profile.fppa_right || profile.fppaRight || 0;
+    var lsi   = profile.lsi_symmetry || profile.lsi || 1;
+    var knee  = profile.knee_flexion_max || profile.kneeFlexion || 80;
+    var h     = profile.jump_height_com || profile.jumpHeight || 0;
+    var rsi   = profile.rsi_modified || 0;
 
-    profileCtx = '\n\nPROFIL BIOMETRIQUE ATHLETE:\n'
-      + '- Hauteur saut CMJ: ' + (h ? h.toFixed(1) + ' cm' : 'non mesure') + '\n'
-      + '- FPPA gauche: ' + (fppaL ? fppaL.toFixed(1) + 'deg' : '--') + '\n'
-      + '- FPPA droite: ' + (fppaR ? fppaR.toFixed(1) + 'deg' : '--') + '\n'
-      + '- LSI symetrie: ' + (lsi ? lsi.toFixed(2) : '--') + '\n'
-      + '- Flexion genou max: ' + (knee ? knee.toFixed(0) + 'deg' : '--') + '\n'
-      + '- RSI modifie: ' + (rsi ? rsi.toFixed(3) : '--') + '\n'
-      + '\nSeuils cliniques:\n'
-      + '- FPPA normal <10deg, risque modere 10-15deg, eleve >15deg (Hewett 2005)\n'
-      + '- LSI normal >=0.90, modere 0.80-0.89, severe <0.80 (Kyritsis 2016)\n'
-      + '- Flexion genou optimale 70-90deg (Dingenen 2015)\n';
+    var alerts = [];
+    var strengths = [];
+
+    if (fppaL >= 15) alerts.push("FPPA gauche ELEVE " + fppaL.toFixed(1) + "deg => risque valgus significatif (Hewett 2005)");
+    else if (fppaL >= 12) alerts.push("FPPA gauche MODERE " + fppaL.toFixed(1) + "deg => proche seuil critique 15deg");
+    else strengths.push("FPPA gauche normal " + fppaL.toFixed(1) + "deg");
+
+    if (lsi < 0.80) alerts.push("LSI SEVERE " + (lsi*100).toFixed(0) + "% => retour sport contre-indique (Kyritsis 2016)");
+    else if (lsi < 0.90) alerts.push("LSI MODERE " + (lsi*100).toFixed(0) + "% => critere retour sport non atteint (<90%)");
+    else strengths.push("LSI satisfaisant " + (lsi*100).toFixed(0) + "%");
+
+    if (knee < 70) alerts.push("Flexion genou INSUFFISANTE " + knee.toFixed(0) + "deg => optimal 70-90deg (Dingenen 2015)");
+    else if (knee >= 70 && knee <= 90) strengths.push("Flexion genou OPTIMALE " + knee.toFixed(0) + "deg");
+
+    if (h >= 45) strengths.push("Hauteur saut EXCELLENTE " + h.toFixed(1) + "cm");
+    else if (h >= 35) strengths.push("Hauteur saut correcte " + h.toFixed(1) + "cm");
+    else if (h > 0) alerts.push("Hauteur saut FAIBLE " + h.toFixed(1) + "cm => objectif >= 38cm");
+
+    if (rsi >= 0.9) strengths.push("RSI ELITE " + rsi.toFixed(3));
+    else if (rsi >= 0.7) strengths.push("RSI BON " + rsi.toFixed(3));
+    else if (rsi > 0) alerts.push("RSI FAIBLE " + rsi.toFixed(3) + " => travail pliometrique recommande");
+
+    profileCtx = " | PROFIL ATHLETE: Hauteur CMJ=" + (h ? h.toFixed(1)+"cm" : "non mesure")
+      + ", FPPA-G=" + (fppaL ? fppaL.toFixed(1)+"deg" : "?")
+      + ", FPPA-D=" + (fppaR ? fppaR.toFixed(1)+"deg" : "?")
+      + ", LSI=" + (lsi ? (lsi*100).toFixed(0)+"%" : "?")
+      + ", Flexion genou=" + (knee ? knee.toFixed(0)+"deg" : "?")
+      + ", RSI=" + (rsi ? rsi.toFixed(3) : "?")
+      + " | ALERTES: " + (alerts.length ? alerts.join("; ") : "aucune alerte critique")
+      + " | POINTS FORTS: " + (strengths.length ? strengths.join("; ") : "a evaluer");
   }
 
-  return 'Tu es un assistant expert en biomecanique sportive et prevention LCA integre dans VERTEXTRACK, une plateforme d\'analyse du saut vertical pour athletes de basketball et football.'
-    + '\n\n' + (roleCtx[role] || roleCtx.athlete)
+  return base
+    + " | " + (roleCtx[role] || roleCtx.athlete)
     + profileCtx
-    + '\n\nRegles:\n'
-    + '- Reponds TOUJOURS en francais\n'
-    + '- Sois concis (3-5 phrases max)\n'
-    + '- Ne fais pas de diagnostic medical\n'
-    + '- Encourage a consulter un professionnel de sante pour les decisions medicales\n'
-    + '- Utilise les donnees biocaniques fournies pour personnaliser tes reponses';
+    + " | REGLES ABSOLUES: Reponds TOUJOURS en francais. Maximum 5 phrases sauf si programme complet demande. Pour tout exercice donne: nom + series x reps + frequence/semaine. Cite auteur+annee pour toute reference scientifique. Reste dans ton domaine: biomecanique, saut vertical, LCA, performance sportive basketball/football.";
 }
 
 async function callGroq(userMessage) {
