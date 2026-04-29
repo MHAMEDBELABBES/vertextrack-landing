@@ -289,10 +289,17 @@
 <!-- HERO -->
 <section class="hero">
   <video class="hero-video" autoplay loop muted playsinline>
-    <source src="videoa.mp4" type="video/mp4">
-    <source src="videoa.webm" type="video/webm">
+    <source src="assets/videos/vidoea.mp4" type="video/mp4">
+    <source src="assets/videos/vidoea.webm" type="video/webm">
   </video>
   <div class="hero-overlay"></div>
+
+  <!-- Fallback si la vidéo ne charge pas -->
+  <div id="hero-fallback" style="position:absolute;inset:0;
+    background:linear-gradient(135deg,
+      rgba(0,200,255,0.08) 0%,
+      rgba(3,8,15,1) 100%);
+    display:none;z-index:0;"></div>
 
   <div class="hero-content">
     <div class="hero-badge">IA · Vision par ordinateur · Biomécanique</div>
@@ -316,7 +323,7 @@
 
   <div class="hero-metrics">
     <div class="hm-item">
-      <span class="hm-val" data-count="0.80" data-dec="2">0.80</span>
+      <span class="hm-val">0.80</span>
       <span class="hm-label">AUC-ROC</span>
     </div>
     <div class="hm-item">
@@ -333,6 +340,20 @@
     </div>
   </div>
 </section>
+
+<!-- VIDEO FALLBACK SCRIPT -->
+<script>
+(function(){
+  var vid = document.querySelector('.hero-video');
+  var fb  = document.getElementById('hero-fallback');
+  if (!vid || !fb) return;
+  function showFallback() { fb.style.display = 'block'; }
+  vid.addEventListener('error', showFallback);
+  setTimeout(function(){
+    if (vid.paused || vid.readyState < 2) showFallback();
+  }, 3000);
+})();
+</script>
 
 <!-- WORKFLOW -->
 <section class="section workflow">
@@ -454,7 +475,7 @@
 
       <div class="who-card reveal" style="border-top-color:#00c8ff;">
         <span class="who-badge" style="background:rgba(0,200,255,0.1);color:#00c8ff;">ATHLÈTE</span>
-        <div class="who-title">Performance & Suivi</div>
+        <div class="who-title">Performance &amp; Suivi</div>
         <div class="who-desc">
           Visualise ton profil biomécanique en langage simple.
           Suis ton programme semaine par semaine avec minuterie
@@ -625,7 +646,7 @@
 </footer>
 
 <script>
-// IntersectionObserver pour animations au scroll
+// IntersectionObserver — animations au scroll
 var reveals = document.querySelectorAll('.reveal');
 var io = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) {
@@ -663,8 +684,9 @@ var countIO = new IntersectionObserver(function(entries) {
     }
   });
 }, { threshold: 0.5 });
-document.querySelectorAll('[data-count]')
-  .forEach(function(el) { countIO.observe(el); });
+document.querySelectorAll('[data-count]').forEach(function(el) {
+  countIO.observe(el);
+});
 </script>
 
 </body>
